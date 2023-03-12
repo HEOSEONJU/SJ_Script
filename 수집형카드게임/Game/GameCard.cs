@@ -408,7 +408,7 @@ public class GameCard : MonoBehaviour
 
     public int MAX_DREW_Count()
     {
-        int count = 0;
+        int count = 1;
         foreach (SpellEffect SE in Spell_Effects)
         {
             foreach (Effect_Value EV in SE.Effect_Type_Value)

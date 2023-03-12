@@ -62,14 +62,6 @@ public class TitleManager : MonoBehaviour
         POPUP_1=GetComponent<FailWinodw>();
     }
 
-
-    public void Init_Accoutnt()
-    {
-        FireBaseDB.instacne.Create_ID(_INPUT_ID.text, _INPUT_PASSWORD.text, _INPUT_GAME_NAME.text);
-        
-    }
-
-
     public void Duplication_Text()
     {
         POPUP_1.View_Text("이미 있는 아이디입니다");
@@ -85,21 +77,6 @@ public class TitleManager : MonoBehaviour
         FireBaseDB.instacne.Player_Data_instacne.Init_Account(_INPUT_ID.text, _INPUT_PASSWORD.text, _INPUT_GAME_NAME.text);
 
     }
-
-
-
-
-
-    public void Try_LogiN()
-    {
-        LogIn_ID = _INPUT_LOGINID.text;
-        LogIn_Password = _INPUT_LOGINPASSWORD.text;
-
-        FireBaseDB.instacne.Login(LogIn_ID, LogIn_Password);
-
-
-
-    }
     public void Sucess_Login()
     {
         LogIn_POPUP.SetActive(false);
@@ -110,7 +87,6 @@ public class TitleManager : MonoBehaviour
     {
         POPUP_1.View_Text("아이디 혹은 비밀번호가 틀렷습니다.");
     }
-
     public void OpenCreate()
     {
         Create_ID_POPUP.SetActive (true);
@@ -145,9 +121,7 @@ public class TitleManager : MonoBehaviour
     {
         Application.Quit();
     }
-
-
-    public void MoveGame()
+    public void MoveGame()//버툰으로 호출
     {
         POPUP.SetActive(false);
         Loading.SetActive(true);
@@ -157,8 +131,6 @@ public class TitleManager : MonoBehaviour
     }
     IEnumerator SceneLoading()
     {
-
-        
         Gage_Value.value = 0;
         Debug.Log("로딩시작");
         TextMeshProUGUI LP=Gage_Value.transform.GetChild(2).GetComponent<TextMeshProUGUI>();

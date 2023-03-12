@@ -50,7 +50,7 @@ public class Deck : MonoBehaviour
 
 
     }
-    public void InitDeck()
+    public void InitDeck()///플레이어의 데이테를 참조해 덱에 카드를 생성하는기능
     {
 
         for (int i = 0; i < FireBaseDB.instacne.Player_Data_instacne.DeckCards.Count; i++)
@@ -98,7 +98,7 @@ public class Deck : MonoBehaviour
         ShuffleDeck();
 
     }
-    public void Play_Particle( )
+    public void Play_Particle( )//카드 생성 파티클을 작동하는 함수
     {
         for(int i=0;i<Init_Effect.Count;i++)
         {
@@ -106,7 +106,7 @@ public class Deck : MonoBehaviour
         }
     }
 
-     IEnumerator Stop_Particle(float time)
+     IEnumerator Stop_Particle(float time)//카드 생성 파티클을 멈추는 코루틴
     {
         yield return new WaitForSeconds(time*0.1f+1.2f);
         for (int i = 0; i < Init_Effect.Count; i++)
@@ -114,7 +114,7 @@ public class Deck : MonoBehaviour
             Init_Effect[i].Stop();
         }
     }
-    public void Function_Stop_Particle(float time)
+    public void Function_Stop_Particle(float time)//카드 생성 파티클을 멈추는 코루틴을 호출하는 함수
     {
         StartCoroutine(Stop_Particle(time));
     }
@@ -130,9 +130,7 @@ public class Deck : MonoBehaviour
             Init_Effect[i].Stop();
         }
     }
-
-
-    public void Special_InitCard(int ID,int num)
+    public void Special_InitCard(int ID,int num)//뽑기에서 나오지 않는 특수 카드를 생성 하는 함수
     {
 
         int TempID = ID;
@@ -179,7 +177,7 @@ public class Deck : MonoBehaviour
 
 
     }
-    public void Extra_InitCard(int ID, int num)
+    public void Extra_InitCard(int ID, int num)//스펠효과에 인한 추가 카드생성을 작동하는 함수
     {
 
         int TempID = ID;
@@ -226,50 +224,17 @@ public class Deck : MonoBehaviour
 
     }
 
-    void Init_Card(SpellCard card,int TempID)
+    void Init_Card(SpellCard card,int TempID)//카드생성
     {
-        
         card.CardNumber = TempID;
         card.manager = manager;
         card.Cost = CardDataBase.cards[TempID].cost;
         card.CardType = CardDataBase.cards[TempID].CardType;
-        /*
-        card.SpellType = CardDataBase.cards[TempID].SpellType;
-        card.Value_A = CardDataBase.cards[TempID].Value_A;
-        card.Value_D = CardDataBase.cards[TempID].Value_D;
-        card.Value_H = CardDataBase.cards[TempID].Value_H;
-        card.Value_PA = CardDataBase.cards[TempID].Value_PA;
-        card.Value_PD = CardDataBase.cards[TempID].Value_PD;
-        card.Value_PH = CardDataBase.cards[TempID].Value_PH;
-        card.Value_R = CardDataBase.cards[TempID].Value_R;
-        card.Value_AC = CardDataBase.cards[TempID].Value_AC;
-        card.Value_TY = CardDataBase.cards[TempID].Value_TY;
-        card.Value_MR = CardDataBase.cards[TempID].Value_MR;
-        card.Value_CP = CardDataBase.cards[TempID].Value_CP;
-        card.Value_CD = CardDataBase.cards[TempID].Value_DC;
-        card.Value_Cost = CardDataBase.cards[TempID].Value_Cost;
-        card.Value_MAXCost = CardDataBase.cards[TempID].Value_MAXCost;
-        card.Value_Char_Damage = CardDataBase.cards[TempID].Value_Char_Damage;
-        card.Value_Drew = CardDataBase.cards[TempID].Value_Drew;
-        card.Value_Hand_Less = CardDataBase.cards[TempID].Value_Hand_Less;
-        card.Value_Create_Deck = CardDataBase.cards[TempID].Value_Create_Deck;
-        card.Value_Create_Deck1 = CardDataBase.cards[TempID].Value_Create_Deck1;
-        card.Value_Create_Deck2 = CardDataBase.cards[TempID].Value_Create_Deck2;
-        card.Value_Create_Deck3 = CardDataBase.cards[TempID].Value_Create_Deck3;
-        card.Value_Create_Deck4 = CardDataBase.cards[TempID].Value_Create_Deck4;
-        card.HEAL = CardDataBase.cards[TempID].HEAL;
-        card.Value_Enemy_Damage = CardDataBase.cards[TempID].Value_Enemy_Damage;
-        card.Turn = CardDataBase.cards[TempID].Turn;
-        card.Special = CardDataBase.cards[TempID].Special;
-        */
         card.Value_Enemy_Damage_Effect = CardDataBase.cards[TempID].Value_Enemy_Damage_Effect;
         card.Value_Char_Effect_Num = CardDataBase.cards[TempID].Value_Char_Effect_Num;
         card.Value_Enemy_Effect_Num = CardDataBase.cards[TempID].Value_Enemy_Effect_Num;
-        
-        
-
     }
-    void Init_SpcialCard(SpellCard card, int TempID)
+    void Init_SpcialCard(SpellCard card, int TempID)//스페셜카드생성
     {
         card.CardNumber = TempID;
         card.manager = manager;
@@ -278,41 +243,8 @@ public class Deck : MonoBehaviour
         card.Value_Enemy_Damage_Effect = CardDataBase.Special_cards[TempID].Value_Enemy_Damage_Effect;
         card.Value_Char_Effect_Num = CardDataBase.Special_cards[TempID].Value_Char_Effect_Num;
         card.Value_Enemy_Effect_Num = CardDataBase.Special_cards[TempID].Value_Enemy_Effect_Num;
-        /*card.SpellType = CardDataBase.Special_cards[TempID].SpellType;
-        card.Value_A = CardDataBase.Special_cards[TempID].Value_A;
-        card.Value_D = CardDataBase.Special_cards[TempID].Value_D;
-        card.Value_H = CardDataBase.Special_cards[TempID].Value_H;
-        card.Value_PA = CardDataBase.Special_cards[TempID].Value_PA;
-        card.Value_PD = CardDataBase.Special_cards[TempID].Value_PD;
-        card.Value_PH = CardDataBase.Special_cards[TempID].Value_PH;
-        card.Value_R = CardDataBase.Special_cards[TempID].Value_R;
-        card.Value_AC = CardDataBase.Special_cards[TempID].Value_AC;
-        card.Value_TY = CardDataBase.Special_cards[TempID].Value_TY;
-        card.Value_MR = CardDataBase.Special_cards[TempID].Value_MR;
-        card.Value_CP = CardDataBase.Special_cards[TempID].Value_CP;
-        card.Value_CD = CardDataBase.Special_cards[TempID].Value_DC;
-        card.Value_Cost = CardDataBase.Special_cards[TempID].Value_Cost;
-        card.Value_MAXCost = CardDataBase.Special_cards[TempID].Value_MAXCost;
-        card.Value_Char_Damage = CardDataBase.Special_cards[TempID].Value_Char_Damage;
-        card.Value_Drew = CardDataBase.Special_cards[TempID].Value_Drew;
-        card.Value_Hand_Less = CardDataBase.Special_cards[TempID].Value_Hand_Less;
-        card.Value_Create_Deck = CardDataBase.Special_cards[TempID].Value_Create_Deck;
-        card.Value_Create_Deck1 = CardDataBase.Special_cards[TempID].Value_Create_Deck1;
-        card.Value_Create_Deck2 = CardDataBase.Special_cards[TempID].Value_Create_Deck2;
-        card.Value_Create_Deck3 = CardDataBase.Special_cards[TempID].Value_Create_Deck3;
-        card.Value_Create_Deck4 = CardDataBase.Special_cards[TempID].Value_Create_Deck4;
-        card.HEAL = CardDataBase.Special_cards[TempID].HEAL;
-
-        
-        
-        card.Value_Enemy_Damage = CardDataBase.Special_cards[TempID].Value_Enemy_Damage;
-        
-        card.Turn = CardDataBase.Special_cards[TempID].Turn;
-        card.Special = CardDataBase.Special_cards[TempID].Special;
-        */
-
     }
-    IEnumerator Extra_Move(SpellCard card, int num)
+    IEnumerator Extra_Move(SpellCard card, int num)//중앙에서 카드를 생성하고 덱으로 들어가는 연출하는 코루틴
     {
         card.MoveTransForm(new PRS(card.transform.position, Quaternion.identity, Vector3.zero), false);
         yield return new WaitForSeconds(0.3f);
@@ -326,48 +258,31 @@ public class Deck : MonoBehaviour
         yield return new WaitForSeconds(0.15f);
         card.transform.GetChild(0).GetComponent<SpriteRenderer>().sortingOrder = 0;
     }
-
-
-    public bool Drew()
+    public bool Drew()//덱에서 패로 카드를 뽑는 함수
     {
         if (DeckCards.Count > 0 & Hand.CurrentHand < Hand.MaxHand)
         {
             Hand.AddCard(DeckCards[0]);
             DeckCards[0].transform.parent = Hand.transform.GetChild(0);
-
             DeckCards.Remove(DeckCards[0]);
-
             Hand.Cards[Hand.CurrentHand - 1].GetComponent<SpellCard>().StartFlip();
-
             return true;
 
         }
         else if (Hand.CurrentHand == 10)
         {
             POPUP_1.View_Text("패가 가득찼습니다.");
-            //Debug.Log("패가 가득찼습니다.");
             return false;
         }
         else if (DeckCards.Count == 0)
         {
             POPUP_1.View_Text("덱이없습니다");
-            //Debug.Log("덱이없습니다");
             return false;
         }
         else
             return false;
     }
-
-
-
-
-
-
-
-
-
-
-    public void ShuffleDeck()
+    public void ShuffleDeck()//덱에서 카드순서를 셔플하는 함수
     {
         for (int j = 0; j < 5; j++)
         {
@@ -379,19 +294,12 @@ public class Deck : MonoBehaviour
                 DeckCards[rn] = temp;
             }
         }
-        int C = DeckCards.Count;
-        
-
-
     }
-
-    public void Reset_Deck_Hand()
+    public void Reset_Deck_Hand()//패를 초기화 하는 함수
     {
-
         for (int i = DeckCards.Count - 1; i >= 0; i--)
         {
             Destroy(DeckCards[i].gameObject);
-
         }
         DeckCards.Clear();
         for (int i = Hand.Cards.Count - 1; i >= 0; i--)
@@ -405,7 +313,5 @@ public class Deck : MonoBehaviour
     {
         Reset_Deck_Hand();
     }
-
-
 
 }

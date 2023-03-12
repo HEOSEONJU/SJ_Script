@@ -17,11 +17,11 @@ public class Manager : MonoBehaviour
     public float Size = 0.1f;//패에있는 카드 크기
     public StageUI Stage_UI;
     [Header("게임참조")]
-    public PlayerInfos PlayerData;
-    public Deck MYDeck;
-    public CardHand Hand;
-    public CharManager Char_Manager;
-    public EnemyManager Enemy_Manager;
+
+    public Deck MYDeck;//플레이어의 덱
+    public CardHand Hand;//플레이어의 패
+    public CharManager Char_Manager;//배틀에 참가한 캐릭터 매니저
+    public EnemyManager Enemy_Manager;//배틀상대의 매니저
 
     [Header("게임정보")]
     bool Loading;
@@ -37,36 +37,22 @@ public class Manager : MonoBehaviour
     public int My_Cost;
     public int My_MAXCost;
     public int DrewCount = 1;
-
-
-
-
-
-
-
     public bool STOP;
-
     float CardDelay = 0.5f;//카드뽑기딜레이
     int StartDrew = 5;
     public bool onMyCardArea;
     public TextMeshProUGUI AttackOrder;
-
     CardState state;
-
-
     [Header("확대참조")]
     public GameObject EnLargeObject;
     public Image Large_Main;
     public TextMeshProUGUI Large_Cost;
     public TextMeshProUGUI Large_Name;
     public TextMeshProUGUI Large_Exp;
-
-
     public FailWinodw POPUP_1;
 
     [SerializeField]
     GameObject Setting;
-
     [Header("보상참조")]
     [SerializeField]
     PlayerInfos Player_Reward;
@@ -93,9 +79,8 @@ public class Manager : MonoBehaviour
     [Header("스펠카드 사용시 참조")]
     public Card_Result _Result;
     public GameCard Target_Solo;
-
     public SpellCard SelectedCard;
-    enum CardState { Not, Over, Drag }
+    enum CardState { Not, Over, Drag }//아무것도하지못하는상태, 확대만 가능한 상태,드래그까지가능한상태;
     private void Awake()
     {
         Char_Manager.CharAwke();
@@ -122,12 +107,9 @@ public class Manager : MonoBehaviour
         AttackOrder.text = "공격준비완료";
         Setting.SetActive(false);
     }
-
-
-
-    public void Restart()
+    public void Restart()//게임을 초기 상황으로 돌리고 재시작하는 기능
     {
-        if (state == CardState.Drag)
+        if (state == CardState.Drag)//드래그가능한상태는 내턴에 행동을 할 수있는상태
         {
             CloseSetting();
             MYDeck.Reset_Deck_Hand();
@@ -139,19 +121,16 @@ public class Manager : MonoBehaviour
             Drag = false;
             Char_Manager.CharInit();
             StartCoroutine(FirstDrew());
-
             Turn = true;
             ViewCost();
             STOP = false;
             Enlarge(false);
             AttackOrder.text = "공격준비완료";
             Setting.SetActive(false);
-
             StartCoroutine(Char_Manager.MonsterCardReset());
-
             Enemy_Manager.Restart();
         }
-        else
+        else//행동을 할 수 없는 단계 상대턴,공격중
         {
             POPUP_1.View_Text("행동중 에는 항복할 수 없습니다.");
         }
@@ -159,14 +138,13 @@ public class Manager : MonoBehaviour
     }
 
 
-    public void Enlarge(bool state)
+    public void Enlarge(bool state)//카드 확대하는 기능
     {
         EnLargeObject.SetActive(state);
     }
 
     private void Update()
     {
-
         if (Input.GetKeyDown(KeyCode.Space))//카드정리
         {
             CardAlignment();
@@ -183,7 +161,7 @@ public class Manager : MonoBehaviour
             CardDrag();
         }
 
-        if (LoadingTimer >= 0)
+        if (LoadingTimer >= 0)//로딩타이머가있는동안에는 움직이지못함
         {
             LoadingTimer -= Time.deltaTime;
             state = CardState.Not;
@@ -193,7 +171,8 @@ public class Manager : MonoBehaviour
             state = CardState.Drag;
         }
     }
-    IEnumerator SwapCorountine()//턴넘겨주기 진행코루틴
+    IEnumerator SwapCorountine()//내행동을 종료하고 캐릭터들이 모든 공격종료후 상대에게 턴을 넘겨주는 기능
+                                //턴을 종료한 상대가 나에게 턴을 넘겨줄때 턴 시작시 작동해야한 기능 작동
     {
         Turn = !Turn;
         if (Turn)//내턴시작
@@ -256,16 +235,7 @@ public class Manager : MonoBehaviour
             Enemy_Manager.StartEnemyTurn();
         }
     }
-
-
-
-
-
-
-
-
-
-
+    
     public void Button_Swap()//버툰으로 함수부르기
     {
         if (LoadingTimer <= 0 & Enemy_Manager.Live)
@@ -274,18 +244,9 @@ public class Manager : MonoBehaviour
             SwapTurn();
         }
     }
-
-
-
     public void SwapTurn()//턴넘겨주는함수
     {
-
-
-
         StartCoroutine(SwapCorountine());
-
-
-
     }
     public void ViewCost()//코스트이미지갱신
     {
@@ -313,18 +274,10 @@ public class Manager : MonoBehaviour
         }
     }
 
-
-
-
-
-
     IEnumerator CardAlignmentCoroutine()//카드정리중에는 못움직임
     {
-
         LoadingTimer = CardDelay;
         yield return new WaitForSeconds(CardDelay);
-
-
     }
 
     public void CardAlignment()//손패 카드정리
@@ -404,7 +357,7 @@ public class Manager : MonoBehaviour
         }
     }
 
-    void DetectCardArea()//손패지역인지 체크
+    void DetectCardArea()//드래그한 카드가 패인지 체크하는 함수
     {
         Vector3 MousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         MousePos.z = -10f;
@@ -413,7 +366,7 @@ public class Manager : MonoBehaviour
         onMyCardArea = Array.Exists(hits, x => x.collider.gameObject.layer == layer);
     }
 
-    void EnlargeCard(bool Enlarge, SpellCard Card)//카드갖다대면 확대하는함수
+    void EnlargeCard(bool Enlarge, SpellCard Card)//선택한 카드의 내용을 확대카드에 갱신하는 함수
     {
         if (Enlarge)
         {
@@ -453,11 +406,10 @@ public class Manager : MonoBehaviour
         }
     }
 
-    public void CardMouseExit(SpellCard Card)
+    public void CardMouseExit(SpellCard Card) //카드에서 마우스가 떠나면 작동하는 함수
     {
         EnlargeCard(false, Card);
     }
-
     public void DeckMouseOver(Canvas Count)//덱위에 마우스를올려 덱매수를확인하는함수
     {
 
@@ -468,19 +420,19 @@ public class Manager : MonoBehaviour
         }
     }
 
-    public void DeckMouseExit(Canvas Count)
+    public void DeckMouseExit(Canvas Count) //덱에서  마우스가 떠나면 작동하는 함수
     {
         Count.gameObject.SetActive(false);
     }
 
-    public void CardMouseDown()
+    public void CardMouseDown()//드래그의 시작을 확인하는 함수
     {
         if (state == CardState.Not)
             return;
         Drag = true;
     }
 
-    public void CardMouseUp()
+    public void CardMouseUp()//드래그의 종료를 확인하는 함수
     {
         if (state == CardState.Not)
             return;
@@ -497,7 +449,8 @@ public class Manager : MonoBehaviour
     /// <summary>
     /// 스펠효과적용하는
     //////////////////////////////////////////////////////////////////////////////////
-    IEnumerator Card_Effect()
+    IEnumerator Card_Effect()//내려놓은 스펠카드가 올바른 발동위치인지 발동조건을 만족하였는지 확인 후
+                             //발동 조건을 모두 만족하였다면 스펠카드가 가진 Effect를 발동 시키는 코루틴
     {
 
         bool Check;
@@ -711,7 +664,7 @@ public class Manager : MonoBehaviour
 
         ViewCost();
     }
-    public void InitCard_NUM(CardScriptable DataBox, int Rank, List<int> Init_List, int Special_num = 0)//카드 생성기능
+    public void InitCard_NUM(CardScriptable DataBox, int Rank, List<int> Init_List, int Special_num = 0)//플레이어가 덱에 설정해둔 카드를 생성하는기능
     {
         int Ran = 1;
 
@@ -738,36 +691,36 @@ public class Manager : MonoBehaviour
             Init_List.Add(Special_num);
         }
     }
-    public void CostUse(int UsingCost)//코스트소모되는 위치 확인용
+    public void CostUse(int UsingCost)//코스트 소모를 담당하는 함수
     {
         My_Cost -= UsingCost;
         ViewCost();
 
 
     }
-    public void StopManager()
+    public void StopManager()//게임을 중단하는 함수
     {
         state = CardState.Not;
         Loading = false;
     }
 
-    public void OpenSetting()
+    public void OpenSetting()//설정창을 여는 함수
     {
         Setting.SetActive(true);
     }
-    public void CloseSetting()
+    public void CloseSetting()//설정창을 닫는 함수
     {
         Setting.SetActive(false);
     }
 
-    public void GiveUpGame()
+    public void GiveUpGame()//항복기능
     {
         Setting.SetActive(false);
         GameEnd(false);
     }
 
 
-    public void GameEnd(bool result)
+    public void GameEnd(bool result)//게임종료를 진행하는 함수
     {
         int Live_Check = 0;
 
@@ -805,8 +758,8 @@ public class Manager : MonoBehaviour
 
 
 
-
-            PlayerData.StageClear_Function(Enemy_Manager.ID - 1);
+            
+            StageClear_Function(Enemy_Manager.ID - 1);
             
 
         }
@@ -829,8 +782,21 @@ public class Manager : MonoBehaviour
         
 
     }
+    public void StageClear_Function(int i)//다음 스테이지를 해금하는 함수
+    {
 
-    public void Reward()
+        FireBaseDB.instacne.Player_Data_instacne.StageClear[i] = 2;
+        if (i < FireBaseDB.instacne.Player_Data_instacne.StageClear.Count - 1)
+        {
+            if (FireBaseDB.instacne.Player_Data_instacne.StageClear[i + 1] == 0)
+            {
+                FireBaseDB.instacne.Player_Data_instacne.StageClear[i + 1] = 1;
+                FireBaseDB.instacne.Upload_Data(StoreTYPE.STAGE);
+            }
+        }
+
+    }
+    public void Reward()//게임에서 이겼을 때 보상을처리하는 함수
     {
         int Reward_Gold;
         int Reward_Ticket;
@@ -923,7 +889,7 @@ public class Manager : MonoBehaviour
     [Header("씬이동용")]
     public Camera MainCamera;
     public GameObject GameScene;
-    public void MoveMainScene()
+    public void MoveMainScene()//게임스테이지에서 스테이지 선택창으로 돌아가는 함수
     {
         MainCamera.enabled = true;
         GameObject.Find("Main Camera").GetComponent<ManagementMainUI>().UpdateDate();

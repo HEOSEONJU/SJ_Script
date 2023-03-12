@@ -213,20 +213,7 @@ public class PlayerInfos : MonoBehaviour
 
 
 
-    public void StageClear_Function(int i)
-    {
 
-        FireBaseDB.instacne.Player_Data_instacne.StageClear[i] = 2;
-        if(i< FireBaseDB.instacne.Player_Data_instacne.StageClear.Count-1)
-        {
-            if (FireBaseDB.instacne.Player_Data_instacne.StageClear[i + 1] == 0)
-            {
-                FireBaseDB.instacne.Player_Data_instacne.StageClear[i + 1] = 1;
-                FireBaseDB.instacne.Upload_Data(StoreTYPE.STAGE);
-            }
-        }
-
-    }
 
     public bool LevelUp()
     {
