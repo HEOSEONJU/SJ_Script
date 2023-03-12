@@ -1,0 +1,115 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1b57bdeafd7e5145a4bb89795624a0c, type: 3}
+  m_Name: New Player_Data
+  m_EditorClassIdentifier: 
+  Equip_Weapon_Item:
+    Base_item: {fileID: 11400000, guid: 9b55ed8f199d78a488590c3ca955e033, type: 2}
+    count: 0
+    Upgrade: 1
+    INDEX: 1000
+  Equip_Armor_Item:
+  - Base_item: {fileID: 11400000, guid: e4b6224f3a020924db7719e358c67210, type: 2}
+    count: 0
+    Upgrade: 13
+    INDEX: 2000
+  - Base_item: {fileID: 0}
+    count: 0
+    Upgrade: 0
+    INDEX: 0
+  - Base_item: {fileID: 0}
+    count: 0
+    Upgrade: 0
+    INDEX: 0
+  Items:
+  - Base_item: {fileID: 11400000, guid: b0ce95a1699e9f945ba20dd6d714561d, type: 2}
+    count: 0
+    Upgrade: 3
+    INDEX: 1001
+  - Base_item: {fileID: 0}
+    count: 0
+    Upgrade: 0
+    INDEX: 3000
+  - Base_item: {fileID: 11400000, guid: 9b55ed8f199d78a488590c3ca955e033, type: 2}
+    count: 0
+    Upgrade: 0
+    INDEX: 1000
+  - Base_item: {fileID: 11400000, guid: 9b55ed8f199d78a488590c3ca955e033, type: 2}
+    count: 0
+    Upgrade: 0
+    INDEX: 1000
+  - Base_item: {fileID: 11400000, guid: 9b55ed8f199d78a488590c3ca955e033, type: 2}
+    count: 0
+    Upgrade: 0
+    INDEX: 1000
+  - Base_item: {fileID: 11400000, guid: 9b55ed8f199d78a488590c3ca955e033, type: 2}
+    count: 1
+    Upgrade: 0
+    INDEX: 1000
+  - Base_item: {fileID: 11400000, guid: 5dda053e421c9a540b23640b433b2cf1, type: 2}
+    count: 2
+    Upgrade: 0
+    INDEX: 3000
+  - Base_item: {fileID: 0}
+    count: 0
+    Upgrade: 0
+    INDEX: 0
+  - Base_item: {fileID: 0}
+    count: 0
+    Upgrade: 0
+    INDEX: 0
+  - Base_item: {fileID: 0}
+    count: 0
+    Upgrade: 0
+    INDEX: 0
+  - Base_item: {fileID: 0}
+    count: 0
+    Upgrade: 0
+    INDEX: 0
+  - Base_item: {fileID: 0}
+    count: 0
+    Upgrade: 0
+    INDEX: 0
+  - Base_item: {fileID: 0}
+    count: 0
+    Upgrade: 0
+    INDEX: 0
+  - Base_item: {fileID: 0}
+    count: 0
+    Upgrade: 0
+    INDEX: 0
+  - Base_item: {fileID: 0}
+    count: 0
+    Upgrade: 0
+    INDEX: 0
+  - Base_item: {fileID: 0}
+    count: 0
+    Upgrade: 0
+    INDEX: 0
+  - Base_item: {fileID: 0}
+    count: 0
+    Upgrade: 0
+    INDEX: 0
+  - Base_item: {fileID: 0}
+    count: 0
+    Upgrade: 0
+    INDEX: 0
+  - Base_item: {fileID: 0}
+    count: 0
+    Upgrade: 0
+    INDEX: 0
+  - Base_item: {fileID: 0}
+    count: 0
+    Upgrade: 0
+    INDEX: 0
+  Gold: 1828
+  Last_Position: {x: 0, y: 0, z: 0}
