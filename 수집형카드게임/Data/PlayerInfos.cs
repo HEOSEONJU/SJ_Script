@@ -111,6 +111,38 @@ public class PlayerData
 
 
 
+    public MonsterInfo Find_Monster_Data(int INDEX)
+    {
+        
+
+            if (MonsterCards.Count == 0)
+            {
+                return null;
+            }
+            int Low = 0;
+            int High = MonsterCards.Count - 1;
+            int Mid;
+            while (Low <= High)
+            {
+                Mid = (Low + High) / 2;
+                if (MonsterCards[Mid].ID == INDEX)
+                {
+                    return MonsterCards[Mid];
+                }
+                else if (MonsterCards[Mid].ID > INDEX)
+                {
+                    High = Mid - 1;
+                }
+                else
+                {
+                    Low = Mid + 1;
+                }
+
+            }
+            return null;
+
+
+        }
     
 
 }
@@ -211,10 +243,6 @@ public class PlayerInfos : MonoBehaviour
         
     }
 
-
-
-
-
     public bool LevelUp()
     {
         if(FireBaseDB.instacne.Player_Data_instacne.Exp >= 200)
@@ -239,6 +267,6 @@ public class PlayerInfos : MonoBehaviour
     }
     
 
-    
+
 }
 

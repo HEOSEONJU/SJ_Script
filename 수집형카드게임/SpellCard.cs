@@ -6,38 +6,12 @@ public class SpellCard : Card
 {
     public int Cost;
     public int CardType;
-    //public int SpellType;
-    //public int HEAL;
+    
     public int Value_Enemy_Damage;
     public int Value_Enemy_Damage_Effect;
     public int Value_Enemy_Effect_Num;
     public int Value_Char_Effect_Num;
-    /*
-    public int Value_A;
-    public int Value_D;
-    public int Value_H;
-    public int Value_PA;
-    public int Value_PD;
-    public int Value_PH;
-    public int Value_R;
-    public int Value_AC;
-    public int Value_TY;
-    public int Value_MR;
-    public int Value_CP;
-    public int Value_CD;
-    public int Value_DC;
-    public int Value_Cost;
-    public int Value_MAXCost;
-    public int Value_Char_Damage;
-    public int Value_Drew;
-    public int Value_Hand_Less;
-    public int Value_Create_Deck;
-    public int Value_Create_Deck1;
-    public int Value_Create_Deck2;
-    public int Value_Create_Deck3;
-    public int Value_Create_Deck4;
-    public int Turn;
-    */
+    
     public GameObject Front;
     public GameObject Back;
     public bool CardFBCheck;
@@ -46,12 +20,12 @@ public class SpellCard : Card
     public float x, y, z;
     public bool Special;
 
-    //TrailRenderer trailRenderer;
+    
 
     public List<Order> SummonEffect;
     public void Start()
     {
-        InitCard();
+        
         timer = 0;
         if (Front != null & Back != null)
             Front.SetActive(false);
@@ -59,11 +33,6 @@ public class SpellCard : Card
         x = 0;
         y = 1;
         z = 0;
-
-
-
-
-
     }
 
 
@@ -130,10 +99,6 @@ public class SpellCard : Card
         }
     }
 
-    public void InitCardFunction()
-    {
-
-    }
     public void Flip()
     {
         CardFBCheck = !CardFBCheck;
@@ -223,23 +188,3 @@ public class SpellCard : Card
 
 
 }
-/*
-    public void Skill_Apply(CharSkillData temp)
-    {
-
-        Cost = 0;
-        Value_Cost=temp.Value_Cost;
-        Value_MAXCost=temp.Value_MAXCost;
-        Value_Char_Damage=temp.Value_Char_Damage;
-        Value_Drew=temp.Value_Drew;
-        Value_Hand_Less=temp.Value_Hand_Less;
-        Value_Create_Deck=temp.Value_Create_Deck;
-        Value_Create_Deck1 = temp.Value_Create_Deck1;
-        Value_Create_Deck2 = temp.Value_Create_Deck2;
-        Value_Create_Deck3 = temp.Value_Create_Deck3;
-        Value_Create_Deck4 = temp.Value_Create_Deck4;
-        Value_Enemy_Effect_Num=temp.Value_Enemy_Effect_Num;
-        Value_Char_Effect_Num=temp.Value_Char_Effect_Num;
-
-    }
-    */

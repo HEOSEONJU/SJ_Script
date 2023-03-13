@@ -25,7 +25,7 @@ public class PRS
 
 }
 
-
+//무한루프탐지
 public static class InfiniteLoopDetector
 {
     private static string prevPoint = "";

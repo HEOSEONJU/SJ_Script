@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 
@@ -39,6 +40,38 @@ public class CharCardData
 public class CharCardScriptTable : ScriptableObject
 {
     public List<CharCardData> Monster = new List<CharCardData>();
+
+    public CharCardData Find_Char(int INDEX)//ÀÌÁøÅ½»ö
+    {
+
+        if (Monster.Count == 0)
+        {
+            return null;
+        }
+        int Low = 0;
+        int High = Monster.Count - 1;
+        int Mid;
+        while (Low <= High)
+        {
+            Mid = (Low + High) / 2;
+            if (Monster[Mid].id == INDEX)
+            {
+                return Monster[Mid];
+            }
+            else if (Monster[Mid].id > INDEX)
+            {
+                High = Mid - 1;
+            }
+            else
+            {
+                Low = Mid + 1;
+            }
+
+        }
+        return null;
+
+
+    }
 
 }
 

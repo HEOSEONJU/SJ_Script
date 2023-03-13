@@ -6,13 +6,11 @@ public class CardData : MonoBehaviour
 {
     public static CardData instance;
 
-    public CardScriptable CardDataFile;
-    //public DeckScriptTable DeckDataFile;
-    //public HaveScriptTable HaveDataFile;
-    public CharCardScriptTable CharDataFile;
-    public GameObject PlayerInfoFile;
-    public EnemyScriptTable EnemyDataFile;
-    public Char_Skill_ScriptTable CharSkillFile;
+    public CardScriptable CardDataFile;//스펠 카드데이터
+    public CharCardScriptTable CharDataFile;//캐릭터 데이터
+    public GameObject PlayerInfoFile;//로그인한 플레이어 정보
+    public EnemyScriptTable EnemyDataFile;//적 데이터
+    public Char_Skill_ScriptTable CharSkillFile;//캐릭터 스킬데이터
 
     private void Awake()
     {
@@ -24,16 +22,5 @@ public class CardData : MonoBehaviour
         {
             Destroy(gameObject);
         }
-    }
-
-
-
-    public void Start()
-    {
-
-        //HaveDataFile.cards = FireBaseDB.instacne.D.HaveCard;
-        //DeckDataFile.cards = FireBaseDB.instacne.D.DeckCards;
-
-        //Debug.Log(PlayerInfoFile.GetComponent<PlayerInfos>().CurrentTime);
     }
 }

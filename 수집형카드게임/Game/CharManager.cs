@@ -11,7 +11,7 @@ public class CharManager : MonoBehaviour
 {
     Manager _Manager;
     public GameObject MonsterCard;
-    public GameObject Infomation;
+    public GameObject Infomation;//확대해서 보여주는 오브젝트
     public GameCard SelectedCard;//선택된 캐릭터
     public List<GameCard> CombatChar;//배틀에 참가한 캐릭터들
     public List<TextMeshProUGUI> TextList;

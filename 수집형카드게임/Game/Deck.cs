@@ -6,7 +6,7 @@ using TMPro;
 
 public class Deck : MonoBehaviour
 {
-    public List<MonsterCard> Monstes;
+    
     public List<SpellCard> SpellCards;
     public List<SpellCard> CardInfo;
     public CardHand Hand;
