@@ -38,7 +38,7 @@ public class EnemyBossMove : EnemyMove
         StopRotate = true;
         Action = false;
         StopMoveFunction = 0;
-        Delay = AttackDelay;
+        
         RotateSpeed = 0;
         
         

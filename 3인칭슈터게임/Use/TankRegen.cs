@@ -37,8 +37,8 @@ public class TankRegen : MonoBehaviour
             var e = Instantiate(TankPrefab, RegenPosi[num].position, Quaternion.identity, TankParent);
             EnemyOldTankMove Temp_e = e.transform.GetComponent<EnemyOldTankMove>();
             Temp_e.FindPooling(Pooling);
-            Temp_e.MaxAggro = 100000;
-            Temp_e.Aggro = 100000;
+            //Temp_e.MaxAggro = 100000;
+            //Temp_e.Aggro = 100000;
             Temp_e.BossArea = true;
             Temp_e.Target =  GameManager.instance.Char_Player_Trace.transform;
             Temp_e.Angle = 179;

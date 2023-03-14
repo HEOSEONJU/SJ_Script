@@ -10,14 +10,14 @@ public class EnemeySoldierDanger : MonoBehaviour
         
         if (other.CompareTag("Player"))
         {
-            Danger.SetTargeting(other.transform);
+            Danger._Manager.Targeting(other.transform);
         }
     }
     void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            Danger.ReMoveTargeting();
+            //Danger._Manager.Target == null;
         }
     }
 }

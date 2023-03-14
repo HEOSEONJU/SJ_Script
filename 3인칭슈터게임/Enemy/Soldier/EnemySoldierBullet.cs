@@ -10,13 +10,14 @@ public class EnemySoldierBullet : CommonBullet
     {
         HP = 20;
         diff = 3f;
-        speed = 4; 
-        
+        speed = 4;
+        transform.parent = null;
         
         //transform.rotation = Quaternion.Euler(transform.rotation.x, transform.rotation.y, transform.rotation.z);
     }
-    public void BulletAction()
+    public void BulletAction(Transform Dir)
     {
+        transform.LookAt(Dir);
         StartCoroutine(SetOffActive());
     }
     // Update is called once per frame

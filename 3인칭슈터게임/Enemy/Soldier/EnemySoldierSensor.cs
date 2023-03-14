@@ -6,15 +6,17 @@ public class EnemySoldierSensor : MonoBehaviour
 {
     public Camera cam;
     Plane[] plane;
+    [SerializeField]
     EnemySoldierMove Move;
-    
+    [SerializeField]
+    EnemySoldier_Manager _Manager;
     // Update is called once per frame
      void Start()
     {
-        //cam = GetComponent<Camera>();
+        
         plane = GeometryUtility.CalculateFrustumPlanes(cam);
         
-        Move=GetComponent<EnemySoldierMove>();
+        
         
     }
     void Update()
@@ -26,9 +28,13 @@ public class EnemySoldierSensor : MonoBehaviour
         {
             if(GeometryUtility.TestPlanesAABB(plane,enemy.bounds))
             {
-                Move.LockOnTarget();
-                Move.SetTargeting(enemy.transform);
+
                 
+                
+                _Manager.Targeting(GameManager.instance.Char_Player_Trace.transform);
+                
+                //Move.SetTargeting(GameManager.instance.Char_Player_Trace.transform);
+                return;
             }
             
         }
