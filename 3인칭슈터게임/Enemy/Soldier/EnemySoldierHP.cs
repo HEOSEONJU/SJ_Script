@@ -5,8 +5,8 @@ using System;
 public class EnemySoldierHP : EnemyHp
 {
     // Start is called before the first frame update
-    
-    
+    [SerializeField]
+    EnemySoldier_Manager _Manager;
     Animator animator;
     //public Animation Ani;
     
@@ -33,8 +33,8 @@ public class EnemySoldierHP : EnemyHp
     
     public override void Damged(int Da, bool special = false)
     {
-        Move.SetTargeting(GameManager.instance.Char_Player_Trace.transform);
-        Move.LockOnTarget();
+        _Manager.Targeting(GameManager.instance.Char_Player_Trace.transform);
+
         Debug.Log(Da);
         
 
@@ -55,7 +55,7 @@ public class EnemySoldierHP : EnemyHp
         {
             col[i].enabled = false;
         }
-        Move.DesBullet();
+        _Manager.DesBullet();
         DelID();
         GameManager.instance.Score += 10;
         animator.SetTrigger("Death");
@@ -75,9 +75,10 @@ public class EnemySoldierHP : EnemyHp
         foreach (EnemySoldierMove move in Squad)
         {
             
-            if (move != null &move.Target ==null)
+            if (_Manager != null & _Manager.Target ==null)
             {
-                 move.SetTargeting(GameManager.instance.Char_Player_Trace.transform);
+                _Manager.Targeting(GameManager.instance.Char_Player_Trace.transform);
+                 
                  yield return new WaitForSeconds(1.0f);
                 
             }
