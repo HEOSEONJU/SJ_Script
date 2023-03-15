@@ -21,7 +21,7 @@ public class EnemyMove : MonoBehaviour
 
 
 
-    public virtual void Cla_Dis()
+    public virtual void Cal_Dis()
     {
         return;
     }

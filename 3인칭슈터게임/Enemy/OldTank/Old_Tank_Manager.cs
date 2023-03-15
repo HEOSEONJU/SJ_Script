@@ -63,7 +63,7 @@ public class Old_Tank_Manager : Enemy_Manager
     }
     private void FixedUpdate()
     {
-        _Move.Cla_Dis();
+        _Move.Cal_Dis();
     }
 
 

@@ -19,7 +19,7 @@ public class EnemySoldierMove : EnemyMove
 
 
     }
-    public override void Cla_Dis()
+    public override void Cal_Dis()
     {
         if (_Manager.Target == null)
         {

@@ -19,10 +19,8 @@ public class EnemyBossBulletAttack : MonoBehaviour
         {
             list.Add(BulletParent.transform.GetChild(i).gameObject);
         }
-        for(int i=0;i<list.Count;i++)
-        {
-            list[i].transform.parent= null;
-        }
+        BulletParent.transform.parent = null;
+        
         Stop = false;
         StartAttack = false;
     }
@@ -54,34 +52,23 @@ public class EnemyBossBulletAttack : MonoBehaviour
     IEnumerator AttackFunction( )
     {
 
-        if (count >= list.Count || Stop==true || StartAttack == false) 
+        while(count < list.Count)
         {
-           
-           
-
-
-            float Delay = 5f;
-
-            yield return new WaitForSeconds(Delay);
-            count = 0;
-            StartAttack = false;
-
-
-
-        }
-        else
-        {
-            
-
+            if (Stop) break;
             LParticle.Play();
-
-            list[count].GetComponent<EnemyBossBullet>().FireBullet(Targeting,LParticle.transform.position);
+            list[count++].GetComponent<EnemyBossBullet>().FireBullet(Targeting, LParticle.transform.position);
             RPartlcle.Play();
-            list[count+1].GetComponent<EnemyBossBullet>().FireBullet(Targeting, RPartlcle.transform.position);
+            list[count++].GetComponent<EnemyBossBullet>().FireBullet(Targeting, RPartlcle.transform.position);
             yield return new WaitForSeconds(0.2f);
-            count+=2;
-            StartCoroutine(AttackFunction());
-        }   
+        }
+        Stop = false;
+        count = 0;
+        yield return new WaitForSeconds(5f);
+        StartAttack = false;
+    }
+    private void OnDisable()
+    {
+        Destroy(BulletParent);
     }
 
 }

@@ -20,7 +20,7 @@ public class Enemy_Manager : MonoBehaviour
     public float Aggro;
     public float MAX_Aggro;
     [SerializeField]
-    LayerMask Layer = 9;
+    protected LayerMask Layer = 9;
     public void Update()
     {
         Current_Delay += Time.deltaTime;
@@ -42,7 +42,7 @@ public class Enemy_Manager : MonoBehaviour
         return;
     }
 
-    public  bool Check_Attack()
+    public virtual  bool Check_Attack()
     {
         
         if (Current_Delay <= MAX_Delay)
