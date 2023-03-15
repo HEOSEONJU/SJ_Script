@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Reflection;
+
 public class EnemyManager : MonoBehaviour
 {
     public int ID;
     public EnemyScriptTable Enemy_Data_Table;
     public Manager User_Manager;
-    CharManager Char_Manager;
+    public CharManager Char_Manager;
     Animator animator;
     Enemy_Text EnemyText;
     public string Name;
@@ -37,9 +39,8 @@ public class EnemyManager : MonoBehaviour
     [SerializeField]
     Image Boss_BGImage;
     //보스스킬
-    public List<int> Skill_Number;
-    public List<int> Skill_Percentage;
-    public List<int> Skill_Damage;
+    public List<Base_E_Skill> SKills ;
+    
 
 
 
@@ -54,7 +55,7 @@ public class EnemyManager : MonoBehaviour
     [SerializeField]
     List<Transform> Buff_Effect;
     [SerializeField]
-    List<Transform> Skill_HIT_Effect;
+    public List<Transform> Skill_HIT_Effect;
 
 
     public SpellEffect Temp;
@@ -71,7 +72,7 @@ public class EnemyManager : MonoBehaviour
     public List<TextMeshProUGUI> TextList;
     [SerializeField]
     Transform Contents_Parent;
-    List<int> TargetList;
+    public List<int> TargetList;
     bool Loading;
 
     [SerializeField]
@@ -137,13 +138,10 @@ public class EnemyManager : MonoBehaviour
             Boss_Image.material = Enemy_Data_Table.Enemy[ID].Boss_material;
         }
         Boss_BGImage.sprite = Enemy_Data_Table.Enemy[ID].Boss_BGImage;
-
-
     }
 
-    public void Restart()
+    public void Restart()//재시작함수
     {
-
         Live = true;
         Name = Enemy_Data_Table.Enemy[ID].Name;
         TYPE = Enemy_Data_Table.Enemy[ID].TYPE;
@@ -151,9 +149,15 @@ public class EnemyManager : MonoBehaviour
         Base_ATK = Enemy_Data_Table.Enemy[ID].Base_ATK;
         Base_DEF = Enemy_Data_Table.Enemy[ID].Base_DEF;
         Base_Magic_Regi = Enemy_Data_Table.Enemy[ID].Magic_Regi;
-        Skill_Number = Enemy_Data_Table.Enemy[ID].SkillNumber;
-        Skill_Damage = Enemy_Data_Table.Enemy[ID].SkillDamage;
-        Skill_Percentage = Enemy_Data_Table.Enemy[ID].SkillPercentage;
+        SKills=new List<Base_E_Skill>();
+        
+        foreach (GameObject E in Enemy_Data_Table.Enemy[ID].Skills)
+        {
+            SKills.Add(E.GetComponent<Base_E_Skill>());
+        }
+
+        
+        
         AttckCount = Enemy_Data_Table.Enemy[ID].AttackCount;
         CalculatorStatus();
         Current_Hp = Current_MAXHP;
@@ -165,38 +169,31 @@ public class EnemyManager : MonoBehaviour
         ShieldCoolDown = 0;
         MAX_ShieldCoolDown = 3;
     }
-
-
-    void ResetBar()
+    public void ResetBar()//실드,체력바 갱신
     {
-        int INDEX = 5;
-        for (int i = 0; i < Skill_Number.Count; i++)
+        SD_Bar.fillAmount = 0;
+        HP_Bar.fillAmount = Current_Hp * 1.0f / Current_MAXHP; 
+        foreach (Base_E_Skill E in SKills)
         {
-            if (Skill_Number[i] == 0)
-                INDEX = i;
+            if(E.TYPESKILL==SKill_Enum.Shield)
+            {
+                SD_Bar.fillAmount = Shield_Point * 1.0f / E.Value;
+                break;
+            }
         }
-        HP_Bar.fillAmount = Current_Hp * 1.0f / Current_MAXHP;
-        if (INDEX <= 3)
-        {
-            SD_Bar.fillAmount = Shield_Point * 1.0f / Skill_Damage[INDEX];
-        }
-        else
-        {
-            SD_Bar.fillAmount = 0;
-        }
+        
+
     }
-    public void StartEnemyTurn()
+    public void StartEnemyTurn()//적의 턴함수
     {
         CalculatorStatus();
         ResetBar();
         StartCoroutine(EnemyTrunCoroutine());
     }
-
-    public void TurnEnd()
+    public void TurnEnd()//적의 효과의 지속시간 감소
     {
         for (int i = Spell_Effects_List.Count - 1; i >= 0; i--)
         {
-
             if (Spell_Effects_List[i].UsingTurn())
             {
                 Spell_Effects_List.Remove(Spell_Effects_List[i]);
@@ -204,7 +201,6 @@ public class EnemyManager : MonoBehaviour
         }
         for (int i = Skill_Effects_List.Count - 1; i >= 0; i--)
         {
-
             if (Skill_Effects_List[i].UsingTurn())
             {
                 Skill_Effects_List.Remove(Skill_Effects_List[i]);
@@ -217,12 +213,10 @@ public class EnemyManager : MonoBehaviour
         }
         Invoke("Image_buff", 0.1f);//디스트로이가 바로실행안되서 조금늦게해야함
     }
-
-    public void AC_CAl()
+    public void AC_CAl()//공격횟수 재계산
     {
         int MAX = -100;
         int MIN = 100;
-
         foreach (SpellEffect SE in Spell_Effects_List)
         {
             foreach (Effect_Value EV in SE.Effect_Type_Value)
@@ -257,12 +251,11 @@ public class EnemyManager : MonoBehaviour
         if (MAX != -100)
             AttckCount += MAX;
         if (MIN != 100)
-        {
-            //Debug.Log(MIN);
+        { 
             AttckCount += MIN;
         }
     }
-    IEnumerator EnemyTrunCoroutine()
+    IEnumerator EnemyTrunCoroutine()//적의 턴을 진행하는 코루틴
     {
         //자기턴에 해야할일
         int Ran;
@@ -273,17 +266,23 @@ public class EnemyManager : MonoBehaviour
             bool c = false;
             if (SearchAttackTarget())
             {
-                for (int j = 0; j < Skill_Damage.Count; j++)
+
+                foreach (Base_E_Skill E in SKills)
                 {
-                    Ran = Random.Range(1, 101);
-                    //Debug.Log(j + "번스킬시도중 결과값:"+Ran);
-                    if (Ran >= (100 - Skill_Percentage[j]))
+                    if (E.TYPESKILL == SKill_Enum.Attack)
                     {
-                        c = Skill_Function(Skill_Number[j], j);
+
+                        Ran = Random.Range(1, 101);
+                        if (Ran >= (100 - E.Percentage))
+                        {
+                            c = Skill_Function(E);
+                            break;
+                        }
                         break;
-                        //Attack_Fuction();
                     }
                 }
+
+
                 if (c == false)//스킬발동못해서 기본공격
                 {
                     Attack_Fuction();
@@ -301,10 +300,9 @@ public class EnemyManager : MonoBehaviour
         }
         EndEnemyTurn();//턴넘겨주기
     }
-    public void EndEnemyTurn()
+    public void EndEnemyTurn()//적의 턴을 종료하고 플레이어에게 넘겨주는 함수
     {
         CalculatorStatus();
-
         if (SearchAttackTarget())
         {
             User_Manager.SwapTurn();
@@ -312,45 +310,40 @@ public class EnemyManager : MonoBehaviour
         else
             User_Manager.GameEnd(false);
     }
-    public void EndAttack()
+    public void EndAttack()//공격종료
     {
         Loading = false;
     }
-    bool SearchAttackTarget()
+    bool SearchAttackTarget()//공격할 대상 찾기
     {
-        int check = 0;
-        for (int i = 0; i < Char_Manager.CombatChar.Count; i++)
+        foreach(GameCard GC in Char_Manager.CombatChar)
         {
-            if (!Char_Manager.CombatChar[i].Live)
-                check++;
+            if (GC.Live)
+            {
+                return true;
+            }
         }
-        if (check == 4)
-        {
-            Debug.Log("때릴수있는 상대방없음");
-            EndAttack();
-            return false;
-        }
-        else
-            return true;
+        Debug.Log("때릴수있는 상대방없음");
+        EndAttack();
+        return false;
     }
     //공격함수
-    void Attack_Fuction()
+    void Attack_Fuction()//공격함수
     {
-        int Target = Random.Range(0, Char_Manager.CombatChar.Count);
+        int Target = 0;
         while (true)
         {
+            Target = Random.Range(0, Char_Manager.CombatChar.Count);
             if (Char_Manager.CombatChar[Target].Live)
             {
                 //Debug.Log("때릴수있는상대확보");
                 break;
             }
-            Target = Random.Range(0, Char_Manager.CombatChar.Count);
             //Debug.Log("때릴수있는상대재탐색");
         }
         StartCoroutine(Melee_Attack_Coroutine(Target, Skill_Effects[TYPE]));
-        //animator.SetTrigger("First_Attack");
     }
-    IEnumerator Melee_Attack_Coroutine(int TargetNum, Transform Skill)
+    IEnumerator Melee_Attack_Coroutine(int TargetNum, Transform Skill)//근접공격을 하는 함수
     {
         Vector3 Origin = Skill.position;
         Vector3 TargetPosi = Char_Manager.CombatChar[TargetNum].transform.position;
@@ -369,39 +362,30 @@ public class EnemyManager : MonoBehaviour
         Skill_HIT_Effect[TYPE].position = TargetPosi;
         Skill_HIT_Effect[TYPE].gameObject.SetActive(true);
         StartCoroutine(StopEffect(Skill_HIT_Effect[TYPE], 1.0f));
-        //SkillDamaged(TargetList[0], Skill_Damage);
         Char_Manager.CombatChar[TargetNum].Melee_Damaged(Current_ATK);
     }
-
-
-
-
-    bool Skill_Function(int num, int INDEX)
+    bool Skill_Function(Base_E_Skill E)//스킬공격을 하는 함수
     {
         TargetList = new List<int>();
         int r = Random.Range(1, 10);
-        if (num == 0)
+        switch(E.TYPESKILL)
         {
-            if (Shield_Point >= 1 | ShieldCoolDown >= 1)
-                return false;
-        }
-        switch (num)
-        {
-            case 0:
-                StartCoroutine(SkillCoroutine_00(Shield_Effects[TYPE], INDEX));
-                return true;
-            case 1:
-
+            case SKill_Enum.Attack:
                 while (TargetList.Count == 0)
                 {
                     r = Random.Range(0, Char_Manager.CombatChar.Count);
                     if (Char_Manager.CombatChar[r].Live)
                     {
                         TargetList.Add(r);
-                        StartCoroutine(SkillCoroutine_01(Skill_Effects[TYPE + 8], INDEX));
+                        StartCoroutine(E.SkillCoroutine_(this, Shield_Effects[TYPE]));
                         return true;
                     }
                 }
+                break;
+            case SKill_Enum.Shield:
+                if (Shield_Point >= 1 | ShieldCoolDown >= 1)
+                    return false;
+                StartCoroutine(E.SkillCoroutine_(this, Shield_Effects[TYPE]));
                 break;
             default:
                 EndAttack();
@@ -409,58 +393,7 @@ public class EnemyManager : MonoBehaviour
         }
         return false;
     }
-    IEnumerator SkillCoroutine_00(Transform Skill, int INDEX)
-    {
-        Shield_Point += Skill_Damage[INDEX];
-        Skill.gameObject.SetActive(true);
-        ResetBar();
-        ShieldCoolDown = MAX_ShieldCoolDown;
-        yield return new WaitForSeconds(2.0f);
-        EndAttack();
-
-    }
-    IEnumerator SkillCoroutine_01(Transform Skill, int INDEX)
-    {
-        Vector3 origin = Skill.transform.position;
-        float time;
-        Skill.gameObject.SetActive(true);
-        yield return new WaitForSeconds(1.5f);
-        Vector3 TargetPois = Char_Manager.CombatChar[TargetList[0]].transform.position;
-        TargetPois = new Vector3(TargetPois.x, TargetPois.y, -15);
-        time = 0;
-        float boomTime = 0.25f;
-        while (time <= boomTime)
-        {
-            Skill.transform.position = Vector3.Lerp(Skill.transform.position, TargetPois, time);
-            time += Time.deltaTime;
-            yield return new WaitForSeconds(Time.deltaTime);
-        }
-        Skill.gameObject.SetActive(false);//도착
-        Skill_HIT_Effect[TYPE + 8].position = TargetPois;
-        Skill_HIT_Effect[TYPE + 8].gameObject.SetActive(true);
-        StartCoroutine(StopEffect(Skill_HIT_Effect[TYPE + 8]));
-        SkillDamaged(TargetList[0], Skill_Damage[INDEX]);
-        int Half_Damage = Skill_Damage[INDEX] / 2;//직격타
-        if (TargetList[0] != 0)//왼쪽데미지
-        {
-            if (Char_Manager.CombatChar[TargetList[0] - 1].Live)
-            {
-                Debug.Log("절반데미지" + Half_Damage);
-                SkillDamaged(TargetList[0] - 1, Half_Damage);//주변피해
-            }
-        }
-        if (TargetList[0] != 3)//오른쪽데미지
-        {
-            if (Char_Manager.CombatChar[TargetList[0] + 1].Live)
-            {
-                SkillDamaged(TargetList[0] + 1, Half_Damage);//주변피해
-            }
-        }
-        Skill.transform.position = origin;
-        EndAttack();
-        yield return null;
-    }
-    IEnumerator StopEffect(Transform effect, float time = 2.0f)
+    public IEnumerator StopEffect(Transform effect, float time = 2.0f)
     {
         yield return new WaitForSeconds(time);
         effect.gameObject.SetActive(false);
@@ -504,7 +437,7 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
-    void CalculatorStatus()
+    void CalculatorStatus()//스테이터스를 재계산
     {
         Current_ATK = Base_ATK;
         Current_DEF = Base_DEF;
@@ -592,7 +525,7 @@ public class EnemyManager : MonoBehaviour
         Current_MAXHP = (Base_MaxHP * ((100 + Percent_MAXHP)) / 100) + TempHp;
     }
     //=============================물리공격 캐릭터->에너미
-    public void Melee_Attack(int Char_ATK, int CP, int CD, Attack_Effect_Type TYPE)
+    public void Melee_Attack(int Char_ATK, int CP, int CD, Attack_Effect_Type TYPE)//근접공격
     {
         if (Current_DEF > 0) //방어력음수일때 데미지늘어나는거방지
             Char_ATK -= Current_DEF;
@@ -648,7 +581,7 @@ public class EnemyManager : MonoBehaviour
         Play_Hit_Animation(TYPE, false); //마법히트애니메이션재생
     }
 
-    void Damaged(int Char_ATK, int Text_type)
+    void Damaged(int Char_ATK, int Text_type)//데미지받는함수
     {
         if (Shield_Point > 0)
         {
@@ -679,7 +612,7 @@ public class EnemyManager : MonoBehaviour
             Current_Hp = 0;
         }
     }
-    void Shield_Broken()
+    void Shield_Broken()//실드파괴
     {
         Shield_Point = 0;
         Shield_Effects[TYPE].gameObject.SetActive(false);
