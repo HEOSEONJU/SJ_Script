@@ -4,51 +4,49 @@ using UnityEngine;
 using UnityEngine.AI;
 public class EnemyMove : MonoBehaviour
 {
-    
-    
+
+    public float DelayTrigger = 0;
     public NavMeshAgent agent = null;
     public Transform[] Waypoint = null;
     public int WayCount;
-    public Transform Target = null;
-    
-    public bool LockOn = false;
-    public float Delay;
-    public float AttackDelay;
+    public Transform Target = null;  
+
     public Animator animator;
+
     
+
     
-    
-    public float Aggro;
-    public float dis;
-    public float MaxDis;
-    public float MaxAggro;
     // Start is called before the first frame update
 
 
-    public void SetTargeting(Transform PlayerPosi)
-    {
-        CancelInvoke();
-        Target = PlayerPosi;
-        Aggro = MaxAggro;
-    }
 
-    public void ReMoveTargeting()
-    {
-        agent.isStopped = false;
-        agent.velocity = Vector3.zero;
-        
-        Target = null;
-    }
 
-    public void LockOnTarget()
+    public virtual void Cal_Dis()
     {
-        LockOn = true;
-        
+        return;
     }
-    public void LostOnTarget()
+    public virtual void Move_Target()
     {
-        LockOn = false;
+        return;
+    }
+    public virtual void Follow_Target()
+    {
+        return;
+    }
+    public virtual void Stop_Enemy()
+    {
+        return;
+    }
+    public virtual float Distance()
+    {
+        return 1f;
+    }
+    public virtual bool RobotSearchPlayer(Vector3 Pos, Vector3 forwardDir, float angle, Vector3 targetPos, float distance)//자기위치,전방벡터,앵글,타겟위치,최대탐색거리
+    {
+        return false;
+    }
+    public virtual void CannonShot()
+    {
 
     }
-
 }

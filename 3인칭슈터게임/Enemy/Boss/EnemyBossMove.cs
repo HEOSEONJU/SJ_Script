@@ -4,22 +4,24 @@ using UnityEngine;
 
 public class EnemyBossMove : EnemyMove
 {
-    
+    [SerializeField]
+    Boss_Manager _Manager;
     public Animator Shield;
-    
+
     public Transform PlayerPosition;
 
     public bool Live;
-    
-    
-    
+
+
+
     public float BossMoveSpeed;
     public float BossAngle;
-    
+
     public Rigidbody RD;
     public EnemyBossHP HP;
 
     public bool StopRotate;
+    [SerializeField]
     float RotateSpeed;
     public bool Attack;
     public bool Action;
@@ -31,6 +33,11 @@ public class EnemyBossMove : EnemyMove
     public Transform LegPosi;
     public bool AnimationWalk;
     public int NUM = 0;
+
+    [SerializeField]
+    EnemyBossBulletAttack EBBA;
+    [SerializeField]
+    EnemyBossRocketAttack EBRA;
     void Awake()
     {
         Live = true;
@@ -38,11 +45,11 @@ public class EnemyBossMove : EnemyMove
         StopRotate = true;
         Action = false;
         StopMoveFunction = 0;
-        Delay = AttackDelay;
+
         RotateSpeed = 0;
-        
-        
-        Move=GetComponent<CharacterController>();
+
+
+        Move = GetComponent<CharacterController>();
         AnimationWalk = false;
 
 
@@ -51,20 +58,23 @@ public class EnemyBossMove : EnemyMove
     private void Start()
     {
         PlayerPosition = GameManager.instance.Char_Player_Attack.transform;
-        StartCoroutine(RotateCoroutine());
-        AttackFunction();
+
     }
     void FixedUpdate()
     {
         FIxedShiledMseh();
-        animator.SetBool("Walk",AnimationWalk);
-        Shield.SetBool("Walk",AnimationWalk);
-        
-    
+
+
+
     }
     void Update()
     {
-
+        /*   */
+        if (!HP.Live || GameManager.instance.Hp <= 0)
+        {
+            return;
+        }
+        /*
         if (HP.Live &GameManager.instance.Hp>0)
         {
             distance = Vector3.Distance(PlayerPosition.transform.position, transform.position);
@@ -87,82 +97,125 @@ public class EnemyBossMove : EnemyMove
 
             transform.position = new Vector3(transform.position.x, 0.1f, transform.position.z);
         }
-
+        */
 
 
 
     }
+    public float Distance_value;
+    public override float Distance()
+    {
+
+        return Distance_value;
+
+
+    }
+    public override void Cal_Dis()
+    {
+        if (_Manager.Target == null)
+        {
+            Distance_value = Mathf.Infinity;
+            return;
+        }
+
+        Distance_value = Vector3.Distance(_Manager.Target.position, transform.position);
+    }
+
+
     public void BossStop()
     {
-        transform.GetChild(0).GetComponent<EnemyBossRocketAttack>().StopAttack();
-        transform.GetChild(0).GetComponent<EnemyBossBulletAttack>().StopAttack(); 
-        AnimationWalk = false;
+        EBBA.StopAttack();
+        EBBA.StopAttack();
         StopAllCoroutines();
 
 
     }
     public void StopRocket()
     {
-        if (distance <= 20)
+        if (Distance_value <= 15)
         {
-            transform.GetChild(0).GetComponent<EnemyBossRocketAttack>().StopAttack();
-            //AttackSelect();
+            EBRA.StopAttack();
         }
     }
     void FIxedShiledMseh()
     {
         Shield.transform.localPosition = Vector3.zero;
     }
-    void MoveBoss()
-    {
-        if(distance>=15 & StopMoveFunction>=2.0f)
-        {
-            Move.Move(transform.forward.normalized* BossMoveSpeed * Time.deltaTime);
-            
-            AnimationWalk = true;
 
-        }
-        else
+    public override void Follow_Target()
+    {
+        Vector3 Move_Vector = Vector3.zero;
+        Move_Vector += new Vector3(0, -9.81f, 0);
+        Move_Vector += transform.forward.normalized;
+        Move.Move(Move_Vector * BossMoveSpeed * Time.deltaTime);
+
+        Range_Attack();
+        if (RotateSpeed == 0)
         {
-            AnimationWalk = false;
-            StopMoveFunction += Time.deltaTime;
+            RotateSpeed += Time.deltaTime;
+
+            StartCoroutine(RotateCoroutine());
         }
-        
+
     }
+
+    public void Range_Attack()
+    {
+        if (Distance_value <= 100 & Distance_value > 15)
+        {
+            NUM = 2;
+        }
+        else if (Distance_value <= 200 & Distance_value > 30)
+        {
+
+            NUM = 3;
+        }
+        switch (NUM)
+        {
+            case 2:
+                
+                if (EBBA.count == 0 && EBBA.StartAttack == false)
+                {
+                    Debug.Log("น฿ป็");
+                    EBBA.AttackBullet(GameManager.instance.Char_Player_Attack.transform);
+                }
+                else if (distance <= 200 & distance > 30)
+                {
+                    if (EBRA.StartFire == false & EBRA.count == 0)
+                    {
+                        EBRA.AttackRocket(GameManager.instance.Char_Player_Attack.transform);
+                    }
+                }
+                break;
+            case 3:
+                if (EBRA.StartFire == false & EBRA.count == 0)
+                {
+                    EBRA.AttackRocket(GameManager.instance.Char_Player_Attack.transform);
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
     void RotateBoss()
     {
-        RotateSpeed = 0;
         StartCoroutine(RotateCoroutine());   
         
     }
 
     IEnumerator RotateCoroutine()
     {
-        
-        if (StopRotate == false)
+        RotateSpeed += Time.deltaTime / 3;
+        while (RotateSpeed<=1) 
         {
-            
-            RotateSpeed+=Time.deltaTime/3;
-            if(RotateSpeed>=1)
-            {
-                RotateSpeed=0;
-                StopRotate=true;
-                yield break;
-            }
+            RotateSpeed += Time.deltaTime / 3;
             Vector3 dir = PlayerPosition.position - transform.position;
             dir = new Vector3(dir.x, 0, dir.z);
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), RotateSpeed);
-
-            
-            yield return new WaitForSeconds(Time.deltaTime);
-            StartCoroutine(RotateCoroutine());
+            yield return null;
         }
-        else
-        {
-            StopRotate = true;
-            yield break;
-        }
-        
+        RotateSpeed = 0;
     }
     void PlayerSearchAngle()
     {

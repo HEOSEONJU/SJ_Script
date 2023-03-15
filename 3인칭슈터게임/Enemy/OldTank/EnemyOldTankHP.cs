@@ -5,11 +5,11 @@ using UnityEngine.AI;
 public class EnemyOldTankHP : EnemyHp
 {
     // Start is called before the first frame update
-    
-    
+    [SerializeField]
+    Old_Tank_Manager _Manager;
     public ParticleSystem DieEff;
     public Animation Ani;
-    public Transform turret;
+    
     public EnemyOldTankMove Move;
     public AudioSource DieSound;
     public void Awake()
@@ -29,8 +29,9 @@ public class EnemyOldTankHP : EnemyHp
     public override void Damged(int Da,bool special=false)
     {
         hp -= Da;
-        Move.SetTargeting(GameManager.instance.Char_Player_Trace.transform);
-        Move.LockOnTarget();
+        _Manager.Targeting(GameManager.instance.Char_Player_Trace.transform);
+        
+        
         if (hp <= 0 & Live == true)
         {
 
@@ -52,6 +53,7 @@ public class EnemyOldTankHP : EnemyHp
 
         
         Ani.Play("Cannon");
+        _Manager._Animator.SetTrigger("Death");
         DieEff.Play();
         DieSound.Play();
 

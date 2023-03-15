@@ -4,7 +4,8 @@ using UnityEngine;
 using System;
 public class EnemyOldTankMove : EnemyMove
 {
-
+    [SerializeField]
+    Old_Tank_Manager _Manager;
     public Vector3 posi;
     public Transform PlayerPosition;
     public GameObject Targeting;
@@ -39,8 +40,7 @@ public class EnemyOldTankMove : EnemyMove
     {
         BossArea = false;
         Live = true;
-        AttackDelay = 4.0f;
-        Delay = AttackDelay;
+        
         Angle = 150.0f;
         SearchDis = 1000.0f;
         AttackDis = 50.0f;
@@ -49,9 +49,9 @@ public class EnemyOldTankMove : EnemyMove
         SoundPlaying = false;
         RD = GetComponent<Rigidbody>();
         RD.drag = float.MaxValue;
-        Aggro = 0;
-        MaxDis = 20;
-        MaxAggro = 30;
+        //Aggro = 0;
+        //MaxDis = 20;
+        //MaxAggro = 30;
         HP = GetComponent<EnemyOldTankHP>();
         count = 0;
         for (int i = 0; i < EXP.Length; i++)
@@ -63,33 +63,6 @@ public class EnemyOldTankMove : EnemyMove
     }
 
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-        if (HP.Live)
-        {
-            TankSearch();
-            TankOrderMove();
-
-            if (Aggro <= 0 & Target != null)
-            {
-                ReMoveTargeting();
-            }
-
-            if (Delay <= AttackDelay)
-            {
-                Delay += Time.deltaTime;
-            }
-            TankMoveSoundControl();
-
-            
-        }
-        
-
-
-
-    }
 
     public void FindPooling(Transform Posi)
     {
@@ -113,103 +86,49 @@ public class EnemyOldTankMove : EnemyMove
             SoundPlaying = false;
         }
     }
-    public void TankSearch()
+
+    float Distance_value;
+    public override float Distance()
     {
-        if (BossArea == false)
-        {
-            PlayerPosition = GameManager.instance.Char_Player_Attack.transform;
-            if (RobotSearchPlayer(transform.position, transform.forward, Angle, PlayerPosition.position, SearchDis))
-            {
-                Target = GameManager.instance.Char_Player_Trace.transform;
 
-            }
+        return Distance_value;
 
-            else
-            {
-                Target = null;
-                transform.rotation = Quaternion.identity;
-
-
-            }
-        }
-    }
-        public void TankOrderMove()
-    {
-        PlayerPosition = GameManager.instance.Char_Player_Attack.transform;
-        if (Target != null & LockOn)
-        {
-            dis = Vector3.Distance(Target.position, transform.position);
-            agent.isStopped = false;
-            agent.velocity = Vector3.zero;
-
-            
-            Check = RobotSearchPlayer(transform.position, transform.forward, Angle, PlayerPosition.position, SearchDis);
-            Cannon.transform.LookAt(PlayerPosition);
-            Targeting.transform.LookAt(PlayerPosition);
-            if (Delay >= AttackDelay)
-            {
-
-                CannonShot();
-
-            }
-        }
-        else if (Target != null)
-        {
-            agent.SetDestination(Target.position);
-
-
-            dis = Vector3.Distance(Target.position, transform.position);
-            if (dis < SearchDis & Aggro >= 0)
-                Aggro -= Time.deltaTime;
-
-
-            RaycastHit[] hits;
-            LayerMask PlayerLayer = 9;
-            LayerMask GroundLayer = 8;
-            Vector3 ta = PlayerPosition.position - transform.position;
-            hits = Physics.RaycastAll(transform.position, ta, AttackDis);
-            Array.Sort(hits, (RaycastHit x, RaycastHit y) => x.distance.CompareTo(y.distance)); // cast한거거리순으로정렬
-            foreach (RaycastHit hit in hits)
-            {
-                if (hit.collider.gameObject.layer == PlayerLayer)
-                {
-
-                    LockOnTarget();
-                    Aggro = MaxAggro;
-                }
-
-                else if (hit.collider.gameObject.layer == GroundLayer)
-                {
-                    break;
-                }
-
-            }
-        }
-        else
-        {
-
-            Delay = 0.0f;
-            agent.isStopped = false;
-            agent.velocity = Vector3.zero;
-
-        }
 
     }
-
-
-    void CannonShot()
+    public override void Cal_Dis()
     {
-        RaycastHit HitInfo;
-        if (Physics.Raycast(Targeting.transform.position, Targeting.transform.forward, out HitInfo, AttackDis))
+        if (_Manager.Target == null)
         {
-            if (HitInfo.transform.tag == "Player")
-            {
-                FireCannon();
-                Delay = 0;
-                return;
-            }
+            Distance_value = Mathf.Infinity;
+            return;
         }
+
+        Distance_value = Vector3.Distance(_Manager.Target.position, transform.position);
+    }
+    public override void CannonShot()
+    {
+        
+        //FireCannon();
+        _Manager.Current_Delay = 0;
+        
         StartCoroutine(DelayFire());
+    }
+    public override void Follow_Target()
+    {
+        TankMoveSoundControl();
+        agent.SetDestination(_Manager.Target.position);
+
+        agent.speed = 4.5f;
+
+        float dis = Vector3.Distance(_Manager.Target.position, transform.position);
+        if (dis > _Manager.MAX_Dis)
+            _Manager.Aggro -= Time.deltaTime;
+    }
+    public override void Stop_Enemy()
+    {
+        agent.speed = 3.5f;
+        agent.isStopped = false;
+        agent.velocity = Vector3.zero;
     }
     public void FireCannon()
     {
@@ -227,14 +146,14 @@ public class EnemyOldTankMove : EnemyMove
         }
         //GameObject Clone = Instantiate(OldTankBullet, Targeting.transform.position, Targeting.transform.rotation);
         //Clone.transform.GetComponent<OldTankBullet>().Exp = EXP;
-        LostOnTarget();
+        //LostOnTarget();
     }
     IEnumerator DelayFire()
     {
-        Delay = 0;
+        
         yield return new WaitForSeconds(2.0f);
         FireCannon();
-        Delay = 0;
+        _Manager.Current_Delay = 0;
 
 
     }

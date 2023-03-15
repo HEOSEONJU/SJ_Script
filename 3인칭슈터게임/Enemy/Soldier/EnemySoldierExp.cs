@@ -6,6 +6,10 @@ public class EnemySoldierExp : MonoBehaviour
 {
     ParticleSystem my;
 
+    private void Start()
+    {
+        transform.parent = null;
+    }
     public void DoSetoff()
     {
         my = GetComponent<ParticleSystem>();

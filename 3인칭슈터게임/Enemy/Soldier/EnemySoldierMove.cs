@@ -5,238 +5,83 @@ using UnityEngine.AI;
 
 public class EnemySoldierMove : EnemyMove
 {
+    [SerializeField]
+    public EnemySoldier_Manager _Manager;
     
-    
-    
-
-    public float DelayTrigger;
-    
-    public bool walk,run;
-    public Transform GunFire;
-    public GameObject[] Bullet;
-    public GameObject[] BulletEffect;
-    public int count;
-    public ParticleSystem MuzzleFlash;
-    public Vector3 relativeVec1;
-    
-    EnemySoldierHP Hp;
     public Vector3 Myposi;
     public float SquadDis;
-    public AudioSource AttackSound;
-    void Awake()
+
+    public float Distance_value;
+    public override float Distance()
     {
-        animator = GetComponent<Animator>();
+
+        return Distance_value;
+
+
+    }
+    public override void Cal_Dis()
+    {
+        if (_Manager.Target == null)
+        {
+            Distance_value= Mathf.Infinity;
+            return;
+        }
+
+         Distance_value= Vector3.Distance(_Manager.Target.position, transform.position);
+    }
+    public override void Follow_Target()
+    {
+        agent.SetDestination(_Manager.Target.position); 
+
+        agent.speed = 4.5f;
         
-        //InvokeRepeating("MoveToNextWayPoint",0.5f ,2.0f);
-        Delay = 2.0f;
-        Aggro = 0;
-        MaxDis= 30.0f;
-        SquadDis = 0;
-        WayCount = 0;
-        MaxAggro = 10;
-        walk = false;
-        run = false;
-        DelayTrigger = 0;
-        Hp =GetComponent<EnemySoldierHP>();
-        count = 0;
-        for(int i=0;i<BulletEffect.Length;i++)
+        float dis = Vector3.Distance(_Manager.Target.position, transform.position);
+        if (dis > _Manager.MAX_Dis)
+            _Manager.Aggro -= Time.deltaTime;
+    }
+    public override void Move_Target()
+    {
+        if (Waypoint.Length == 0)
         {
-            Bullet[i].transform.parent = null;
-            BulletEffect[i].transform.parent = null;
+            return;
         }
         
-        
-    }
-    private void Start()
-    {
-        if(Waypoint.Length>0)
-        agent.SetDestination(Waypoint[0].position);
-    }
-
-    public void Update()
-    {
-        if (Hp.Live)
-        {
-            Myposi = transform.position;
-            if(DelayTrigger<=1.0f)
-            DelayTrigger += Time.deltaTime;
-
-            if(Target!=null)
-            {
-                dis = Vector3.Distance(Target.position, transform.position);
-                if(dis>MaxDis)
-                {
-                    LostOnTarget();
-                }
-                
-            }
-
-            if (LockOn & Target != null)
-            {
-                walk = false;
-                agent.speed = 3.5f;
-                run = false;
-                agent.isStopped = false;
-                agent.velocity = Vector3.zero;
-                
-                
-                if (Delay <= 2.0f)
-                {
-                    Delay += Time.deltaTime;
-                }
-                if (Delay >= 2.0f)
-                {
-                    if (dis < MaxDis)
-                    {
-                        AttackTarget();
-                    }
-                    
-                }
-
-
-            }
-
-            else if (Target != null)
-            {
-                agent.SetDestination(Target.position);
-
-                agent.speed = 7;
-                run = true;
-                dis = Vector3.Distance(Target.position, transform.position);
-                if (dis> MaxDis)
-                    Aggro -= Time.deltaTime;
-            }
-            if (Target == null)
-            {
-                walk = true;
-                agent.speed = 3.5f;
-                run = false;
-            }
-            
-
-            if(Aggro <=0&Target!=null)
-            {
-                ReMoveTargeting();
-                NextWayMove();
-            }
-        }
-        else
-        {
-            walk=false;
-            
-            agent.isStopped = false;
-            agent.velocity= Vector3.zero;
-
-        }
-
-    }
-    public void FixedUpdate()
-    {
-        animator.SetBool("Walk", walk);
-        animator.SetBool("Run", run);
-
-    }
-    public void LateUpdate()
-    {
-        if (LockOn & Target != null &Hp.Live)
-        {
-
-
-
-
-            Transform Spine = animator.GetBoneTransform(HumanBodyBones.Spine);
-            Spine.LookAt(Target.position);
-            Spine.rotation *= Quaternion.Euler(relativeVec1);
-
-        }
-    }
-    public void DesBullet()
-    {
-        int Len = Bullet.Length;
-        for(int i=0;i< Len; i++)
-        {
-            Destroy(Bullet[i].gameObject);
-        }
-        Len = BulletEffect.Length;
-        for (int i = 0; i < Len; i++)
-        {
-            Destroy(BulletEffect[i].gameObject);
-        }
-    }
-    void AttackTarget()
-    {
-
-        //transform.LookAt(Target.position);
-        RaycastHit hit;
-        GunFire.transform.LookAt(GameManager.instance.Char_Player_Attack.transform.position);
+        agent.speed = 3.5f;
         
         
-        if (Physics.Raycast(GunFire.transform.position, GunFire.transform.forward, out hit))//플레이어 어택포지션위치 높아지면 사격안나갈수있음
-        {
-            
-            
-            if (hit.collider.gameObject.layer == 9)
-            {
-                MuzzleFlash.Play();
-                AttackSound.Play();
-                animator.SetTrigger("Attack");
-                Delay = 0;
-                
-                Aggro = MaxAggro;
-                Bullet[count].transform.position = GunFire.position;
-                Bullet[count].transform.rotation = GunFire.rotation;
-                Bullet[count].SetActive(true);
-                Bullet[count].GetComponent<EnemySoldierBullet>().BulletAction();
-                count++;
-                if(count==Bullet.Length)
-                {
-                    count = 0;
-                }
-            }
-            else
-                LostOnTarget();
-        }
-        else
-            LostOnTarget();
+
+        agent.SetDestination(Waypoint[WayCount].position);
+
     }
-    void NextWayMove()
+    public override void Stop_Enemy()
     {
-        if (Target == null & DelayTrigger >= 1.0f)
-        {
-                DelayTrigger = 0.0f;
-                if (Waypoint.Length != 0)
-                {
-                    WayCount += 1;
-                    if (WayCount >= Waypoint.Length)
-                    {
-                        WayCount = 0;
-                    }
-                    agent.SetDestination(Waypoint[WayCount].position);
-                }
-            
-        }
+        agent.speed = 3.5f;
+        agent.isStopped = false;
+        agent.velocity = Vector3.zero;
     }
+
+
 
     public void OnTriggerEnter(Collider other)
     {
-        
-        if (Target == null & DelayTrigger>=1.0f)
+        if (Waypoint.Length == 0)
         {
-            if (other.tag == "Patroll" & Waypoint[WayCount].gameObject.name==other.name)
+            return;
+        }
+        if (_Manager.Target == null & DelayTrigger >= 1.0f)
+        {
+            if (other.tag == "Patroll" && Waypoint[WayCount].gameObject.name == other.name)
             {
                 DelayTrigger = 0.0f;
-                if (Waypoint.Length != 0)
+                WayCount++;
+                if (WayCount >= Waypoint.Length)
                 {
-                    WayCount += 1;
-                    if (WayCount >= Waypoint.Length)
-                    {
-                        WayCount = 0;
-                    }
-                    agent.SetDestination(Waypoint[WayCount].position);
-                    
+                    WayCount = 0;
                 }
+                //agent.SetDestination(Waypoint[WayCount].position);
+
+                
             }
         }
     }
-
 }

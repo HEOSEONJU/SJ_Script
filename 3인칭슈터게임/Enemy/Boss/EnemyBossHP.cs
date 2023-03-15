@@ -18,25 +18,20 @@ public class EnemyBossHP : EnemyHp
     public int MAXShield;
     public bool ShieldCheck;
     public int Regentime = 15;
+    [SerializeField]
     Rigidbody R;
     public int MAXHP=20000;
-    public void Awake()
-    {
-        R = GetComponent<Rigidbody>();
-        Live = true;
-        hp = 20000;
-        ShieldPoint = MAXShield = 1000;
-        //Ani = transform.GetChild(0).transform.GetChild(3).GetComponent<Animation>();
-        //DieEff = transform.GetChild(0).transform.GetChild(4).GetComponent<ParticleSystem>();
-        
-        ShieldCheck = true;
-    }
+    
 
 
 
     private void Start()
     {
         InstID();
+        Live = true;
+        hp = 20000;
+        ShieldPoint = MAXShield = 1000;
+        ShieldCheck = true;
     }
 
     
@@ -76,8 +71,7 @@ public class EnemyBossHP : EnemyHp
         {
             hp -= Da;
         }
-        //Move.SetTargeting(GameManager.instance.Char_Player_Trace.transform);
-        //Move.LockOnTarget();
+        
         if (hp <= 0 & Live == true)
         {
             
