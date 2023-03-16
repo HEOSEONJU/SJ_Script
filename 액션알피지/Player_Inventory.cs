@@ -107,12 +107,7 @@ public class Player_Inventory : MonoBehaviour
 
     public bool Get_Item(Item_Data temp)
     {
-        _Counter_Inventory();
         
-        if (Inventroy_Count >= 20)
-        {
-            return false;
-        }
         Debug.Log("2");
         switch (temp.Base_item.Type)
         {
@@ -122,13 +117,23 @@ public class Player_Inventory : MonoBehaviour
                     if (_Manager.Call_Data().Items[i].INDEX== temp.Base_item.Item_Index)
                     {
                         Use_Item Check = (Use_Item)_Manager.Call_Data().Items[i].Base_item;
-                        if(Check.Max_Count >= _Manager.Call_Data().Items[i].count+ temp.count)
+                        if (Check.Max_Count >= _Manager.Call_Data().Items[i].count + temp.count)
+                        {
                             _Manager.Call_Data().Items[i].count += temp.count;
-                        return true;
+                            Load_on_Data(_Manager.Call_Data());
+                            return true;
+                        }
                     }
                 }
                 break;
         }
+        _Counter_Inventory();
+
+        if (Inventroy_Count >= 20)
+        {
+            return false;
+        }
+
         Debug.Log("3");
         for (int i = 0; i < Max_Inventroy_Count; i++)
         {
@@ -137,6 +142,7 @@ public class Player_Inventory : MonoBehaviour
                 Debug.Log("4");
 
                 _Manager.Call_Data().Items[i].Insert_Data(temp);
+                Load_on_Data(_Manager.Call_Data());
                 return true;
             }
         }
@@ -228,7 +234,7 @@ public class Player_Inventory : MonoBehaviour
             }
         }
     }
-    
+    /*
     public void Renewal_Inventroy(Player_Data Data)
     {
         Main_Weapon.Init_Slot_item(Data.Equip_Weapon_Item);
@@ -250,4 +256,5 @@ public class Player_Inventory : MonoBehaviour
             }
         }
     }
+    */
 }

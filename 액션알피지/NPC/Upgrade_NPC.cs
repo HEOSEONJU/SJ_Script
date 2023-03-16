@@ -17,9 +17,10 @@ public class Upgrade_NPC : Normal_NPC
     
     public override void Close_Window()
     {
+        Upgrade_Function.Remove_Slot_Item();
         _manager._Connect_NPC.Close_NPC();
         _manager.Check_UI();
-        Upgrade_Function.Remove_Slot_Item();
+        
         UI.SetActive(false);
 
 
@@ -41,6 +42,7 @@ public class Upgrade_NPC : Normal_NPC
                 Upgrade_Function.Renewal_Image();
                 
                 _manager._UI.Renewal_Gold_Text();
+                _manager.Data_Save(true);
             }
             else
             {

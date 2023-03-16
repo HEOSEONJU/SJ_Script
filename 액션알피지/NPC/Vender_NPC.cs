@@ -17,7 +17,8 @@ public class Vender_NPC: Normal_NPC
     }
     public override void Close_Window()
     {
-        Function.Open_Close_Sell_Window(false);
+        Function.Sell_Window.SetActive(false);
+        Function.Buy_Window.SetActive(false);
         _manager._Connect_NPC.Close_NPC();
         _manager.Check_UI();
         UI.SetActive(false);

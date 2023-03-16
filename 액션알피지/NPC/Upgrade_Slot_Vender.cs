@@ -162,7 +162,7 @@ public class Upgrade_Slot_Vender : MonoBehaviour, IDropHandler
 
     public void Remove_Slot_Item()
     {
-
+        if(Current!=null)
         Current.Set_HIde(false);
         Current = null;
         Current_INDEX = -1;
