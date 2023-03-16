@@ -112,7 +112,7 @@ public class GameManager : MonoBehaviour
             BossScript.BossStop();
         }
         PlayerMove.enabled = false;
-        PlayerMove.transform.GetComponent<Gun>().enabled = false;
+        //PlayerMove.transform.GetComponent<Gun>().enabled = false;
         EnemyPoolingObject.SetActive(false);
         PlayerPrefs.SetFloat("SCORE", Score - 10000);
         PlayerPrefs.SetInt("Result", 0);

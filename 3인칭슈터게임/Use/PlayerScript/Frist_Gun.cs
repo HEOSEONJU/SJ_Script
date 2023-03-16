@@ -201,6 +201,7 @@ public class Frist_Gun : Base_Gun
 
         if (hitInfo.transform.CompareTag("hitbox") & hitInfo.collider.gameObject.layer == 10)//히트박스태그, 적인지 레이어 비교
         {
+            Debug.Log("충돌");
             StartCoroutine(Main.HitCross(0.3f));//적중시 0.3초간 적중을 표시하기위해 크로스헤어 색깔변경    
             Base_HP temp = hitInfo.transform.GetComponent<Base_HP>();//추상클래스인 체력을 가져옴
             temp.Damged(GunDamage);//총만큼 데미지

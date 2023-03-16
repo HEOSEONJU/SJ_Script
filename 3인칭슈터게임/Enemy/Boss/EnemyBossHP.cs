@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class EnemyBossHP : EnemyHp
 {
+    [SerializeField]
+    Boss_Manager _Manager;
 
     public List<GameObject> Shield;
     public ParticleSystem DieEff;
@@ -83,19 +85,21 @@ public class EnemyBossHP : EnemyHp
 
     public void  BrokeShield()
     {
+        _Manager.SHB();
         
-        ShieldDestroy.Play();
-        for (int i = 0; i < Shield.Count; i++)
+
+        foreach(GameObject GO in Shield)
         {
-            Shield[i].SetActive(false);
+            GO.SetActive(false);
         }
+        
         
         ShieldCheck = false;
         transform.GetChild(0).GetComponent<EnemyBossBulletAttack>().StopAttack();
         transform.GetChild(0).GetComponent<EnemyBossRocketAttack>().StopAttack();
 
 
-        Move.OverHeat();
+        
         
         
     }
@@ -104,9 +108,9 @@ public class EnemyBossHP : EnemyHp
         if (Live == true)
         {
             ShieldCheck = true;
-            for (int i = 0; i < Shield.Count; i++)
+            foreach (GameObject GO in Shield)
             {
-                Shield[i].SetActive(true);
+                GO.SetActive(true);
             }
             if (MAXShield <= 2500)
             {

@@ -45,7 +45,7 @@ public class EnemyMove : MonoBehaviour
     {
         return false;
     }
-    public virtual void CannonShot()
+    public virtual void Attack_Order()
     {
 
     }
