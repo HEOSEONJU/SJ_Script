@@ -40,15 +40,7 @@ public class CharInfo : MonoBehaviour
     {
         CharId = FireBaseDB.instacne.Player_Data_instacne.UseMonsterCards[MYNUM];
 
-        for(int i=0;i< FireBaseDB.instacne.Player_Data_instacne.MonsterCards.Count;i++)
-        {
-            if (CharId == FireBaseDB.instacne.Player_Data_instacne.MonsterCards[i].ID)
-            {
-                CharLevel = FireBaseDB.instacne.Player_Data_instacne.MonsterCards[i].Level;
-                break;
-            }
-        }
-        
+        CharLevel=FireBaseDB.instacne.Player_Data_instacne.Find_Monster_Data(CharId).Level;
 
         Level.text = "LV :" + CharLevel;
         Name.text = "" + CharData.Monster[CharId].CardName;

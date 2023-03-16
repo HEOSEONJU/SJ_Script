@@ -10,10 +10,6 @@ public class FlipScript : MonoBehaviour
     public bool CardFBCheck;
     int timer;
     public float x, y, z;
-
-
-
-
     public void Start()
     {
         timer = 0;
@@ -23,8 +19,7 @@ public class FlipScript : MonoBehaviour
         z = 0;
 
     }
-
-    public void Flip()
+    public void Flip()//카드회전
     {
         CardFBCheck = !CardFBCheck;
         
@@ -43,14 +38,10 @@ public class FlipScript : MonoBehaviour
         }
 
     }
-
     public void StartFlip()
     {
         StartCoroutine(CardFlip());
     }
-
-
-
     IEnumerator CardFlip()
     {
         

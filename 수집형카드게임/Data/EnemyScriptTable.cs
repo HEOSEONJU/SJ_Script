@@ -15,9 +15,10 @@ public class EnemyData
     public int Base_HP;
     public int Magic_Regi;
     public int TYPE;
-    public List<int> SkillNumber;//리스트로바꿀까고민중 여러스킬발동하도록
-    public List<int> SkillDamage;
-    public List<int> SkillPercentage;
+    public List<GameObject> Skills;
+    //public List<int> SkillNumber;//리스트로바꿀까고민중 여러스킬발동하도록
+    //public List<int> SkillDamage;
+    //public List<int> SkillPercentage;
     public int AttackCount;
 
     public Sprite Boss_Image;

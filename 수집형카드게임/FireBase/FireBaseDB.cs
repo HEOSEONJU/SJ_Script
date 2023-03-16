@@ -92,27 +92,7 @@ public class FireBaseDB : MonoBehaviour
         }
         */
     }
-
-    public bool Check_ID(string ID)
-    {
-        DB.Document("ID_List/iIMCnt0VoWUoljB0XMwj").GetSnapshotAsync().ContinueWithOnMainThread(task =>
-        {
-            Assert.IsNull(task.Exception);
-            var cha = task.Result.ConvertTo<Data_TO_STRING_Array>();
-            foreach ( var ID_ in cha.ID ) 
-            {
-               if(ID_==ID)
-                {
-                    return true;
-                }
-               
-            }
-            return false;
-            
-        });
-        return false;
-    }
-    public void Login(string ID,string PW)
+    public void Login(string ID, string PW)//입력한 아이디와비밀번호를 데이터베이스에서 정보를 가져와 맞는지 대조하는 시스템
     {
         DB.Document("ID_List/iIMCnt0VoWUoljB0XMwj").GetSnapshotAsync().ContinueWithOnMainThread(task =>
         {
@@ -151,7 +131,7 @@ public class FireBaseDB : MonoBehaviour
         
     }
 
-    public void Create_ID(string ID,string Password, string NickName)
+    public void Create_ID(string ID, string Password, string NickName)//입력한 아이디 패스워드 닉네임을 가진 계정을 생성합니다.
     {
         if(ID=="" || Password=="" || NickName=="")
         {
@@ -215,7 +195,7 @@ public class FireBaseDB : MonoBehaviour
         
     }
 
-    public void Download_Data(StoreTYPE TYPE)
+    public void Download_Data(StoreTYPE TYPE)//StoreTYPE에 맞는 데이터를 데이터베이스에서 아이디를 참조해 받아옵니다.
     {
         switch (TYPE)
         {
@@ -334,7 +314,7 @@ public class FireBaseDB : MonoBehaviour
                 break;
         }
     }
-    public void Upload_Data(StoreTYPE TYPE)
+    public void Upload_Data(StoreTYPE TYPE)//StoreTYPE에 맞는 데이터를 아이디를 참조해 데이터베이스로 업로드합니다. 
     {
         switch(TYPE) 
         {

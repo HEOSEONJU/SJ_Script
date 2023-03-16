@@ -6,35 +6,23 @@ using UnityEngine.UI;
 public class SmallCharList : MonoBehaviour
 {
     public int MYID;
-    List<MonsterInfo> Monster;
+    
 
     
-    public void Setting()
+    public void Setting(int i)
     {
-        Monster = FireBaseDB.instacne.Player_Data_instacne.MonsterCards;
+        MYID = i;
     }
-    public void ResetState()
+    public void ResetState()//가지고있
     {
-        
-        bool ck = false;
-        for (int i = 0; i < Monster.Count; i++)
-        {
-
-            if (Monster[i].ID == MYID)
-            {
-                ck = true;
-                //Debug.Log("보유ID" + Monster[i].ID + "/ 자기아이디" + MYID);
-            }
-        }
-
-        if (ck == true)
-        {
-            transform.GetChild(2).gameObject.SetActive(false);
-        }
-        else
+        if(FireBaseDB.instacne.Player_Data_instacne.Find_Monster_Data(MYID)==null)//보유하지않고있다면 잠금 이펙트 활성화
         {
             transform.GetChild(2).gameObject.SetActive(true);
+            return;
         }
+        transform.GetChild(2).gameObject.SetActive(false);
+        
+
 
     }
 

@@ -5,9 +5,9 @@ using UnityEngine.UI;
 using TMPro;
 public class CharUI : MonoBehaviour
 {
-    
-    public CharCardScriptTable CharData;
-    public Char_Skill_ScriptTable SkillData;
+
+    //public CharCardScriptTable CharData;
+    //public Char_Skill_ScriptTable SkillData;
     public int MYNUM;//자기몇번째인지
     public int CharId;
     public int CharLevel;
@@ -21,7 +21,7 @@ public class CharUI : MonoBehaviour
     public UIDataUpdate MYUI;
     int MAXLV;
 
-    
+
     public int Select_Num;
     int need;
     int CurrentLevel_INDEX = 1;
@@ -55,6 +55,15 @@ public class CharUI : MonoBehaviour
     UIDataUpdate Pre;
     [SerializeField]
     Image FadeImage;
+
+
+    TextMeshProUGUI Break_Text;
+    TextMeshProUGUI Level_Text;
+    TextMeshProUGUI HP_Text;
+    TextMeshProUGUI ATK_Text;
+    TextMeshProUGUI DEF_Text;
+    TextMeshProUGUI ATK_TYPE_Text;
+
     public void Awake()
     {
         PopUp_1 = GetComponent<FailWinodw>();
@@ -65,18 +74,23 @@ public class CharUI : MonoBehaviour
         MAXLV = 100;
         Select_Num = 0;
 
-        for(int i=1; i<CharData.Monster.Count; i++)
+        for (int i = 1; i < CardData.instance.CharDataFile.Monster.Count; i++)
         {
-            var e=Instantiate(Prefab_Object,ScrollRect);
+            var e = Instantiate(Prefab_Object, ScrollRect);
             SmallCharList temp = e.transform.GetComponent<SmallCharList>();
-            temp.Setting();
-            temp.MYID = i;
-            e.transform.GetChild(0).GetComponent<Image>().sprite = CharData.Monster[i].Small_Image;
-            e.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(()=> ChangeChar(e.transform.GetComponent<SmallCharList>().MYID));
-            e.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = CharData.Monster[i].CardName;
+            temp.Setting(i);
+            e.transform.GetChild(0).GetComponent<Image>().sprite = CardData.instance.CharDataFile.Monster[i].Small_Image;
+            e.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(() => ChangeChar(e.transform.GetComponent<SmallCharList>().MYID));
+            e.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = CardData.instance.CharDataFile.Monster[i].CardName;
             e.transform.GetChild(2).GetChild(0).GetComponent<Button>().onClick.AddListener(() => PopUp_1.View_Text("해당 캐릭터는 잠금되어있습니다"));
-            
+
         }
+        Break_Text = TextObject.GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>();
+        Level_Text = TextObject.GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>();
+        HP_Text = TextObject.GetChild(3).GetChild(0).GetComponent<TextMeshProUGUI>();
+        ATK_Text = TextObject.GetChild(4).GetChild(0).GetComponent<TextMeshProUGUI>();
+        DEF_Text = TextObject.GetChild(5).GetChild(0).GetComponent<TextMeshProUGUI>();
+        ATK_TYPE_Text = TextObject.GetChild(6).GetChild(0).GetComponent<TextMeshProUGUI>();
 
 
     }
@@ -84,11 +98,11 @@ public class CharUI : MonoBehaviour
     public void OnEnable()
     {
         CloseWindow();
-        for(int i=0;i<ScrollRect.childCount;i++)
+        for (int i = 0; i < ScrollRect.childCount; i++)
         {
             ScrollRect.GetChild(i).GetComponent<SmallCharList>().ResetState();
         }
-        
+
 
     }
 
@@ -97,110 +111,84 @@ public class CharUI : MonoBehaviour
 
     public void OpenWindow()
     {
-
         StartCoroutine(Open_WindowCorountine());
-
         ResetText_Need_Gold();
-
-
     }
     public void CloseWindow()
     {
         FadeImage.enabled = false;
         Window.transform.localScale = Vector3.zero;
-
     }
     IEnumerator Open_WindowCorountine()
     {
         FadeImage.enabled = true;
         float time = 0;
-        while(time<=1)
+        while (time <= 1)
         {
-            time+=Time.deltaTime*6;
-            
-            Window.transform.localScale = Vector3.one*time;
+            time += Time.deltaTime * 6;
+            Window.transform.localScale = Vector3.one * time;
             yield return new WaitForSeconds(Time.deltaTime);
         }
     }
 
 
-    void ResetText_Need_Gold()
+    void ResetText_Need_Gold()//요구 골드량 리셋
     {
-        
         int Level = 1;
-        for (int i = 0; i < FireBaseDB.instacne.Player_Data_instacne.MonsterCards.Count; i++)
+        MonsterInfo Temp = FireBaseDB.instacne.Player_Data_instacne.Find_Monster_Data(CharId);
+        Break_Lim = Temp.BreaK_Lim;
+        Level = Temp.Level;
+        CurrentLevel_INDEX = Temp.ID;
+        if (Level >= 80)
         {
-            if (FireBaseDB.instacne.Player_Data_instacne.MonsterCards[i].ID == CharId)
-            {
-                Break_Lim= FireBaseDB.instacne.Player_Data_instacne.MonsterCards[i].BreaK_Lim;
-                CurrentLevel_INDEX = i;
-                Level = FireBaseDB.instacne.Player_Data_instacne.MonsterCards[i].Level;
-                if (Level >= 80)
-                {
-                    need = 500 * Level;
-                }
-                else if (Level >= 60)
-                {
-                    need = 400 * Level;
-                }
-                else if (Level >= 40)
-                {
-                    need = 300 * Level;
-                }
-                else if (Level >= 20)
-                {
-                    need = 200 * Level;
-                }
-                else
-                {
-                    need = 100 * Level;
-                }
-                break;
-
-                
-            }
+            need = 500 * Level;
         }
-        
-        
+        else if (Level >= 60)
+        {
+            need = 400 * Level;
+        }
+        else if (Level >= 40)
+        {
+            need = 300 * Level;
+        }
+        else if (Level >= 20)
+        {
+            need = 200 * Level;
+        }
+        else
+        {
+            need = 100 * Level;
+        }
         NeedGoldText.text = "" + need;
-        CharCardData temp = CharData.Monster[CharId];
-
-        UP_HP_TEXT.text = ""+temp.UpHp;
+        CharCardData temp = CardData.instance.CharDataFile.Find_Char(CharId);
+        UP_HP_TEXT.text = "" + temp.UpHp;
         UP_ATK_TEXT.text = "" + temp.UpAtk;
         UP_DEF_TEXT.text = "" + temp.UpDef;
 
     }
 
-
-
     public void CloseCharUI()
     {
-
         Pre.UpdateData();
-
         for (int i = 0; i < CharPosi.Count; i++)
         {
             CharPosi[i].GetComponent<CharInfo>().Reset();
         }
-        
-
-        gameObject.SetActive(false);    
-        
-
+        gameObject.SetActive(false);
     }
 
-    public void Setting(int ID,int Level,int num)
+    public void Setting(int ID, int Level, int num)//초기셋팅
     {
         CharId = ID;
-        
+
         CharLevel = Level;
         Select_Num = ID;
         MYNUM = num;
-        Name.text = "" + CharData.Monster[CharId].CardName;
-        CharImage.sprite = CharData.Monster[CharId].Image;
-        
-        Rankimage.sprite = CharData.Monster[CharId].RankImage;
-        CharBGImage.sprite = CharData.Monster[CharId].BGImage;
+        CharCardData Temp = CardData.instance.CharDataFile.Find_Char(CharId);
+        Name.text = "" + Temp.CardName;
+        CharImage.sprite = Temp.Image;
+        Rankimage.sprite = Temp.RankImage;
+        CharBGImage.sprite = Temp.BGImage;
         TextReset();
 
     }
@@ -209,14 +197,11 @@ public class CharUI : MonoBehaviour
 
     public void LevelUpChar()
     {
-
-        if (need <= FireBaseDB.instacne.Player_Data_instacne.Gold & FireBaseDB.instacne.Player_Data_instacne.MonsterCards[CurrentLevel_INDEX].Level < Break_Lim * 20)
+        MonsterInfo TEMP = FireBaseDB.instacne.Player_Data_instacne.Find_Monster_Data(CurrentLevel_INDEX);
+        if (need <= FireBaseDB.instacne.Player_Data_instacne.Gold & TEMP.Level < Break_Lim * 20)
         {
-
-
-
             FireBaseDB.instacne.Player_Data_instacne.Gold -= need;
-            FireBaseDB.instacne.Player_Data_instacne.MonsterCards[CurrentLevel_INDEX].Level++;
+            TEMP.Level++;
             FireBaseDB.instacne.Upload_Data(StoreTYPE.GOLD);
             FireBaseDB.instacne.Upload_Data(StoreTYPE.CHAR);
 
@@ -225,14 +210,14 @@ public class CharUI : MonoBehaviour
             TextReset();
             ResetText_Need_Gold();
         }
-        else if(need>= FireBaseDB.instacne.Player_Data_instacne.Gold)
+        else if (need >= FireBaseDB.instacne.Player_Data_instacne.Gold)
         {
             PopUp_1.View_Text("돈이 모자랍니다.");
             //PopUp.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "돈이 모자랍니다.";
             //Debug.Log("돈이모자랍니다");
             //돈이모자랍니다
         }
-        else if(FireBaseDB.instacne.Player_Data_instacne.MonsterCards[CurrentLevel_INDEX].Level >= Break_Lim * 20)
+        else if (TEMP.Level >= Break_Lim * 20)
         {
             PopUp_1.View_Text("현재 가능한 최대레벨에 도달햇습니다.");
             //PopUp.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "현재 가능한 최대레벨에 도달햇습니다";
@@ -243,40 +228,42 @@ public class CharUI : MonoBehaviour
     }
 
 
-    void TextReset()
+
+    
+
+
+    void TextReset()//보이는 텍스트 갱신
     {
-        CharCardData temp = CharData.Monster[CharId];
+        CharCardData temp = CardData.instance.CharDataFile.Find_Char(CharId);
 
-        TextObject.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text= temp.CardName;//이름
+        TextObject.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = temp.CardName;//이름
 
+
+        int LevelTemp = 0;
+        MonsterInfo TEMP = FireBaseDB.instacne.Player_Data_instacne.Find_Monster_Data(CharId);
+        Break_Text.text = "한계돌파 :" + TEMP.BreaK_Lim;
+        Level_Text.text = "Level:" + TEMP.Level;//레벨
         
-        int LevelTemp =0;
-        for (int i = 0; i < FireBaseDB.instacne.Player_Data_instacne.MonsterCards.Count; i++)
-        {
-            if (FireBaseDB.instacne.Player_Data_instacne.MonsterCards[i].ID == CharId)
-            {
-                LevelTemp = FireBaseDB.instacne.Player_Data_instacne.MonsterCards[i].Level;
-                TextObject.GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>().text = "한계돌파 :" + FireBaseDB.instacne.Player_Data_instacne.MonsterCards[i].BreaK_Lim;
-            }
-        }
-        TextObject.GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>().text = "Level:" + LevelTemp;//레벨
-        LevelTemp -= 1;
-        TextObject.GetChild(3).GetChild(0).GetComponent<TextMeshProUGUI>().text = "HP:" + (temp.HP + (temp.UpHp * LevelTemp));//체력
-        TextObject.GetChild(4).GetChild(0).GetComponent<TextMeshProUGUI>().text = "ATK:" + (temp.ATK + (temp.UpAtk * LevelTemp));//공격
-        TextObject.GetChild(5).GetChild(0).GetComponent<TextMeshProUGUI>().text = "DEF" + (temp.DEF + (temp.UpDef * LevelTemp));//방어
+        
+        LevelTemp = TEMP.Level-1;
+        HP_Text.text = "HP:" + (temp.HP + (temp.UpHp * LevelTemp));//체력
+        ATK_Text.text = "ATK:" + (temp.ATK + (temp.UpAtk * LevelTemp));//공격
+        DEF_Text.text = "DEF" + (temp.DEF + (temp.UpDef * LevelTemp));//방어
         if (temp.AttackType >= 1)
-            TextObject.GetChild(6).GetChild(0).GetComponent<TextMeshProUGUI>().text = "공격방식:물리";
+            ATK_TYPE_Text.text = "공격방식:물리";
         else
-            TextObject.GetChild(6).GetChild(0).GetComponent<TextMeshProUGUI>().text = "공격방식:마법";
+            ATK_TYPE_Text.text = "공격방식:마법";
 
 
         //스킬불러오기
-        for (int i = 0; i <temp.Skill_ID.Count; i++)
-        { Skills_Sprite[i].sprite = SkillData.Skill[temp.Skill_ID[i]].Image;
-            Skills_Name[i].text = SkillData.Skill[temp.Skill_ID[i]].SkillName;
-            Skills_Exp[i].text = SkillData.Skill[temp.Skill_ID[i]].exp;
+        for (int i = 0; i < temp.Skill_ID.Count; i++)
+        {
+            CharSkillData TEMP_SKill = CardData.instance.CharSkillFile.Find_Skill(temp.Skill_ID[i]);
+            Skills_Sprite[i].sprite = TEMP_SKill.Image;
+            Skills_Name[i].text = TEMP_SKill.SkillName;
+            Skills_Exp[i].text = TEMP_SKill.exp;
         }
-        
+
 
 
 
@@ -284,77 +271,49 @@ public class CharUI : MonoBehaviour
 
     }
 
-    public void ChangeChar(int num)
+    public void ChangeChar(int num)//버툰 클릭했을때 주화면 캐릭터 변경
     {
 
         Select_Num = num;
-        //Data.MonsterCards[CharId - 1].Level = Data.UseMonsterCards[MYNUM].Level;
-
-        bool ck = false;
-
-        for(int i=0;i< FireBaseDB.instacne.Player_Data_instacne.MonsterCards.Count;i++)
+        if (FireBaseDB.instacne.Player_Data_instacne.Find_Monster_Data(Select_Num) == null)
         {
-            if(FireBaseDB.instacne.Player_Data_instacne.MonsterCards[i].ID == Select_Num)
-                ck = true;
-
+            return;
         }
 
+        CharCardData TMEP = CardData.instance.CharDataFile.Find_Char(Select_Num);
+        CharId = TMEP.id;
+        CharLevel = FireBaseDB.instacne.Player_Data_instacne.Find_Monster_Data(CharId).Level;
+        Name.text = "" + TMEP.CardName;
+        CharImage.sprite = TMEP.Image;
 
-        if (ck == true)
-        {
-            CharId = CharData.Monster[Select_Num].id;
+        Rankimage.sprite = TMEP.RankImage;
+        CharBGImage.sprite = TMEP.BGImage;
+        TextReset();
 
-            for(int i=0;i< FireBaseDB.instacne.Player_Data_instacne.MonsterCards.Count;i++)
-            {
-                if(FireBaseDB.instacne.Player_Data_instacne.MonsterCards[i].ID==CharId)
-                {
-                    CharLevel = FireBaseDB.instacne.Player_Data_instacne.MonsterCards[i].Level;
-                }
-            }
-
-            
-            
-            Name.text = "" + CharData.Monster[Select_Num].CardName;
-            CharImage.sprite = CharData.Monster[Select_Num].Image;
-            
-            Rankimage.sprite = CharData.Monster[Select_Num].RankImage;
-            CharBGImage.sprite = CharData.Monster[Select_Num].BGImage;
-            TextReset();
-        }
     }
 
-    public void swapOk()
+    public void swapOk()//캐릭터 배치하기
     {
-        if (Select_Num != 0)
+        if (Select_Num == 0)//0 더미데이터라 종료
         {
-            bool ck = false;
-            for(int i=0;i<4;i++)
-            {
-                if(FireBaseDB.instacne.Player_Data_instacne.UseMonsterCards[i]== CharData.Monster[Select_Num].id)
-                    ck = true;
-            }
-            if (ck==false)
-            {
+            return;
+        }
 
-                FireBaseDB.instacne.Player_Data_instacne.UseMonsterCards[MYNUM] = CharData.Monster[Select_Num].id;
-                
-
-                for (int i = 0; i < FireBaseDB.instacne.Player_Data_instacne.MonsterCards.Count; i++)
-                {
-                    if (FireBaseDB.instacne.Player_Data_instacne.MonsterCards[i].ID == CharId)
-                    {
-                        //Data.UseMonsterCards[MYNUM].Level = Data.MonsterCards[i].Level;
-                    }
-                }
-                CharPosi[MYNUM].GetComponent<CharInfo>().Reset();
-                FireBaseDB.instacne.Upload_Data(StoreTYPE.CHAR);
-            }
-            else
+        CharCardData TEMP = CardData.instance.CharDataFile.Find_Char(Select_Num);
+        foreach(int INDEX in FireBaseDB.instacne.Player_Data_instacne.UseMonsterCards)
+        {
+            if(INDEX==TEMP.id)
             {
                 PopUp_1.View_Text("이미 배치되어있는 캐릭터입니다.");
-                
+                return;
             }
         }
+        FireBaseDB.instacne.Player_Data_instacne.UseMonsterCards[MYNUM] = TEMP.id;
+        CharPosi[MYNUM].GetComponent<CharInfo>().Reset();
+        FireBaseDB.instacne.Upload_Data(StoreTYPE.CHAR);
+
+
+
 
     }
 }

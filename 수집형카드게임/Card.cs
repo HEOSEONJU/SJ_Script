@@ -6,17 +6,13 @@ public class Card : MonoBehaviour
 {
     public string Name;
     public int CardNumber;
-    //public GameObject CardImage;
+    
     public float percent;
     public PRS originPosi;
     
     public void InitCard()
     {
-        //var e =Instantiate(Cardimage);
-        //e.transform.parent = transform;
-        //e.transform.localPosition = Vector3.zero;
-        //e.transform.localScale = Vector3.one;
-        //e.transform.localRotation= Quaternion.identity;
+        
         
 
     }
