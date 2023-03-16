@@ -21,6 +21,7 @@ public class Enemy_Manager : MonoBehaviour
     public float MAX_Aggro;
     [SerializeField]
     protected LayerMask Layer = 9;
+    
     public void Update()
     {
         Current_Delay += Time.deltaTime;

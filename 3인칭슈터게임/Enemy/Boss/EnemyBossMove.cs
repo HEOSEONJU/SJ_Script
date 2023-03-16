@@ -34,10 +34,7 @@ public class EnemyBossMove : EnemyMove
     public bool AnimationWalk;
     public int NUM = 0;
 
-    [SerializeField]
-    EnemyBossBulletAttack EBBA;
-    [SerializeField]
-    EnemyBossRocketAttack EBRA;
+    
     void Awake()
     {
         Live = true;
@@ -124,9 +121,9 @@ public class EnemyBossMove : EnemyMove
 
     public void BossStop()
     {
-        EBBA.StopAttack();
-        EBBA.StopAttack();
-        StopAllCoroutines();
+        _Manager.EBBA.StopAttack();
+        _Manager.EBRA.StopAttack();
+        
 
 
     }
@@ -134,7 +131,7 @@ public class EnemyBossMove : EnemyMove
     {
         if (Distance_value <= 15)
         {
-            EBRA.StopAttack();
+            _Manager.EBRA.StopAttack();
         }
     }
     void FIxedShiledMseh()
@@ -174,23 +171,23 @@ public class EnemyBossMove : EnemyMove
         {
             case 2:
                 
-                if (EBBA.count == 0 && EBBA.StartAttack == false)
+                if (_Manager.EBBA.count == 0 && _Manager.EBBA.StartAttack == false)
                 {
                     Debug.Log("น฿ป็");
-                    EBBA.AttackBullet(GameManager.instance.Char_Player_Attack.transform);
+                    _Manager.EBBA.AttackBullet(GameManager.instance.Char_Player_Trace.transform);
                 }
                 else if (distance <= 200 & distance > 30)
                 {
-                    if (EBRA.StartFire == false & EBRA.count == 0)
+                    if (_Manager.EBRA.StartFire == false & _Manager.EBRA.count == 0)
                     {
-                        EBRA.AttackRocket(GameManager.instance.Char_Player_Attack.transform);
+                        _Manager.EBRA.AttackRocket(GameManager.instance.Char_Player_Attack.transform);
                     }
                 }
                 break;
             case 3:
-                if (EBRA.StartFire == false & EBRA.count == 0)
+                if (_Manager.EBRA.StartFire == false & _Manager.EBRA.count == 0)
                 {
-                    EBRA.AttackRocket(GameManager.instance.Char_Player_Attack.transform);
+                    _Manager.EBRA.AttackRocket(GameManager.instance.Char_Player_Attack.transform);
                 }
                 break;
             default:
@@ -387,31 +384,31 @@ public class EnemyBossMove : EnemyMove
         animator.SetTrigger("Landing");
         Shield.SetTrigger("Landing");
     }
+
+    public override void Attack_Order()
+    {
+        MeleeFunction();
+    }
+    [SerializeField]
+    LayerMask Layer;
+
     public void MeleeFunction()
     {
+        
         MelleEffect.transform.position=LegPosi.position;
         MelleEffect.Play();
+
+
         Ray ray = new Ray();
         ray.direction = Vector3.up;
-        ray.origin = MelleEffect.transform.position;
-        if(Physics.SphereCast(ray,5.0f))
+        ray.origin = transform.position;
+        RaycastHit[] hit;
+        hit = Physics.SphereCastAll(ray, 15, 1, Layer);
+        if (hit.Length > 0)
         {
-            RaycastHit[] hitInfos;
-            int hit = 0;
-            hitInfos = Physics.SphereCastAll(ray, 10.0f);
-            for (int i = 0; i < hitInfos.Length; i++)
-            {
-                if (hitInfos[i].collider.gameObject.layer == 9)
-                {
-                    hit++;
-                }
-            }
-            if (hit > 0)
-            {
-                GameManager.instance.PlayerDamage(400);
-            }
-
+            GameManager.instance.PlayerDamage(400);
         }
+
 
     }
 
@@ -425,14 +422,10 @@ public class EnemyBossMove : EnemyMove
 
     IEnumerator OverHeatCoroutine()
     {
-        animator.SetTrigger("OverHeat");
-        Shield.SetTrigger("OverHeat");
-        Action = true;
+        
+        
         yield return new WaitForSeconds(15.0f);
         
-
-        animator.SetTrigger("Cool");
-        Shield.SetTrigger("Cool");
     }
 
     public void CoolDownAction()

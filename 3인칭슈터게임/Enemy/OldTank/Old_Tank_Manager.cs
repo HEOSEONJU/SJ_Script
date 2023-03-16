@@ -70,7 +70,7 @@ public class Old_Tank_Manager : Enemy_Manager
     public override void Attack_Function()
     {
 
-        _Move.CannonShot();
+        _Move.Attack_Order();
 
     }
     public override bool Search_Target()
