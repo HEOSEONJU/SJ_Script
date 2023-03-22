@@ -80,19 +80,7 @@ public class Player_Animator : MonoBehaviour
 
     }
 
-    public bool CanRotate()
-    {
-        if(_animator.GetCurrentAnimatorStateInfo(0).IsTag("Jump"))
-        {
-            return false;
-        }
-        
-
-
-        return true;
-
-    }
-
+   
 
     public bool PlayDodge(float Horizontal,float Vertical)
     {
