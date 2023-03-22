@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Hit_Type_NameSpace;
 using UnityEditor;
+using System.ComponentModel;
+using Unity.Burst.CompilerServices;
 
 public class Player_Manager : MonoBehaviour
 {
@@ -14,7 +16,7 @@ public class Player_Manager : MonoBehaviour
 
     Player_Input _Input;
     Player_Move _Move;
-    Player_Animator _Animator;
+    public Player_Animator _Animator;
     public Player_Camera _Camera;
     public Player_Weapon_Slot_Manager _WeaponSlotManager;
     Player_Animaotr_Controller _Attacker;
@@ -41,14 +43,22 @@ public class Player_Manager : MonoBehaviour
 
     public UI_Manager _UI;
 
+    public Vector3 CC_VELOCITY;
+
+    public List<int> Enemy_IDList = new List<int>();//적 중복공격방지
     [SerializeField]
     bool State = false;
+    
+    [SerializeField]
+    List<GameObject> ColliderList;//땅에 접촉한 오브젝트갯수
+    [SerializeField]
+    LayerMask GroundLayer;
     // Start is called before the first frame update
     public void Init(Player_Data Load_Data)
     {
         Data=Load_Data;
         Game_Master.instance.Load_Player(this);
-
+        ColliderList=new List<GameObject>();
         _Camera = Player_Camera.instance;
         _Camera.Init(transform);
         _Input = GetComponent<Player_Input>();
@@ -83,7 +93,7 @@ public class Player_Manager : MonoBehaviour
                 {
                     return;
                 }
-                float delta = Time.deltaTime;
+                
                 _Input.Player_Key_Input();
 
                 if (Input.GetKeyDown(KeyCode.V))
@@ -93,7 +103,7 @@ public class Player_Manager : MonoBehaviour
 
 
                 _Move.SpeedSetting();
-                _Animator.CanRotate();
+                
                 _Attacker.Update_Attack_Timer();
 
 
@@ -111,37 +121,25 @@ public class Player_Manager : MonoBehaviour
         }
         float delta = Time.deltaTime;
 
-
-
-        switch(State)
+        CC_VELOCITY = _Move.rb.velocity;
+        _Move.CalDir();
+        //Ground_Check();
+        _Move.Jump_Function();
+        switch (State)
         {
             case true:
-                _Move.CalDir();
+                
+                
+                //_Move.Falling();
 
 
 
 
-
-                _Move.GroundMove();
-                _Move.Falling();
-
-
-                _Move.Speed_Control();
-
-                _Move.CharRotate(delta);
-                _Move.Jump_Function();
+                //_Move.CharRotate(delta);
+                //_Move.Jump_Function();
 
                 _Animator.UpdataAnimation(_Input.Vertical, _Input.Horizontal, SprintState);
-                if (_Camera != null)
-                {
-
-                    _Camera.FollowTarget(delta);
-                    if (!Open_UI)//나중에 UI오픈으로 바꿀것
-                    {
-
-                        _Camera.HandleCameraRotation(delta, _Input.MouseX, _Input.MouseY);
-                    }
-                }
+                
                 break;
         }
 
@@ -159,12 +157,30 @@ public class Player_Manager : MonoBehaviour
                 {
                     return;
                 }
+
+                
+
                 float delta = Time.deltaTime;
+
+
+                if (_Camera != null)
+                {
+
+                    _Camera.FollowTarget(delta);
+                    if (!Open_UI)//나중에 UI오픈으로 바꿀것
+                    {
+
+                        _Camera.HandleCameraRotation(delta, _Input.MouseX, _Input.MouseY);
+                    }
+                }
+                
+                //IsGround = _Move.CC.isGrounded;
                 _Animator._animator.SetBool("IsGround", IsGround);
                 IsInteracting = _Animator._animator.GetBool("IsInteracting");
                 Infinity = _Animator._animator.GetBool("Infinity");
                 Attacking = _Animator._animator.GetBool("Attacking");
                 Magnification = _Animator._animator.GetFloat("Magnification");
+                Rotate = _Animator._animator.GetBool("Rotate");
                 _Input.LeftClick = false;
                 _Input.RightClick = false;
 
@@ -180,7 +196,8 @@ public class Player_Manager : MonoBehaviour
                 }
                 _Animator._animator.SetBool("WalkState", WalkState);
                 _Animator._animator.SetBool("SprintState", SprintState);
-
+                
+                
 
                 break;
         }
@@ -192,13 +209,10 @@ public class Player_Manager : MonoBehaviour
         return Data;
     }
 
-    public List<int> Enemy_IDList = new List<int>();
 
-    public void Reset_IDList()
-    {
-        Enemy_IDList.Clear();
-    }
 
+
+    #region UI관련
     public void Check_UI()
     {
 
@@ -240,6 +254,9 @@ public class Player_Manager : MonoBehaviour
         }
         Check_UI();
     }
+    #endregion
+
+    #region NPC접촉
 
     public void Connect_NPC_Function()
     {
@@ -266,6 +283,9 @@ public class Player_Manager : MonoBehaviour
 
         Check_UI();
     }
+    #endregion
+
+    #region 데미지관련
 
     public void Enemy_Damaged(Enemy_Base_Status temp)
     {
@@ -298,7 +318,10 @@ public class Player_Manager : MonoBehaviour
         }
     }
 
-
+    public void Reset_IDList()
+    {
+        Enemy_IDList.Clear();
+    }
 
     public void PlayerDamaged(int Damage, Vector3 Dir, Hit_AnimationNumber AttackType, float KnockPower)
     {
@@ -324,16 +347,16 @@ public class Player_Manager : MonoBehaviour
             {
                 case Hit_AnimationNumber.Weak:
                     _Animator.PlayerTargetAnimation("Damage_Front_Big_ver_A", true);
-                    _Move.rb.AddForce(KnockPower * -transform.forward, ForceMode.VelocityChange);
+                    //_Move.rb.AddForce(KnockPower * -transform.forward, ForceMode.VelocityChange);
                     break;
                 case Hit_AnimationNumber.Nomal:
                     _Animator.PlayerTargetAnimation("Damage_Front_Big_ver_C", true);
-                    _Move.rb.AddForce(KnockPower * -transform.forward, ForceMode.VelocityChange);
+                    //_Move.rb.AddForce(KnockPower * -transform.forward, ForceMode.VelocityChange);
                     break;
                 case Hit_AnimationNumber.Hard:
                     _Animator.PlayerTargetAnimation("Damage_Front_High_KnockDown", true);
-                    _Move.rb.AddForce(KnockPower / 2f * -transform.forward, ForceMode.VelocityChange);
-                    _Move.rb.AddForce(KnockPower / 4f * transform.up, ForceMode.VelocityChange);
+                    //_Move.rb.AddForce(KnockPower / 2f * -transform.forward, ForceMode.VelocityChange);
+                    //_Move.rb.AddForce(KnockPower / 4f * transform.up, ForceMode.VelocityChange);
                     break;
                 default:
                     break;
@@ -345,16 +368,16 @@ public class Player_Manager : MonoBehaviour
             {
                 case Hit_AnimationNumber.Weak:
                     _Animator.PlayerTargetAnimation("Damage_Front_Big_ver_A", true);
-                    _Move.rb.AddForce(KnockPower / 10f * -transform.forward, ForceMode.Impulse);
+                    //_Move.rb.AddForce(KnockPower / 10f * -transform.forward, ForceMode.Impulse);
                     break;
                 case Hit_AnimationNumber.Nomal:
                     _Animator.PlayerTargetAnimation("Damage_Front_Big_ver_C", true);
-                    _Move.rb.AddForce(KnockPower / 10f * -transform.forward, ForceMode.Impulse);
+                    //_Move.rb.AddForce(KnockPower / 10f * -transform.forward, ForceMode.Impulse);
                     break;
                 case Hit_AnimationNumber.Hard:
                     _Animator.PlayerTargetAnimation("Damage_Front_High_KnockDown", true);
-                    _Move.rb.AddForce(KnockPower / 20f * -transform.forward, ForceMode.Impulse);
-                    _Move.rb.AddForce(KnockPower / 40f * transform.up, ForceMode.Impulse);
+                    //_Move.rb.AddForce(KnockPower / 20f * -transform.forward, ForceMode.Impulse);
+                    //_Move.rb.AddForce(KnockPower / 40f * transform.up, ForceMode.Impulse);
                     break;
                 default:
                     break;
@@ -368,8 +391,9 @@ public class Player_Manager : MonoBehaviour
 
 
     }
+    #endregion
 
-
+    #region 데이터관련
     public void Load_On_FireBase()
     {
         FireBase_M.Load();
@@ -441,7 +465,66 @@ public class Player_Manager : MonoBehaviour
         Save_On_FireBase();
     }
 
-    
+    #endregion
+
+    #region 지상접촉 탐지
+    void Ground()
+    {
+        
+        if (ColliderList.Count > 0)
+        {
+            IsGround = true;
+            return;
+        }
+        
+
+        IsGround = false;
+    }
+
+    public void Ground_Check()//땅에 닿을 위치면 땅위치로 이동시킴
+    {
+        
+        Vector3 RaycastOrigin = transform.position;
+        RaycastOrigin.y += 0.9f;
+        Vector3 Last_Posi= transform.position;
+        
+        if (Physics.SphereCast(RaycastOrigin,0.2f, Vector3.down,out RaycastHit hit,1f, GroundLayer))
+        {
+            
+            Vector3 Temp = hit.point;
+            Last_Posi.y = Temp.y+0.05f;
+            transform.position = Last_Posi;
+            
+            IsGround = true;
+        }
+        else
+        {
+            IsGround =false;
+        }
+        
+        
+        
+    }
+    private void OnCollisionEnter(Collision collision)
+    {
+
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            //Ground();
+        }
+    }
+    public float Dis;
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            //Ground();
+        }
+    }
+    #endregion
+
+
+
 
 
 }

@@ -242,7 +242,7 @@ public class FireBase_Manager:MonoBehaviour
             yield return null;
         }
 
-        var Temp = Instantiate(Player_Char, Data.Last_Position, Quaternion.identity).GetComponent<Player_Manager>();
+        var Temp = Instantiate(Player_Char, Data.Last_Position+Vector3.up, Quaternion.identity).GetComponent<Player_Manager>();
         Temp.FireBase_M = this;
         Temp._UI = Instantiate(UI_Object).GetComponent<UI_Manager>();
         Temp.Init(Data);

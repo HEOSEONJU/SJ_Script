@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Player_Move : MonoBehaviour
 {
-    
+
     Player_Manager manager;
     Player_Input _Input;
     Player_Animator _Animator;
@@ -17,38 +17,46 @@ public class Player_Move : MonoBehaviour
     public float MoveSpeed = 25;
     public float SprintSpeed = 50;
     public float CurrentSpeed = 0;
+    public float AirSpeed;
+    public float GravitySpeed;
     public Rigidbody rb;
-   
+
     Vector3 MoveDir;
     [SerializeField]
     Vector3 Normal_Vec;
+    [SerializeField]
     Vector3 projectVeclocity;
     Transform Player_Camera;
     [SerializeField]
     float Jump_Height = 2;
     [SerializeField]
     float rotationSpeed = 10;
-
-    public float Gravity_Drag=20;
+    [SerializeField]
+    float Power;
+    public float Gravity_Drag = 20;
     [SerializeField]
     float AirTimer = 0;
     public bool Airup;
 
+
+    [SerializeField]
+    float Control_Ground_Move;
+    
     public void Init()
     {
         manager = GetComponent<Player_Manager>();
-        _Input=GetComponent<Player_Input>();
-        _Animator= GetComponent<Player_Animator>();
+        _Input = GetComponent<Player_Input>();
+        _Animator = GetComponent<Player_Animator>();
         Player_Camera = Camera.main.transform;
-        rb=GetComponent<Rigidbody>();
-        
+        //rb=GetComponent<Rigidbody>();
+
         CurrentSpeed = MoveSpeed;
         //ignoreLayer = ~(1 << 8 | 1 << 9 | 1 << 10);
     }
 
     public void SpeedSetting()
     {
-        
+
         if (manager.SprintState)
         {
             if (manager.IsGround)
@@ -56,32 +64,34 @@ public class Player_Move : MonoBehaviour
                 CurrentSpeed = SprintSpeed;
                 return;
             }
-            
+
         }
-        else if(manager.WalkState)
+        else if (manager.WalkState)
         {
             if (manager.IsGround)
             {
                 CurrentSpeed = WalkSpeed;
                 return;
             }
-            
+
         }
-        
-            CurrentSpeed = MoveSpeed;
-        
+
+        CurrentSpeed = MoveSpeed;
+
     }
+
+
 
     public bool GC = false;
     public void CalDir()
     {
-        
-
+        Power= _Input.Vertical + _Input.Horizontal;
+        Power = Mathf.Clamp(Power, 0, 1);
 
         MoveDir = Player_Camera.transform.forward * _Input.Vertical;
         MoveDir += Player_Camera.transform.right * _Input.Horizontal;
-        MoveDir.y = 0;
         MoveDir.Normalize();
+        MoveDir.y = 0;
     }
 
     public void CharRotate(float delta)
@@ -90,7 +100,7 @@ public class Player_Move : MonoBehaviour
         {
             return;
         }
-        if(manager.IsInteracting)
+        if (manager.IsInteracting)
         {
             return;
         }
@@ -104,7 +114,7 @@ public class Player_Move : MonoBehaviour
             return;
         }
 
- 
+
 
         Vector3 targetDir = Vector3.zero;
         float moveOverrride = _Input.MoveAmount;
@@ -141,7 +151,7 @@ public class Player_Move : MonoBehaviour
 
             return;
         }
-
+        
         Quaternion tr = Quaternion.LookRotation(targetDir);
         Quaternion targetRotation = Quaternion.Slerp(transform.rotation, tr, rs * delta);
 
@@ -149,7 +159,41 @@ public class Player_Move : MonoBehaviour
     }
     public void GroundMove()
     {
+        //Debug.Log("지상");
 
+        Vector3 T = new Vector3(MoveDir.x, 0, MoveDir.z)*CurrentSpeed;
+        T.y = rb.velocity.y;
+        rb.velocity = T;
+
+        return;
+        #region 구 코드
+        projectVeclocity = Vector3.ProjectOnPlane(MoveDir, Normal_Vec).normalized * CurrentSpeed;
+
+
+
+
+        if (projectVeclocity.y == 0) projectVeclocity.y = Physics.gravity.y;
+        //rb.AddForce(projectVeclocity, ForceMode.Force);
+        //Vector3 Temp_Vector = rb.velocity;
+
+        //Temp_Vector.x = Mathf.Clamp(Temp_Vector.x, -Control_Ground_Move, Control_Ground_Move);
+        //Temp_Vector.z = Mathf.Clamp(Temp_Vector.z, -Control_Ground_Move, Control_Ground_Move);
+
+        //Vector3 MoveValue = projectVeclocity.normalized * CurrentSpeed/ Control_Ground_Move;
+        //MoveValue.y += Physics.gravity.y;
+        //rb.velocity = MoveValue;
+
+
+        return;
+
+
+        /*
+         * 
+         * if (Normal_Vec.y == 1.0f)
+        {
+            rb.AddForce(Vector3.down);
+        }
+         * 
         if (_Animator._animator.GetCurrentAnimatorStateInfo(0).IsTag("Landing"))
         {
             return;
@@ -170,55 +214,100 @@ public class Player_Move : MonoBehaviour
             
             
             
-            projectVeclocity = Vector3.ProjectOnPlane(MoveDir, Normal_Vec);
-            if (Normal_Vec.y == 1.0f)
-            {
-                rb.AddForce(Vector3.down);
-            }
-            //rb.AddForce(projectVeclocity.normalized * CurrentSpeed, ForceMode.Force);
-            rb.velocity = projectVeclocity.normalized * CurrentSpeed/10f;
+            
             //힘을주면 대각으로 올라갈때 남아있던 y축 벨로시티값에 공중에뜸 그래서 벨로시티수정으로 바꿈
             //rb.AddForce(projectVeclocity, ForceMode.VelocityChange);
 
 
 
         }
+        */
+        #endregion
     }
-    
+
+    public void Jumping()
+    {
+        //Debug.Log("상승");
+
+        rb.AddForce(Vector3.up * Jump_Height, ForceMode.Impulse);
+        //rb.AddForce(T * Time.deltaTime, ForceMode.Force);
+    }
+    public void Jumping_Move()
+    {
+        //Debug.Log("점프?");
+        Vector3 T = rb.velocity;
+        T.x = transform.forward.x * AirSpeed * Power;
+        T.z = transform.forward.z * AirSpeed * Power;
+        rb.velocity = T;
+        
+    }
+    public void FallingStart()
+    {
+        Vector3 T = Vector3.zero;
+        T = rb.velocity;
+
+        T.x = transform.forward.x * AirSpeed * Power;
+        T.z = transform.forward.z * AirSpeed * Power;
+        T.y += Physics.gravity.y * Time.deltaTime;
+        //rb.AddForce(T * Time.deltaTime, ForceMode.Force);
+    }
+
     public void Falling()
     {
-
-
+        
+        Vector3 T;
+        T = rb.velocity;
+        Ray ray = new Ray(transform.position, Vector3.down);
+        Debug.Log("추락");
+        T.y += Physics.gravity.y * Time.deltaTime;
+        if (Physics.SphereCast(ray, 0.2f, out RaycastHit hitInfo, (1.8f / 2f) + 0.2f))//원형미끌어짐생성
+        {
+            //Debug.Log(Vector3.Angle(Vector3.down, hitInfo.normal)); 충돌각
+            T.x += hitInfo.normal.x * 3;
+            T.z += hitInfo.normal.z * 3;
+        }
+        else
+        {
+            T.x = transform.forward.x * AirSpeed * Power;
+            T.z = transform.forward.z * AirSpeed * Power;
+        }
+        rb.velocity = T;
+        return;
+        
+        
+        //rb.AddForce(Vector3.down, ForceMode.Force);
+        
+        #region 구코드
         if (!manager.IsGround && !manager.IsInteracting)
         {
-            _Animator.PlayerTargetAnimation("Falling",false);
+            _Animator.PlayerTargetAnimation("Falling", false);
         }
         RaycastHit hit;
         Vector3 origin = transform.position;
         //Debug.DrawRay(origin, -Vector3.up * 1.2f, Color.black);
 
-        if(!manager.IsGround)
+        if (!manager.IsGround)
         {
-            AirTimer+=Time.deltaTime;
+            AirTimer += Time.deltaTime;
             if (_Input.MoveAmount > 0.1f)
             {
-                rb.AddForce(transform.forward * CurrentSpeed / 100, ForceMode.Force);
+                //rb.AddForce(transform.forward * CurrentSpeed / 100, ForceMode.Force);
             }
         }
-        
 
-        if (Physics.SphereCast(origin,0.2f, -Vector3.up, out hit, Player_Height_Distance, LandLayer))
+
+        if (Physics.SphereCast(origin, 0.2f, -Vector3.up, out hit, Player_Height_Distance, LandLayer))
         {
 
-            if (!manager.IsGround & AirTimer>1.5f)//착지한순간
+            if (!manager.IsGround & AirTimer > 1.5f)//착지한순간
             {
-                
+
                 _Input.JumpCoolTime();
 
-
-                _Animator.PlayerTargetAnimation("Landing",true);
+                Debug.Log("착지");
+                _Animator.PlayerTargetAnimation("Landing", true);
             }
-            else if(!manager.IsGround)
+            else if (!manager.IsGround)
             {
                 //_Animator.PlayerTargetAnimation("Empty_IDLE", false);
             }
@@ -226,56 +315,51 @@ public class Player_Move : MonoBehaviour
             Normal_Vec = hit.normal;
             manager.IsGround = true;
             AirTimer = 0;
-            
-            
+
+
         }
         else
         {
             manager.IsGround = false;
         }
 
-        
+        #endregion
+
+
 
     }
     public void Jump_Function()
     {
-        if (manager.Jump )
+        if (manager.Jump)
         {
+            //점프펑션다시만들기
+            //rb.AddForce(Vector3.up * Jump_Height, ForceMode.Impulse);
             
-            rb.AddForce(Vector3.up * Jump_Height, ForceMode.Impulse);
-            _Animator.PlayerTargetAnimation("Jump",true);
+            _Animator._animator.CrossFade("Jump", 0f);
+            //_Animator.PlayerTargetAnimation("Jump", true);
             manager.Jump = false;
-            
+
         }
     }
 
     public void Speed_Control()//속도 매그니튜드 초과방지
     {
+
+        /*
         Vector3 temp = rb.velocity;
 
-   
+
 
 
         temp.y = 0;
-        if(temp.magnitude> CurrentSpeed)
+        if (temp.magnitude > CurrentSpeed/15)
         {
-            temp.Normalize();
-            temp *= CurrentSpeed;
+            
+            temp = temp.normalized * CurrentSpeed/15;
+
             rb.velocity = new Vector3(temp.x, rb.velocity.y, temp.z);
         }
-
-        
-        
-
-        if(manager.IsGround)
-        {
-            rb.drag = Gravity_Drag;
-        }
-        else
-        {
-            rb.drag = Gravity_Drag;
-        }
-
     }
-
+        */
+    }
 }
