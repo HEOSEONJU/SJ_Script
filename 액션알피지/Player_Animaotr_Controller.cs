@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class Player_Animaotr_Controller : MonoBehaviour
 {
-    Player_Move _Move;
+    public Player_Move _Move;
     Player_Animator _Animator;
-    Player_Manager manager;
+    public Player_Manager manager;
     Player_Input _Input;
 
 
@@ -33,6 +33,8 @@ public class Player_Animaotr_Controller : MonoBehaviour
 
     [SerializeField]
     public ParticleSystem temp;
+
+
     private void Awake()
     {
 
@@ -44,108 +46,14 @@ public class Player_Animaotr_Controller : MonoBehaviour
         Player_Camera_Transform = Camera.main.transform;
     }
     public Vector3 deltaPosition_ATK;
+    public Vector3 deltaPosition;
     private void OnAnimatorMove()
     {
-
-
-        if (Check_Animation())//델타포지션사용하지않는 애니메이션의경우 반환
-        {
-            return;
-        }
-        float delta = Time.deltaTime;
-        if (_Animator._animator.GetCurrentAnimatorStateInfo(1).IsTag("Land_Air_Attack")) //지상에서 공중으로의 공격
-        {
-            _Move.rb.drag = DragPower;
-            Vector3 deltaPosition_air = _Animator._animator.deltaPosition / delta;
-            
-            deltaPosition_air.y += _Move.rb.velocity.y * delta;
-            deltaPosition_air.x *= PushPower*delta;
-            deltaPosition_air.z *= PushPower*delta;
-
-            _Move.rb.velocity = deltaPosition_air;
-
-            if (manager.LockOnMode)
-            {
-                transform.LookAt(manager._Camera.CurrentLockonTarget);
-                Quaternion temp = transform.rotation;
-                temp.Set(0, temp.y, 0, temp.w);
-                transform.rotation = temp;
-
-            }
-
-            return;
-        }
-        if (_Animator._animator.GetCurrentAnimatorStateInfo(1).IsTag("Air_Attack"))//공중공격
-        {
-            _Move.rb.drag = DragPower;
-            Vector3 deltaPosition_air = _Animator._animator.deltaPosition / delta;
-            //deltaPosition_air.y *= 1.5f;
-            deltaPosition_air.y += _Move.rb.velocity.y * delta;
-            //deltaPosition_air.x *= PushPower/delta;
-            //deltaPosition_air.z *= PushPower/delta;
-
-            _Move.rb.velocity = deltaPosition_air;
-            return;
-        }
-
-        //캐릭터 방향전환 밀림심하면 드래그올리고 벨로시티값 조정
-
-
-
-
-
-        // 지상움직임 지상공격 움직임
-        _Move.rb.drag = DragPower;
-        Vector3 deltaPosition = _Animator._animator.deltaPosition;
-        deltaPosition.y += _Move.rb.velocity.y * delta;
-        deltaPosition.x *= PushPower / delta;
-        deltaPosition.z *= PushPower / delta;
-
-        _Move.rb.velocity = deltaPosition;
-
-        //공중콤보라면
-        //float delta = Time.deltaTime;
-        //_Move.rb.drag = 0;
-        //Vector3 deltaPosition = _Animator.deltaPosition;
-        //deltaPosition.y = 0;
-        //Vector3 velocity = deltaPosition / delta;
-        //_Move.rb.velocity = velocity;
+        deltaPosition=_Animator._animator.deltaPosition;
     }
-
-
-    bool Check_Animation()//해당태그에 맞는 애니메이션은 루트모션에맞춰이동하기 닷지 공격
-    {
-
-        if (_Animator._animator.GetCurrentAnimatorStateInfo(2).IsTag("Hit_Player"))
-        {
-
-            return true;
-        }
-        if (_Animator._animator.GetCurrentAnimatorStateInfo(1).IsTag("Attack"))
-        {
-
-            return false;
-        }
-        if (_Animator._animator.GetCurrentAnimatorStateInfo(1).IsTag("Air_Attack"))
-        {
-            return false;
-        }
-        if (_Animator._animator.GetCurrentAnimatorStateInfo(1).IsTag("Land_Air_Attack"))
-        {
-            return false;
-        }
-        if (_Animator._animator.GetCurrentAnimatorStateInfo(0).IsTag("Dodge"))
-        {
-            return false;
-        }
-        return true;
-    }
-
 
     public void Change_Weapon_Type(List<string> New_Weapon_Animation_List = null, List<string> New_Air_Weapon_Animation_List = null)
     {
-
-
         Attack_Name.Clear();
         if (New_Weapon_Animation_List != null)
         {
@@ -164,10 +72,7 @@ public class Player_Animaotr_Controller : MonoBehaviour
             }
         }
         _Animator._animator.SetInteger("Combo_Stack", 0);
-
-
     }
-
     void EnableAttack()
     {
         Can_Attack = true;
@@ -180,6 +85,8 @@ public class Player_Animaotr_Controller : MonoBehaviour
     }
     void ComboReset()
     {
+
+        Debug.Log("시간초과로 콤보리셋");
         _Animator._animator.SetInteger("Combo_Stack", 0);
     }
 
@@ -261,7 +168,7 @@ public class Player_Animaotr_Controller : MonoBehaviour
 
         if (!manager.LockOnMode)
             ChangeDir();
-
+        Debug.Log("우클릭콤보"+ _Animator._animator.GetInteger("Combo_Stack"));
         _Animator.PlayerTargetAnimation(Air_Attack_Name[_Animator._animator.GetInteger("Combo_Stack")], true);
         _Animator._animator.SetInteger("Combo_Stack", _Animator._animator.GetInteger("Combo_Stack") + 1);
         DisableAttack();
