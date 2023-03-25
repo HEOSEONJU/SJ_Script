@@ -15,10 +15,15 @@ public class Stop_Vector : StateMachineBehaviour
         PAC = animator.GetComponent<Player_Animaotr_Controller>();
         Timer = 0;
         Start_Vector = PAC._Move.rb.velocity;
+        
         Arrive_Vector = PAC._Move.rb.velocity;
         Arrive_Vector.x = 0;
         Arrive_Vector.z = 0;
-        if (YReset) Arrive_Vector.y = 0;
+        if (YReset)
+        {
+            Start_Vector = Vector3.zero;
+            Arrive_Vector.y = 0;
+        }
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

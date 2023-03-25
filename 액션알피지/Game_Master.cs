@@ -26,7 +26,9 @@ public class Game_Master : MonoBehaviour
         }
         DontDestroyOnLoad(this.gameObject);
     }
+    [SerializeField]
     Player_Manager player_manager;
+    [SerializeField]
     UI_Manager _UI;
 
     public UI_Manager Call_UI()

@@ -18,7 +18,7 @@ public class Upgrade_NPC : Normal_NPC
     public override void Close_Window()
     {
         Upgrade_Function.Remove_Slot_Item();
-        _manager._Connect_NPC.Close_NPC();
+        _manager._Connect_Object.Close_NPC();
         _manager.Check_UI();
         
         UI.SetActive(false);

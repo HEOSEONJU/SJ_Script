@@ -6,18 +6,18 @@ using TMPro;
 public class UI_Manager : MonoBehaviour
 {
 
-    public Player_Manager _Manager;
-
-
     Vector3 Mouse_Position;
-    public bool Windows;
+    public bool Windows
+    {
+        get { return Windows_Object.gameObject.activeSelf; }
+    }
 
     public bool Draging;
     [SerializeField]
     Transform Windows_Object;
     [SerializeField]
     UI_Information INFO;
-    
+
     public TextMeshProUGUI Status_Text_Level;
     public TextMeshProUGUI Status_Text_ATK;
     public TextMeshProUGUI Status_Text_DEF;
@@ -27,126 +27,152 @@ public class UI_Manager : MonoBehaviour
     public TextMeshProUGUI Gold_Text;
 
 
-
+    [SerializeField]
     CanvasGroup Canvas_Group;
 
 
-    public void Init(Player_Manager Manager)
+    public void Init()
     {
-        _Manager=Manager;
-        Canvas_Group=GetComponent<CanvasGroup>();
-        Slot[] temp= GetComponentsInChildren<Slot>();
+
+        DontDestroyOnLoad(this.gameObject);
+        
+
+        Inventory_Slot[] temp = GetComponentsInChildren<Inventory_Slot>();
         int INDEX = 0;
-        foreach(Slot slot in temp)
+        foreach (Inventory_Slot slot in temp)
         {
-            slot.Setting_Slot(this, INDEX++);
+            slot.Setting_Slot( INDEX++);
         }
         Windows_Object.gameObject.SetActive(false);
     }
 
     public bool Use_Heal_item(Use_Item temp)
     {
-        if(_Manager._Status.Current_HP==_Manager._Status.MAX_HP)
+        if (Game_Master.instance.Call_Player()._Status.Current_HP == Game_Master.instance.Call_Player()._Status.MAX_HP)
         {
             return false;
         }
-        
-        _Manager._Status.Heal(temp.Point);
-        Status_Text_HP.text = _Manager._Status.Current_HP.ToString() + "/" + _Manager._Status.MAX_HP.ToString();
+
+        Game_Master.instance.Call_Player()._Status.Heal(temp.Point);
+        View_Hp_text();
         return true;
+    }
+    public void View_Hp_text()
+    {
+        Status_Text_HP.text = Game_Master.instance.Call_Player()._Status.Current_HP.ToString() + "/" + Game_Master.instance.Call_Player()._Status.MAX_HP.ToString();
     }
 
     public void Reseting_Status()
     {
-        _Manager._Status.Cal_All();
-        Status_Text_Level.text = _Manager._Status.Level.ToString();
-        Status_Text_ATK.text = _Manager._Status.ATK_Point.ToString();
-        Status_Text_DEF.text = _Manager._Status.DEF_Point.ToString();
-        Status_Text_HP.text = _Manager._Status.Current_HP.ToString() + "/"+_Manager._Status.MAX_HP.ToString();
-        Status_Text_CRP.text = _Manager._Status.CRP_Point.ToString()+"%";
-        Status_Text_CRT.text = _Manager._Status.CRT_Point.ToString()+"%";
+        Game_Master.instance.Call_Player()._Status.Cal_All();
+        Status_Text_Level.text = Game_Master.instance.Call_Player()._Status.Level.ToString();
+        Status_Text_ATK.text = Game_Master.instance.Call_Player()._Status.ATK_Point.ToString();
+        Status_Text_DEF.text = Game_Master.instance.Call_Player()._Status.DEF_Point.ToString();
+        View_Hp_text();
+        Status_Text_CRP.text = Game_Master.instance.Call_Player()._Status.CRP_Point.ToString() + "%";
+        Status_Text_CRT.text = Game_Master.instance.Call_Player()._Status.CRT_Point.ToString() + "%";
 
     }
 
 
-    public void Active_Windows(bool state,Slot Item_temp=null)
+    public void Active_Windows(bool state, Item_Data Item_temp = null)
     {
-        
+
         Windows_Object.gameObject.SetActive(state);
-        if(Item_temp == null)
+        if (Item_temp == null)
         {
             return;
         }
-        if(Item_temp.Slot_IN_Item.Base_item!=null)
-        Renewal_Text(Item_temp);
-        
+        if (Item_temp.Base_item != null)
+            Renewal_Text(Item_temp);
+
 
 
 
 
     }
-    public void Renewal_Text(Slot Item_temp)
+    public void Renewal_Text(Item_Data Item_temp)
     {
-        
-        INFO.Name.text = Item_temp.Slot_IN_Item.Base_item.Item_Name;
 
-        switch(Item_temp.Slot_IN_Item.Base_item.Type)
+        INFO.Name.text = Item_temp.Base_item.Item_Name;
+
+        switch (Item_temp.Base_item.Type)
         {
             case Type.Use:
                 INFO.Upgarde.text = "";
                 INFO.Type.text = "Use";
-                Use_Item temp_U = (Use_Item)Item_temp.Slot_IN_Item.Base_item;
-                INFO.Header[0].text = "Heal :";
+                Use_Item temp_U = (Use_Item)Item_temp.Base_item;
+                INFO.Header[0].text = "회복양 :";
                 INFO.Point[0].text = temp_U.Point.ToString();
-                INFO.Header[1].text = "Count:";
-                INFO.Point[1].text = Item_temp.Slot_IN_Item.count.ToString();
+                INFO.Header[1].text = "개수:";
+                INFO.Point[1].text = Item_temp.count.ToString();
                 for (int i = 2; i < INFO.Header.Count; i++)
                 {
                     INFO.Header[i].text = "";
                     INFO.Point[i].text = "";
                 }
                 break;
-            case Type.Weapon:
-                INFO.Type.text = "Weapon";
-                Weapon_Item temp_W = (Weapon_Item)Item_temp.Slot_IN_Item.Base_item;
-                INFO.Upgarde.text = "+" + Item_temp.Slot_IN_Item.Upgrade;
-                INFO.Header[0].text = "ATK :";
-                INFO.Point[0].text = (temp_W.Attack_Point + (temp_W.UP_Attack_Point * Item_temp.Slot_IN_Item.Upgrade)).ToString();
-                INFO.Header[1].text = "CRP :";
-                INFO.Point[1].text = (temp_W.CRP + (temp_W.CRP * Item_temp.Slot_IN_Item.Upgrade)).ToString() + "%";
-                INFO.Header[2].text = "CRT :";
-                INFO.Point[2].text = (temp_W.CRT + (temp_W.CRT * Item_temp.Slot_IN_Item.Upgrade)).ToString() + "%";
-                for (int i = 3; i < INFO.Header.Count; i++)
-                {
-                    INFO.Header[i].text = "";
-                    INFO.Point[i].text = "";
-                }
 
-                break;
-            case Type.Armor:
-                INFO.Type.text = "Armor";
-                Armor_Item temp_A = (Armor_Item)Item_temp.Slot_IN_Item.Base_item;
-                INFO.Upgarde.text = "+" + Item_temp.Slot_IN_Item.Upgrade;
-                INFO.Header[0].text = "ATK :";
-                INFO.Point[0].text = (temp_A.Attack_Point + (temp_A.UP_Attack_Point * Item_temp.Slot_IN_Item.Upgrade)).ToString();
-                INFO.Header[1].text = "DEF :";
-                INFO.Point[1].text = (temp_A.Armor_Point + (temp_A.UP_Armor_Point * Item_temp.Slot_IN_Item.Upgrade)).ToString();
-                INFO.Header[2].text = "HP  :";
-                INFO.Point[2].text = (temp_A.HP_Point + (temp_A.UP_HP_Point * Item_temp.Slot_IN_Item.Upgrade)).ToString();
-                for (int i = 3; i < INFO.Header.Count; i++)
-                {
-                    INFO.Header[i].text = "";
-                    INFO.Point[i].text = "";
-                }
+            case Type.Equip:
 
+                Equip_Item EI = (Equip_Item)Item_temp.Base_item;
+                switch (EI.EST)
+                {
+
+                    case Equip_Slot_Type.Weapon:
+                        INFO.Type.text = "무기";
+                        Weapon_Item temp_W = (Weapon_Item)Item_temp.Base_item;
+                        INFO.Upgarde.text = "+" + Item_temp.Upgrade;
+                        INFO.Header[0].text = "공격력 :";
+                        INFO.Point[0].text = (temp_W.Attack_Point + (temp_W.UP_Attack_Point * Item_temp.Upgrade)).ToString();
+                        INFO.Header[1].text = "치명타확률 :";
+                        INFO.Point[1].text = (temp_W.CRP + (temp_W.UP_CRP * Item_temp.Upgrade)).ToString() + "%";
+                        INFO.Header[2].text = "치명타데미지 :";
+                        INFO.Point[2].text = (temp_W.CRT + (temp_W.UP_CRT * Item_temp.Upgrade)).ToString() + "%";
+                        for (int i = 3; i < INFO.Header.Count; i++)
+                        {
+                            INFO.Header[i].text = "";
+                            INFO.Point[i].text = "";
+                        }
+
+                        break;
+                    default:
+                        Armor_Item temp_A = (Armor_Item)Item_temp.Base_item;
+                        switch (temp_A.EST)
+                        {
+                            case Equip_Slot_Type.Breastplate:
+                                INFO.Type.text = "갑옷";
+                                break;
+                            case Equip_Slot_Type.Glove:
+                                INFO.Type.text = "장갑";
+                                break;
+                            case Equip_Slot_Type.Helmet:
+                                INFO.Type.text = "투구";
+                                break;
+
+                        }
+                        INFO.Upgarde.text = "+" + Item_temp.Upgrade;
+                        INFO.Header[0].text = "공격력 :";
+                        INFO.Point[0].text = (temp_A.Attack_Point + (temp_A.UP_Attack_Point * Item_temp.Upgrade)).ToString();
+                        INFO.Header[1].text = "방어력 :";
+                        INFO.Point[1].text = (temp_A.Armor_Point + (temp_A.UP_Armor_Point * Item_temp.Upgrade)).ToString();
+                        INFO.Header[2].text = "체력  :";
+                        INFO.Point[2].text = (temp_A.HP_Point + (temp_A.UP_HP_Point * Item_temp.Upgrade)).ToString();
+                        for (int i = 3; i < INFO.Header.Count; i++)
+                        {
+                            INFO.Header[i].text = "";
+                            INFO.Point[i].text = "";
+                        }
+                        break;
+                }
                 break;
         }
-       
+
     }
 
     public void Renewal_Gold_Text()
     {
-        Gold_Text.text = _Manager._Manager_Inventory.Current_Gold().ToString();
+        Gold_Text.text = Game_Master.instance.Call_Player()._Manager_Inventory.Current_Gold().ToString();
     }
 
 

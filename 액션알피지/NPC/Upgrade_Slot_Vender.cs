@@ -10,7 +10,7 @@ public class Upgrade_Slot_Vender : MonoBehaviour, IDropHandler
     Upgrade_NPC _NPC;
 
     public int Current_INDEX;
-    Slot Current;
+    Inventory_Slot Current;
     [SerializeField]
     Sprite base_Image;
     [SerializeField]
@@ -43,19 +43,19 @@ public class Upgrade_Slot_Vender : MonoBehaviour, IDropHandler
     {
         if (eventData.pointerDrag != null)
         {
-            Slot temp = eventData.pointerDrag.transform.GetComponent<Slot>();
-            if (temp.Slot_IN_Item.Base_item == null)
+            Inventory_Slot temp = eventData.pointerDrag.transform.GetComponent<Inventory_Slot>();
+            if (Game_Master.instance.Call_Player().Call_Data().Items[temp.Slot_INDEX].Base_item == null)
             {
                 return;
             }
             Slot_Into_item(temp);
-            temp.UI.Reseting_Status();
+            Game_Master.instance.Call_UI().Reseting_Status();
         }
 
     }
-    public void Slot_Into_item(Slot Current_Position)
+    public void Slot_Into_item(Inventory_Slot Current_Position)
     {
-        if(Current_Position.Slot_IN_Item.Base_item.Type==Type.Use)
+        if(Game_Master.instance.Call_Player().Call_Data().Items[Current_Position.Slot_INDEX].Base_item.Type==Type.Use)
         {
             return;
         }
@@ -65,7 +65,7 @@ public class Upgrade_Slot_Vender : MonoBehaviour, IDropHandler
         }
         _NPC._manager._Manager_Inventory.Load_on_Data(_NPC._manager.Call_Data());
         Current_INDEX = Current_Position.Slot_INDEX;
-        Slot_IN_item = Current_Position.Slot_IN_Item;
+        Slot_IN_item = Game_Master.instance.Call_Player().Call_Data().Items[Current_Position.Slot_INDEX];
         Current = Current_Position;
         Current_Position.Set_HIde(true);
         
@@ -100,52 +100,52 @@ public class Upgrade_Slot_Vender : MonoBehaviour, IDropHandler
         {
             Slot_After_Upgrade_Point.text = "+" + (Slot_IN_item.Upgrade + 1);
         }
-        
 
-        switch(Slot_IN_item.Base_item.Type)
+        Equip_Item T = (Equip_Item)Slot_IN_item.Base_item;
+        switch (T.EST)
         {
-            case Type.Weapon:
+            case Equip_Slot_Type.Weapon:
                 Weapon_Item temp_W = (Weapon_Item)Slot_IN_item.Base_item;
-                Before_Point[0].text = "ATK: " + (temp_W.Attack_Point + (temp_W.UP_Attack_Point * Slot_IN_item.Upgrade));
-                Before_Point[1].text = "CRP: " + (temp_W.CRP + (temp_W.UP_CRP * Slot_IN_item.Upgrade)) + "%";
-                Before_Point[2].text = "CRT: " + (temp_W.CRT + (temp_W.UP_CRT * Slot_IN_item.Upgrade)) + "%";
+                Before_Point[0].text = "공격력: " + (temp_W.Attack_Point + (temp_W.UP_Attack_Point * Slot_IN_item.Upgrade));
+                Before_Point[1].text = "치명타확률: " + (temp_W.CRP + (temp_W.UP_CRP * Slot_IN_item.Upgrade)) + "%";
+                Before_Point[2].text = "치명타데미지: " + (temp_W.CRT + (temp_W.UP_CRT * Slot_IN_item.Upgrade)) + "%";
                 if (Slot_IN_item.Upgrade < MAX_Upgrade)
                 {
-                    After_Point[0].text = "ATK: " + (temp_W.Attack_Point + (temp_W.UP_Attack_Point * (Slot_IN_item.Upgrade + 1)));
-                    After_Point[1].text = "CRP: " + (temp_W.CRP + (temp_W.UP_CRP * (Slot_IN_item.Upgrade + 1))) + "%";
-                    After_Point[2].text = "CRT: " + (temp_W.CRT + (temp_W.UP_CRT * (Slot_IN_item.Upgrade + 1))) + "%";
+                    After_Point[0].text = "공격력: " + (temp_W.Attack_Point + (temp_W.UP_Attack_Point * (Slot_IN_item.Upgrade + 1)));
+                    After_Point[1].text = "치명타확률: " + (temp_W.CRP + (temp_W.UP_CRP * (Slot_IN_item.Upgrade + 1))) + "%";
+                    After_Point[2].text = "치명타데미지: " + (temp_W.CRT + (temp_W.UP_CRT * (Slot_IN_item.Upgrade + 1))) + "%";
                     Need_Gold_Point = (Slot_IN_item.Upgrade + 1) * 200;
 
                 }
                 else
                 {
-                    After_Point[0].text = "ATK: " + (temp_W.Attack_Point + (temp_W.UP_Attack_Point * Slot_IN_item.Upgrade));
-                    After_Point[1].text = "CRP: " + (temp_W.CRP + (temp_W.UP_CRP * Slot_IN_item.Upgrade)) + "%";
-                    After_Point[2].text = "CRT: " + (temp_W.CRT + (temp_W.UP_CRT * Slot_IN_item.Upgrade)) + "%";
+                    After_Point[0].text = "공격력: " + (temp_W.Attack_Point + (temp_W.UP_Attack_Point * Slot_IN_item.Upgrade));
+                    After_Point[1].text = "치명타확률: " + (temp_W.CRP + (temp_W.UP_CRP * Slot_IN_item.Upgrade)) + "%";
+                    After_Point[2].text = "치명타데미지: " + (temp_W.CRT + (temp_W.UP_CRT * Slot_IN_item.Upgrade)) + "%";
                     Need_Gold_Point = 0;
                 }
 
 
                 break;
-
-            case Type.Armor:
+            default:
+            //case Type.Armor:
                 Armor_Item temp_A = (Armor_Item)Slot_IN_item.Base_item;
-                Before_Point[0].text = "ATK: " + (temp_A.Attack_Point + (temp_A.UP_Attack_Point * Slot_IN_item.Upgrade));
-                Before_Point[1].text = "DEF: " + (temp_A.Armor_Point + (temp_A.UP_Armor_Point * Slot_IN_item.Upgrade));
-                Before_Point[2].text = "HP : " + (temp_A.HP_Point + (temp_A.UP_HP_Point * Slot_IN_item.Upgrade));
+                Before_Point[0].text = "공격력: " + (temp_A.Attack_Point + (temp_A.UP_Attack_Point * Slot_IN_item.Upgrade));
+                Before_Point[1].text = "방어력: " + (temp_A.Armor_Point + (temp_A.UP_Armor_Point * Slot_IN_item.Upgrade));
+                Before_Point[2].text = "체력 : " + (temp_A.HP_Point + (temp_A.UP_HP_Point * Slot_IN_item.Upgrade));
                 if (Slot_IN_item.Upgrade < MAX_Upgrade)
                 {
-                    After_Point[0].text = "ATK: " + (temp_A.Attack_Point + (temp_A.UP_Attack_Point * (Slot_IN_item.Upgrade + 1)));
-                    After_Point[1].text = "DEF: " + (temp_A.Armor_Point + (temp_A.UP_Armor_Point * (Slot_IN_item.Upgrade + 1)));
-                    After_Point[2].text = "HP : " + (temp_A.HP_Point + (temp_A.UP_HP_Point * (Slot_IN_item.Upgrade + 1)));
+                    After_Point[0].text = "공격력: " + (temp_A.Attack_Point + (temp_A.UP_Attack_Point * (Slot_IN_item.Upgrade + 1)));
+                    After_Point[1].text = "방어력: " + (temp_A.Armor_Point + (temp_A.UP_Armor_Point * (Slot_IN_item.Upgrade + 1)));
+                    After_Point[2].text = "체력 : " + (temp_A.HP_Point + (temp_A.UP_HP_Point * (Slot_IN_item.Upgrade + 1)));
                     Need_Gold_Point = (Slot_IN_item.Upgrade + 1) * 100;
 
                 }
                 else
                 {
-                    After_Point[0].text = "ATK: " + (temp_A.Attack_Point + (temp_A.UP_Attack_Point * Slot_IN_item.Upgrade));
-                    After_Point[1].text = "DEF: " + (temp_A.Armor_Point + (temp_A.UP_Armor_Point * Slot_IN_item.Upgrade));
-                    After_Point[2].text = "HP : " + (temp_A.HP_Point + (temp_A.UP_HP_Point * Slot_IN_item.Upgrade));
+                    After_Point[0].text = "공격력: " + (temp_A.Attack_Point + (temp_A.UP_Attack_Point * Slot_IN_item.Upgrade));
+                    After_Point[1].text = "방어력: " + (temp_A.Armor_Point + (temp_A.UP_Armor_Point * Slot_IN_item.Upgrade));
+                    After_Point[2].text = "체력 : " + (temp_A.HP_Point + (temp_A.UP_HP_Point * Slot_IN_item.Upgrade));
                     Need_Gold_Point = 0;
                 }
                 break;

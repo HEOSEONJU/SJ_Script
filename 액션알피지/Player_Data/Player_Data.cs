@@ -10,15 +10,15 @@ public class Player_Data : ScriptableObject
 
     public Item_Data Equip_Weapon_Item;
     public List<Item_Data> Equip_Armor_Item;
-    
-    public List <Item_Data> Items;
+    public List<Item_Data> Items;
 
     public int Gold;
+        
 
     public Vector3 Last_Position;
 
 
-    public void Swap_Items_WtoI(int INDEX_Arrival)//Weapon->ETC
+    public void Swap_Items_WtoI(int INDEX_Arrival)//Weapon->>ETC
     {
         if (Items[INDEX_Arrival].Base_item == null)
         {
@@ -39,10 +39,10 @@ public class Player_Data : ScriptableObject
         
     }
 
-    public void Swap_Items_ItoW(int INDEX_Arrival)//ETC-Weapon
+    public void Swap_Items_ItoW(int INDEX_Arrival)//ETC->Weapon
     {
-        
-        if (Items[INDEX_Arrival].Base_item.Type == Type.Weapon)
+        Equip_Item EI = (Equip_Item)Items[INDEX_Arrival].Base_item;
+        if (EI.EST== Equip_Slot_Type.Weapon)
         {
             
             if (Equip_Weapon_Item.Base_item == null)
@@ -77,7 +77,7 @@ public class Player_Data : ScriptableObject
     }
 
 
-    public void Swap_Items_AtoA(int INDEX_Arrival, int INDEX_Start)//Armor-Armor
+    public void Swap_Items_AtoA(int INDEX_Arrival, int INDEX_Start)//Armor->Armor
     {
         
         if (Equip_Armor_Item[INDEX_Arrival].Base_item == null)
@@ -102,11 +102,34 @@ public class Player_Data : ScriptableObject
         }
     }
 
-    public void Swap_Items_ItoA(int INDEX_Arrival, int INDEX_Start)//ETC-Armor
+    public void Swap_Items_ItoA(int INDEX_Arrival, int INDEX_Start)//ETC->Armor
     {
-        
-        if (Items[INDEX_Start].Base_item.Type == Type.Armor)
+        Equip_Item T = (Equip_Item)Items[INDEX_Start].Base_item; 
+
+        switch(INDEX_Arrival)
         {
+            case 0://투구
+                if (T.EST != Equip_Slot_Type.Helmet)
+                {
+                    return;
+                }
+                    break;
+            case 1://상의
+                if (T.EST != Equip_Slot_Type.Breastplate)
+                {
+                    
+                    return;
+                }
+                break;
+            case 2://글로브
+                if (T.EST != Equip_Slot_Type.Glove)
+                {
+                    return;
+                }
+                break;
+        }
+
+
             
             if (Equip_Armor_Item[INDEX_Arrival].Base_item == null)
             {
@@ -121,19 +144,21 @@ public class Player_Data : ScriptableObject
             }
             else
             {
+
                 
                 Item_Data temp = Equip_Armor_Item[INDEX_Arrival];
                 Equip_Armor_Item[INDEX_Arrival] = Items[INDEX_Start];
                 Items[INDEX_Start] = temp;
             }
-        }
-
         
+        
+
+
 
 
     }
 
-    public void Swap_Items_AtoI(int INDEX_Arrival, int INDEX_Start)//Armor-ETC
+    public void Swap_Items_AtoI(int INDEX_Arrival, int INDEX_Start)//Armor->ETC
     {
 
         if (Items[INDEX_Arrival].Base_item == null)

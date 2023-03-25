@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 531fe38a16cd49246abb5a6f6e55f99c, type: 3}
+  m_Name: "3\uBC88\uD22C\uAD6C"
+  m_EditorClassIdentifier: 
+  Item_Name: "\uAC15\uCCA0\uD22C\uAD6C"
+  Item_Index: 2102
+  Item_Icon: {fileID: 21300000, guid: b8512cdc5e11cbf4e90f15c7826243e0, type: 3}
+  exp: 
+  Value: 3000
+  Type: 0
+  EST: 1
+  Armor_Point: 200
+  HP_Point: 750
+  Attack_Point: 0
+  UP_Armor_Point: 30
+  UP_HP_Point: 0
+  UP_Attack_Point: 0

@@ -19,7 +19,7 @@ public class Vender_NPC: Normal_NPC
     {
         Function.Sell_Window.SetActive(false);
         Function.Buy_Window.SetActive(false);
-        _manager._Connect_NPC.Close_NPC();
+        _manager._Connect_Object.Close_NPC();
         _manager.Check_UI();
         UI.SetActive(false);
     }

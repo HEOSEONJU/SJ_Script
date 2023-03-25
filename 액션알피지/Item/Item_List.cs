@@ -10,10 +10,17 @@ public class Item_List : ScriptableObject
     public List<item> Items;
 
 
+    
+    public List<item> Add_Item;
+    
+    public List<item> Delete_Item;
+
+
 
     public item Search_item(int INDEX)//이진탐색
     {
-        if(INDEX== 0)
+        
+        if (INDEX== 0)
         {
             return null;
         }
@@ -55,7 +62,7 @@ public class Item_List : ScriptableObject
             return;
         }
         Items.Add(temp);
-        Sort_item();
+        
     }
     public void Delete_Old_item(item temp)//리스트에서 삭제시 리스트에 있는지 확인후 삭제
     {
@@ -65,7 +72,7 @@ public class Item_List : ScriptableObject
             return;
         }
         Items.Remove(temp);
-        Sort_item();
+        
 
     }
 }

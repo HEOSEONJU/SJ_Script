@@ -4,12 +4,12 @@ using UnityEngine;
 
 
 [CreateAssetMenu(menuName = "Item/Armor_Item")]
-public class Armor_Item : item
+public class Armor_Item : Equip_Item
 {
     //public List<string> Attack_List;
     //public GameObject WeaponPrefab;
-
     
+
     public int Armor_Point;
     
     public int HP_Point;

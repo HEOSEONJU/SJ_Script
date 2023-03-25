@@ -25,7 +25,7 @@ public class Normal_NPC : Base_NPC
 
     public override void Close_Window()
     {
-        _manager._Connect_NPC.Close_NPC();
+        _manager._Connect_Object.Close_NPC();
         _manager.Check_UI();
         UI.SetActive(false);
 

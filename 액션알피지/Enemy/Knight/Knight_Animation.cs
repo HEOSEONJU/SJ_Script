@@ -9,14 +9,13 @@ public class Knight_Animation : MonoBehaviour
 
     [SerializeField]
     Knight_Weapon Weapon_Collider;
-
+    [SerializeField]
     Knight_Enemy Manager;
 
-    private void Start()
+    public  void Init()
     {
-        _Animator = GetComponent<Animator>();
         Weapon_Collider = GetComponentInChildren<Knight_Weapon>();
-        Manager = GetComponent<Knight_Enemy>();
+        
         
     }
 

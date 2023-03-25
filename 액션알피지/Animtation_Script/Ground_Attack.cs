@@ -14,8 +14,21 @@ public class Ground_Attack : StateMachineBehaviour
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        Vector3 deltaPosition = animator.deltaPosition;
-        deltaPosition.y = Physics.gravity.y * Time.deltaTime;
+        //Vector3 deltaPosition = animator.deltaPosition;
+        //deltaPosition.y = Physics.gravity.y * Time.deltaTime;
+        Vector3 deltaPosition = PAC.deltaPosition / Time.deltaTime;
+
+        deltaPosition.y = 0;
+        PAC._Move.rb.velocity = deltaPosition;
+        if (PAC.manager.LockOnMode)
+        {
+            PAC.transform.LookAt(PAC.manager._Camera.CurrentLockonTarget);
+            Quaternion temp = PAC.transform.rotation;
+            temp.Set(0, temp.y, 0, temp.w);
+            PAC.transform.rotation = temp;
+
+        }
+
 
 
         //PAC._Move.rb.Move(deltaPosition); base.OnStateUpdate(animator, stateInfo, layerIndex);
