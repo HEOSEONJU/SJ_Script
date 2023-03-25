@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class Player_Weapon_Slot_Manager : MonoBehaviour
 {
-    public Player_Inventory Inventory;
+    
     
     public Weapon_Slot Main_Weapon;
     public Weapon_Slot Sub_Weapon;
     [SerializeField] Player_Animaotr_Controller _Attack_Animator;
-    public void Init(Player_Inventory Manager_Inventory)
+    public void Init()
     {
-        Inventory= Manager_Inventory;
+        
         Weapon_Slot[] weapon_Slot = GetComponentsInChildren<Weapon_Slot>();
 
         foreach (Weapon_Slot weaponHolderSlot in weapon_Slot)
@@ -25,7 +25,8 @@ public class Player_Weapon_Slot_Manager : MonoBehaviour
             else if (weaponHolderSlot.Right)
             {
                 Main_Weapon = weaponHolderSlot;
-                Main_Weapon.Init((Weapon_Item)Inventory.Main_Weapon.Slot_IN_Item.Base_item);
+                
+                Main_Weapon.Init((Weapon_Item)Game_Master.instance.Call_Player().Call_Data().Equip_Weapon_Item.Base_item);
 
 
 
@@ -35,7 +36,7 @@ public class Player_Weapon_Slot_Manager : MonoBehaviour
         }
 
 
-        if(Manager_Inventory.Main_Weapon != null)
+        if(Game_Master.instance.Call_Player().Call_Data().Equip_Weapon_Item.Base_item != null)
         {
             Change_Weapon_Prefab();
         }
@@ -45,15 +46,16 @@ public class Player_Weapon_Slot_Manager : MonoBehaviour
     public void Change_Weapon_Prefab()
     {
 
-        if (Inventory == null)
+        if (Game_Master.instance.Call_Player().Call_Data().Equip_Weapon_Item == null || Main_Weapon==null)
         {
             return;
         }
 
         
-        if(Inventory.Main_Weapon.Slot_IN_Item.Base_item!=null)
+        if(Game_Master.instance.Call_Player().Call_Data().Equip_Weapon_Item!=null)
         {
-            Weapon_Item temp = (Weapon_Item)Inventory.Main_Weapon.Slot_IN_Item.Base_item;
+            Weapon_Item temp = (Weapon_Item)Game_Master.instance.Call_Player().Call_Data().Equip_Weapon_Item.Base_item;
+            
             Main_Weapon.Change_Weapon(temp);
             _Attack_Animator.Change_Weapon_Type(temp.Attack_List, temp.Air_Attack_List);
         }

@@ -36,16 +36,18 @@ public class Player_Foot_IK : MonoBehaviour
             Ray ray = new Ray(_animator.GetIKPosition(AvatarIKGoal.LeftFoot)+Vector3.up,Vector3.down);
             if(Physics.Raycast(ray,out hit,DistanceToGround+1f,GroundLayer))
             {
+                
                 Vector3 footPosition = hit.point;
                 footPosition.y += DistanceToGround;
                 _animator.SetIKPosition(AvatarIKGoal.LeftFoot, footPosition);
                 
             }
 
-
+            
             ray = new Ray(_animator.GetIKPosition(AvatarIKGoal.RightFoot) + Vector3.up, Vector3.down);
             if (Physics.Raycast(ray, out hit, DistanceToGround + 1f, GroundLayer))
             {
+                
                 Vector3 footPosition = hit.point;
                 footPosition.y += DistanceToGround;
                 _animator.SetIKPosition(AvatarIKGoal.RightFoot, footPosition);

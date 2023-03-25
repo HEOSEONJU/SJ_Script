@@ -1,9 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 public class Knight_AI : MonoBehaviour
 {
+    [SerializeField]
     Knight_Enemy _Knight_Enemy;
 
     public Rigidbody _Rigidbody;
@@ -11,14 +13,12 @@ public class Knight_AI : MonoBehaviour
     float DirectionRadius = 5;
     [SerializeField]
     float Detect_MaxAngle = 50;
-    [SerializeField]
-    float Detect_MinAngle = -50;
+    
 
 
     [SerializeField]
     float Attack_MaxAngle = 30;
-    [SerializeField]
-    float Attack_MinAngle = -30;
+    
     [SerializeField]
     LayerMask DetectLayer;
     [SerializeField]
@@ -28,6 +28,8 @@ public class Knight_AI : MonoBehaviour
     public NavMeshAgent Agent;
     [SerializeField]
     float MinDistance;
+    [SerializeField]
+    float MaxDistance;
     public Transform Current_Player;
     public float Distance_Currennt_Player;
 
@@ -37,68 +39,61 @@ public class Knight_AI : MonoBehaviour
     [SerializeField]
     float AttackDelay = 0;
 
-    private void Start()
+    public  void Init()
     {
-        _Knight_Enemy = GetComponent<Knight_Enemy>();
-        _Rigidbody = GetComponent<Rigidbody>();
-        Agent = GetComponentInChildren<NavMeshAgent>();
+        
         Agent.speed = _Knight_Enemy.Move_Speed;
 
     }
 
 
-    public void Detection()
+    public bool Detection()
     {
+        
         Collider[] colliders = Physics.OverlapSphere(transform.position, DirectionRadius, DetectLayer);
-
-        for (int i = 0; i < colliders.Length; i++)
+        Collider PM = Array.Find(colliders, x => x.GetComponent<Player_Manager>());
+        if (PM!=null)
         {
-
-            Player_Manager temp = colliders[i].transform.GetComponent<Player_Manager>();
-            if (temp != null)
+            
+            Vector3 TargetDirection = PM.transform.position - transform.position;
+            float Angle = Vector3.Angle(TargetDirection, transform.forward);
+            
+            if (Angle < Detect_MaxAngle)
             {
-
-                Vector3 TargetDirection = temp.transform.position - transform.position;
-                float Angle = Vector3.Angle(TargetDirection, transform.forward);
-
-
-                if (Angle > Detect_MinAngle && Angle < Detect_MaxAngle)
-                {
-                    Current_Player = temp.transform;
-                }
+                
+                Current_Player = PM.gameObject.transform;
+                return true;
             }
         }
-
+        Current_Player = null;
+        return false;
     }
 
-    public void Move_Target()
+    public bool Move_Target(Animator _Animator)
     {
         Vector3 Dir = Current_Player.position - transform.position;
         Distance_Currennt_Player = Vector3.Distance(Current_Player.position, transform.position);
-        float Angle = Vector3.Angle(Dir, transform.forward);
-
-        switch (_Knight_Enemy.IsInteracting)
+        if(Distance_Currennt_Player> MaxDistance)
         {
-            case true:
-                _Knight_Enemy.Knight_Animator._Animator.SetFloat("Vertical", 0, 0.1f, Time.deltaTime);
-                Agent.enabled = false;
-                break;
-            case false:
-                if (Current_Player != null)
-                {
-                    if (Distance_Currennt_Player > MinDistance)
-                    {
-                        _Knight_Enemy.Knight_Animator._Animator.SetFloat("Vertical", 1, 0.1f, Time.deltaTime);
-                    }
-                    else
-                    {
-                        Agent.velocity = Vector3.zero;
-                        Attack_Think();
-                    }
-                }
-                break;
+            _Animator.SetFloat("Attack_Range", 0);
+            Current_Player = null;
+            return false;
         }
+
+
+        _Animator.SetFloat("Attack_Range", Distance_Currennt_Player);
+        
+        _Knight_Enemy.Knight_Animator._Animator.SetFloat("Vertical", 1, 0.1f, Time.deltaTime);
         Rotate_Target();
+        Agent.transform.localPosition = Vector3.zero;
+        Agent.transform.localRotation = Quaternion.identity;
+        return true;
+    }
+    public void Move_OFF()
+    {
+        _Knight_Enemy.Knight_Animator._Animator.SetFloat("Vertical", 0, 0.1f, Time.deltaTime);
+        Agent.velocity = Vector3.zero;
+        Agent.enabled = false;
         Agent.transform.localPosition = Vector3.zero;
         Agent.transform.localRotation = Quaternion.identity;
     }
@@ -125,11 +120,11 @@ public class Knight_AI : MonoBehaviour
     }
 
 
-    public void Attack_Think()
+    public bool Attack_Think()
     {
-        if (_Knight_Enemy.IsInteracting || AttackDelay > 0)
+        if (AttackDelay > 0)
         {
-            return;
+            return false;
         }
         switch(Attack_Angle())
         {
@@ -146,15 +141,16 @@ public class Knight_AI : MonoBehaviour
                 Quaternion TargetRotation = Quaternion.LookRotation(Dir);
                 transform.rotation = TargetRotation;
 
-                int temp = Random.Range(0, AttackList.Count);
+                int temp = UnityEngine.Random.Range(0, AttackList.Count);
 
                 string AttackOrder = AttackList[temp];
 
                 _Knight_Enemy.Knight_Animator.PlayerTargetAnimation(AttackOrder, true);
                 AttackDelay += 5;
-                break;
+                return true;
+                
         }
-
+        return false;
     }
 
     public bool Attack_Angle()
@@ -164,7 +160,7 @@ public class Knight_AI : MonoBehaviour
         float Angle = Vector3.Angle(TargetDirection, transform.forward);
 
 
-        if (Angle > Attack_MinAngle && Angle < Attack_MaxAngle)
+        if (Angle < Attack_MaxAngle)
         {
             return true;
         }

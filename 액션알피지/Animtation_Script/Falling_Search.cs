@@ -13,30 +13,25 @@ public class Falling_Search : StateMachineBehaviour
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (animator.GetBool("IsInteracting"))
+        
+        if (!PAC.manager.IsGround && animator.GetFloat("Flight_Timer") > 0.1f)
         {
+
+
+
+            animator.CrossFade("Falling", 0f);
+
             return;
         }
         if (!PAC.manager.IsGround)
         {
             animator.SetFloat("Flight_Timer", animator.GetFloat("Flight_Timer") + Time.deltaTime);
             //Debug.Log("ÀÛµ¿");
+        }
+        
+        
 
 
-        }
-        else
-        {
-            
-        }
 
-        if(!PAC.manager.IsGround && animator.GetFloat("Flight_Timer") > 0.1f) 
-        {
-            
-            
-            
-            animator.CrossFade("Falling", 0f);
-            
-            return;
-        }
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class Player_Move : MonoBehaviour
 {
@@ -89,9 +90,15 @@ public class Player_Move : MonoBehaviour
         Power = Mathf.Clamp(Power, 0, 1);
 
         MoveDir = Player_Camera.transform.forward * _Input.Vertical;
+        
+        
         MoveDir += Player_Camera.transform.right * _Input.Horizontal;
-        MoveDir.Normalize();
+
+        //MoveDir = this.transform.TransformDirection(Player_Camera.transform.GetChild(0).forward * _Input.Vertical);
+        //MoveDir += this.transform.TransformDirection(Player_Camera.transform.GetChild(0).right *-1f * _Input.Horizontal);
         MoveDir.y = 0;
+        //MoveDir.Normalize();
+        //MoveDir.y = 0;
     }
 
     public void CharRotate(float delta)
@@ -116,15 +123,15 @@ public class Player_Move : MonoBehaviour
 
 
 
-        Vector3 targetDir = Vector3.zero;
+        Vector3 targetDir = MoveDir;
         float moveOverrride = _Input.MoveAmount;
 
-        targetDir = Player_Camera.forward * _Input.Vertical;
-        targetDir += Player_Camera.right * _Input.Horizontal;
+        //targetDir = Player_Camera.forward * _Input.Vertical;
+        //targetDir += Player_Camera.right * _Input.Horizontal;
 
 
-        targetDir.Normalize();
-        targetDir.y = 0;
+        //targetDir.Normalize();
+        //targetDir.y = 0;
         if (targetDir == Vector3.zero)
         {
             targetDir = transform.forward;
@@ -157,14 +164,18 @@ public class Player_Move : MonoBehaviour
 
         transform.rotation = targetRotation;
     }
+    [SerializeField]
+    float V_value;
     public void GroundMove()
     {
         //Debug.Log("지상");
 
-        Vector3 T = new Vector3(MoveDir.x, 0, MoveDir.z)*CurrentSpeed;
-        T.y = rb.velocity.y;
+        Vector3 T = new Vector3(MoveDir.x, 0, MoveDir.z).normalized*CurrentSpeed;
+        //Vector3 tRelativeVelocity = this.transform.TransformDirection(MoveDir);
+        //rb.velocity = tRelativeVelocity;
+        T.y = 0;
         rb.velocity = T;
-
+        V_value = new Vector3(rb.velocity.x,0, rb.velocity.z).magnitude;
         return;
         #region 구 코드
         projectVeclocity = Vector3.ProjectOnPlane(MoveDir, Normal_Vec).normalized * CurrentSpeed;
@@ -229,7 +240,11 @@ public class Player_Move : MonoBehaviour
     {
         //Debug.Log("상승");
 
-        rb.AddForce(Vector3.up * Jump_Height, ForceMode.Impulse);
+        Vector3 T = rb.velocity;
+        T.x = transform.forward.x * AirSpeed * Power;
+        T.z = transform.forward.z * AirSpeed * Power;
+        T.y = Jump_Height;
+        rb.velocity = T;
         //rb.AddForce(T * Time.deltaTime, ForceMode.Force);
     }
     public void Jumping_Move()
@@ -258,25 +273,31 @@ public class Player_Move : MonoBehaviour
         Vector3 T;
         T = rb.velocity;
         Ray ray = new Ray(transform.position, Vector3.down);
-        Debug.Log("추락");
+        //Debug.Log("추락");
         T.y += Physics.gravity.y * Time.deltaTime;
+        T.y = Mathf.Clamp(T.y, -53, 0);
         if (Physics.SphereCast(ray, 0.2f, out RaycastHit hitInfo, (1.8f / 2f) + 0.2f))//원형미끌어짐생성
         {
-            //Debug.Log(Vector3.Angle(Vector3.down, hitInfo.normal)); 충돌각
-            T.x += hitInfo.normal.x * 3;
-            T.z += hitInfo.normal.z * 3;
+            //Debug.Log(Vector3.Angle(Vector3.down, hitInfo.normal)); //충돌각
+            if (Vector3.Angle(Vector3.down, hitInfo.normal) < 135) //135도이상이 나오면 걸어서올라갈수있는각도값일때 나옴 미끌어질필요없음
+            {
+                T.x += hitInfo.normal.x;
+                T.z += hitInfo.normal.z;
+                rb.velocity = T;
+                return;
+            }
+
         }
-        else
-        {
+        
             T.x = transform.forward.x * AirSpeed * Power;
             T.z = transform.forward.z * AirSpeed * Power;
-        }
+        
+
         rb.velocity = T;
         return;
-        
-        
+
         //rb.AddForce(Vector3.down, ForceMode.Force);
-        
+
         #region 구코드
         if (!manager.IsGround && !manager.IsInteracting)
         {

@@ -37,11 +37,13 @@ public class Weapon_Slot : MonoBehaviour
     }
     public void Change_Weapon(Weapon_Item temp)
     {
+        
         if(Current_Weapon !=null)
         {
+            
             Destroy(Current_Weapon);
         }
-
+        
         if (temp != null)
         {
             Current_Weapon = Instantiate(temp.WeaponPrefab, HandPosition);

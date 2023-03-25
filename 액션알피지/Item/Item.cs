@@ -22,5 +22,6 @@ public class item:ScriptableObject
 
 public enum Type
 {
-    Weapon, Armor, Use
+    Equip,
+    Use
 }

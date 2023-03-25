@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 
 public class Player_Inventory : MonoBehaviour
 {
@@ -12,21 +13,23 @@ public class Player_Inventory : MonoBehaviour
     Player_Manager _Manager;
     public Equip_Weapon Main_Weapon;
     public List<Equip_Armor> Equip_Armors;
-    public List<Slot> Item_List;
+    public List<Inventory_Slot> Item_List;
 
     int Max_Inventroy_Count = 20;
-    int Inventroy_Count;
-    
+    public int Inventroy_Count 
+    { 
+        get { return _Counter_Inventory(); } 
+    }
 
     //public int Gold = 0;
 
-    
+
 
     public GameObject Inventory_Object;
     public GameObject Equip_Object;
     public Transform Slot_Parent;
 
-    UI_Manager UI;
+    public UI_Manager UI;
     //public List<Slot> Equip_Item_Image;
     //public List<Slot> Inventory_Item_Image;
 
@@ -34,8 +37,8 @@ public class Player_Inventory : MonoBehaviour
 
 
 
-    public bool Inventory_Open = false;
-    public bool Equip_Open = false;
+    //public bool Inventory_Open = false;
+    //public bool Equip_Open = false;
 
     public void Init(Player_Manager player_Manager, Player_Data Data)
     {
@@ -50,7 +53,7 @@ public class Player_Inventory : MonoBehaviour
         Main_Weapon = Equip_Object.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<Equip_Weapon>();
         if(Data.Equip_Weapon_Item.Base_item!=null)
         {
-            Main_Weapon.Init_Slot_item(Data.Equip_Weapon_Item);   
+            Main_Weapon.Init_Slot_item();   
         }
 
         for (i = 1; i < 4; i++)
@@ -59,20 +62,20 @@ public class Player_Inventory : MonoBehaviour
         }
         for (i = 0; i < Equip_Armors.Count; i++)
         {
-            Equip_Armors[i].Init_Slot_item(Data.Equip_Armor_Item[i],i);
+            Equip_Armors[i].Init_Slot_item(i);
         }
         for (i = 0; i < Max_Inventroy_Count; i++)
         {
-            Item_List.Add(Slot_Parent.GetChild(i).GetComponentInChildren<Slot>());
+            Item_List.Add(Slot_Parent.GetChild(i).GetComponentInChildren<Inventory_Slot>());
         }
         for (i = 0; i < Data.Items.Count; i++)
         {
-            Item_List[i].Insert_Slot_Item(Data.Items[i],i);
+            Item_List[i].Insert_Slot_Item(i);
         }
         
         Open_Close_Equip_Window(false);
         Inventory_Object.SetActive(false);
-        Inventory_Open = false;
+        //Inventory_Open = false;
         UI.Active_Windows(false);
         
         
@@ -108,41 +111,40 @@ public class Player_Inventory : MonoBehaviour
     public bool Get_Item(Item_Data temp)
     {
         
-        Debug.Log("2");
+        
         switch (temp.Base_item.Type)
         {
             case Type.Use:
-                for (int i = 0; i < Max_Inventroy_Count; i++)
+                foreach(Item_Data ID in _Manager.Call_Data().Items)
                 {
-                    if (_Manager.Call_Data().Items[i].INDEX== temp.Base_item.Item_Index)
+                    if (ID.INDEX == temp.Base_item.Item_Index)
                     {
-                        Use_Item Check = (Use_Item)_Manager.Call_Data().Items[i].Base_item;
-                        if (Check.Max_Count >= _Manager.Call_Data().Items[i].count + temp.count)
+                        Use_Item Check = (Use_Item)ID.Base_item;
+                        if (Check.Max_Count >= ID.count + temp.count)
                         {
-                            _Manager.Call_Data().Items[i].count += temp.count;
-                            Load_on_Data(_Manager.Call_Data());
+                            ID.count += temp.count;//이미 가진 소비아이템 합칠 수 있으므로 갯수 증가
+                            Load_on_Data(_Manager.Call_Data());//인벤토리 갱신
+                            //_Manager.Save_On_FireBase();//얻은내역 업로드
                             return true;
                         }
                     }
                 }
+                
                 break;
         }
-        _Counter_Inventory();
+        
 
         if (Inventroy_Count >= 20)
         {
             return false;
         }
-
-        Debug.Log("3");
-        for (int i = 0; i < Max_Inventroy_Count; i++)
+        foreach (Item_Data ID in _Manager.Call_Data().Items)
         {
-            if (_Manager.Call_Data().Items[i].Base_item == null)
+            if (ID.Base_item == null)
             {
-                Debug.Log("4");
-
-                _Manager.Call_Data().Items[i].Insert_Data(temp);
-                Load_on_Data(_Manager.Call_Data());
+                ID.Insert_Data(temp);//Items에 새로운 데이터 삽입
+                Load_on_Data(_Manager.Call_Data());//인벤토리 갱신
+                //_Manager.Save_On_FireBase();//얻은내역 업로드
                 return true;
             }
         }
@@ -152,19 +154,17 @@ public class Player_Inventory : MonoBehaviour
 
     }
 
-
-    void _Counter_Inventory()
+    int _Counter_Inventory()
     {
         int temp = 0;
-        for (int i = 0; i < Max_Inventroy_Count; i++)
+        foreach(Item_Data ID in _Manager.Call_Data().Items)
         {
-            if (_Manager.Call_Data().Items[i].Base_item != null)
-                temp++;
-
+            if (ID.Base_item != null)   temp++;
         }
-        Debug.Log("Counter_Inven: " + temp);
-        Inventroy_Count = temp;
+        
+        return  temp;
     }
+    
 
 
 
@@ -184,7 +184,7 @@ public class Player_Inventory : MonoBehaviour
                 break;
         }
         
-        Equip_Open = State;
+        //Equip_Open = State;
         Equip_Object.SetActive(State);
     }
 
@@ -203,11 +203,11 @@ public class Player_Inventory : MonoBehaviour
                 break;
             default:
                 UI.Active_Windows(State);
-                _Manager.Data_Save(true);
+                
                 break;
         }
         Inventory_Object.SetActive(State);
-        Inventory_Open = State;
+        //Inventory_Open = State;
         //Renewal_Inventroy(_Manager.Call_Data());
     }
 
@@ -215,23 +215,19 @@ public class Player_Inventory : MonoBehaviour
 
     public void Load_on_Data(Player_Data Data)
     {
-        Main_Weapon.Init_Slot_item(Data.Equip_Weapon_Item);
+        
+        Main_Weapon.Init_Slot_item();
         for (int i = 0; i < Equip_Armors.Count; i++)
         {
-            Equip_Armors[i].Init_Slot_item(Data.Equip_Armor_Item[i],i);
+            Equip_Armors[i].Init_Slot_item(i);
 
         }
 
         for (int i = 0; i < Item_List.Count; i++)
         {
-            if (Data.Items[i].Base_item == null)
-            {
-                Item_List[i].Delete_Slot_Item();
-            }
-            else
-            {
-                Item_List[i].Insert_Slot_Item(Data.Items[i],i);
-            }
+            
+            Item_List[i].Insert_Slot_Item(i);
+            
         }
     }
     /*

@@ -25,7 +25,7 @@ public abstract class Enemy_Base_Status : MonoBehaviour
         ATK = Data.Attack;
         Live = true;
         Object_Postion = transform;
-        ID = Random.Range(1, 1000);
+        ID = gameObject.GetInstanceID();
     }
     public abstract void Drop(int Per);
     public abstract bool Damaged(float Damaged_Point,Transform Player, int Type = 0);//데미지량,플레이어위치,이펙트발생지점,공격타입

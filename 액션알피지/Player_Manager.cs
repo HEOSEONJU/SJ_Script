@@ -22,7 +22,7 @@ public class Player_Manager : MonoBehaviour
     Player_Animaotr_Controller _Attacker;
     public Player_Inventory _Manager_Inventory;
     public Player_Status _Status;
-    public Player_Connect_NPC _Connect_NPC;
+    public Player_Connect_Object _Connect_Object;
     public bool Infinity = false;
     public bool IsGround = false;
     public bool Jump = false;
@@ -58,7 +58,8 @@ public class Player_Manager : MonoBehaviour
     {
         Data=Load_Data;
         Game_Master.instance.Load_Player(this);
-        ColliderList=new List<GameObject>();
+        Game_Master.instance.Load_UI(_UI);
+        ColliderList =new List<GameObject>();
         _Camera = Player_Camera.instance;
         _Camera.Init(transform);
         _Input = GetComponent<Player_Input>();
@@ -71,14 +72,14 @@ public class Player_Manager : MonoBehaviour
         _WeaponSlotManager = GetComponent<Player_Weapon_Slot_Manager>();
 
         _Manager_Inventory = gameObject.GetComponent<Player_Inventory>();
-        _UI.Init(this);
-        Game_Master.instance.Load_UI(_UI);
+        _UI.Init();
+        
         _Manager_Inventory.Init(this, Data);
-        _WeaponSlotManager.Init(_Manager_Inventory);
+        _WeaponSlotManager.Init();
         _Status = GetComponent<Player_Status>();
         _Status.init();
-        _Connect_NPC = GetComponentInChildren<Player_Connect_NPC>();
-        _Connect_NPC.Init(this);
+        _Connect_Object = GetComponentInChildren<Player_Connect_Object>();
+        _Connect_Object.Init(this);
         State = true;
     }
 
@@ -119,27 +120,16 @@ public class Player_Manager : MonoBehaviour
         {
             return;
         }
-        float delta = Time.deltaTime;
 
         CC_VELOCITY = _Move.rb.velocity;
         _Move.CalDir();
         //Ground_Check();
         _Move.Jump_Function();
+        _Animator.UpdataAnimation(_Input.Vertical, _Input.Horizontal, SprintState);
         switch (State)
         {
             case true:
-                
-                
-                //_Move.Falling();
 
-
-
-
-                //_Move.CharRotate(delta);
-                //_Move.Jump_Function();
-
-                _Animator.UpdataAnimation(_Input.Vertical, _Input.Horizontal, SprintState);
-                
                 break;
         }
 
@@ -216,7 +206,7 @@ public class Player_Manager : MonoBehaviour
     public void Check_UI()
     {
 
-        if (_Manager_Inventory.Inventory_Open || _Manager_Inventory.Equip_Open)
+        if (_Manager_Inventory.Inventory_Object.activeSelf || _Manager_Inventory.Equip_Object.activeSelf)
         {
             Open_UI = true;
             return;
@@ -237,7 +227,7 @@ public class Player_Manager : MonoBehaviour
 
     public void Open_Close_Inventory_Self()
     {
-        if (_Connect_NPC.Connecting_Check())
+        if (_Connect_Object.Connecting_Check())
         {
             return;
         }
@@ -258,25 +248,25 @@ public class Player_Manager : MonoBehaviour
 
     #region NPC접촉
 
-    public void Connect_NPC_Function()
+    public void Connect_Object_Function()
     {
-        if (!_Connect_NPC.Connect())
+        if (!_Connect_Object.Connect())
         {
             return;
 
         }
-        if (_Connect_NPC.Connecting_Check())
+        if (_Connect_Object.Connecting_Check())
         {
-            _Connect_NPC.DisConnect_NPC();
+            _Connect_Object.DisConnect_Object();
             _Manager_Inventory.Open_Close_Inventory_Window(false);
             Check_UI();
             return;
         }
 
 
-        _Connect_NPC.Connect_NPC();
+        _Connect_Object.Connect_IF_Function();
         _Manager_Inventory.Open_Close_Inventory_Window(true);
-        if (_Manager_Inventory.Equip_Open)
+        if (_Manager_Inventory.Equip_Object.activeSelf)//장비창이 켜져있엇다면 장비창 오프
         {
             _Manager_Inventory.Open_Close_Equip_Window(false);
         }
@@ -394,73 +384,16 @@ public class Player_Manager : MonoBehaviour
     #endregion
 
     #region 데이터관련
-    public void Load_On_FireBase()
-    {
-        FireBase_M.Load();
-    }
 
     public void Save_On_FireBase()
     {
         FireBase_M.save();
     }
-    public void Data_Load()//플레이어데이터에있는내용을 인벤토리로 옮기는과정//인벤토리닫아서 바뀐슬롯위치 사용한아이템 저장
-    {
-        _Manager_Inventory.Main_Weapon.Slot_IN_Item = Data.Equip_Weapon_Item;
-        for (int i = 0; i < Data.Equip_Armor_Item.Count; i++)
-        {
-            _Manager_Inventory.Equip_Armors[i].Slot_IN_Item = Data.Equip_Armor_Item[i];
-        }
-
-        for (int i = 0; i < Data.Items.Count; i++)
-        {
-            _Manager_Inventory.Item_List[i].Slot_IN_Item = Data.Items[i];
-        }
-    }
+    
 
     public void Data_Save(bool T)//인벤토리내용을 플레이어데이터로옮기는과정 인벤토리열때 작동
     {
-        if (_Manager_Inventory.Main_Weapon != null)
-        {
-            Data.Equip_Weapon_Item = _Manager_Inventory.Main_Weapon.Slot_IN_Item;
-            
-        }
-        else
-        {
-            Data.Equip_Weapon_Item = null;
-            
-        }
-
-        for (int i = 0; i < Data.Equip_Armor_Item.Count; i++)
-        {
-            if (_Manager_Inventory.Equip_Armors[i].Slot_IN_Item != null)
-            {
-                Data.Equip_Armor_Item[i] = _Manager_Inventory.Equip_Armors[i].Slot_IN_Item;
-            }
-            else
-            {
-                Data.Equip_Armor_Item[i] = null;
-            }
-
-
-        }
-
-        for (int i = 0; i < Data.Items.Count; i++)
-        {
-            if (_Manager_Inventory.Item_List[i].Slot_IN_Item != null)
-            {
-
-                        Data.Items[i] = _Manager_Inventory.Item_List[i].Slot_IN_Item;
-                
-                
-                
-            }
-            else
-            {
-                Data.Items[i] = null;
-            }
-
-
-        }
+        
         if(T)
         Save_On_FireBase();
     }
@@ -485,14 +418,14 @@ public class Player_Manager : MonoBehaviour
     {
         
         Vector3 RaycastOrigin = transform.position;
-        RaycastOrigin.y += 0.9f;
+        RaycastOrigin.y += 1f;
         Vector3 Last_Posi= transform.position;
         
-        if (Physics.SphereCast(RaycastOrigin,0.2f, Vector3.down,out RaycastHit hit,1f, GroundLayer))
+        if (Physics.SphereCast(RaycastOrigin,0.2f, Vector3.down,out RaycastHit hit,1.1f, GroundLayer))
         {
             
             Vector3 Temp = hit.point;
-            Last_Posi.y = Temp.y+0.05f;
+            Last_Posi.y = Temp.y;
             transform.position = Last_Posi;
             
             IsGround = true;

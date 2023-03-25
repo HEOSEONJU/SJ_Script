@@ -53,7 +53,7 @@ public class Player_Input : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.E))
         {
-            manager.Connect_NPC_Function();
+            manager.Connect_Object_Function();
         }
         // Input.GetMouseButtonDown(0)  Input.GetMouseButtonDown(1)
         // Input.GetKeyDown(KeyCode.E)

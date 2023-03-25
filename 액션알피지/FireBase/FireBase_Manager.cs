@@ -11,6 +11,7 @@ using UnityEngine.UI;
 using static UnityEngine.Rendering.DebugUI;
 using System.Reflection;
 using static UnityEngine.UI.CanvasScaler;
+using System.Linq;
 
 //using System.Threading.Tasks;
 //using System.Threading;
@@ -71,8 +72,18 @@ public class FireBase_Manager:MonoBehaviour
         string Pass = "12as12";
         Init();
         Login(ID, Pass);
-        
 
+        while(item_List_Ojbect.Add_Item.Count>0)
+        {
+            item_List_Ojbect.Insert_New_Item(item_List_Ojbect.Add_Item.First());
+            item_List_Ojbect.Add_Item.Remove(item_List_Ojbect.Add_Item.First());
+        }
+        while (item_List_Ojbect.Delete_Item.Count > 0)
+        {
+            item_List_Ojbect.Delete_Old_item(item_List_Ojbect.Delete_Item.First());
+            item_List_Ojbect.Delete_Item.Remove(item_List_Ojbect.Delete_Item.First());
+        }
+        item_List_Ojbect.Sort_item();
 
     }
 
@@ -93,6 +104,30 @@ public class FireBase_Manager:MonoBehaviour
 
     public void save()
     {
+
+
+        if (Data.Equip_Weapon_Item.Base_item != null)
+            Data.Equip_Weapon_Item.INDEX = Data.Equip_Weapon_Item.Base_item.Item_Index;
+        else
+            Data.Equip_Weapon_Item.INDEX = 0;
+
+        foreach (Item_Data T in Data.Equip_Armor_Item)
+        {
+            if (T.Base_item != null)
+                T.INDEX = T.Base_item.Item_Index;
+            else
+                T.INDEX = 0;
+        }
+        foreach (Item_Data T in Data.Items)
+        {
+            if (T.Base_item != null)
+            {
+                T.INDEX = T.Base_item.Item_Index;
+                
+            }
+            else
+                T.INDEX = 0;
+        }
         string json =JsonUtility.ToJson(Data);
         Fire_DataBase.Child("Users").Child(LoginID).SetRawJsonValueAsync(json);
 
