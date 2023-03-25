@@ -21,7 +21,7 @@ public class EnemyMove : MonoBehaviour
 
 
 
-    public virtual void Cla_Dis()
+    public virtual void Cal_Dis()
     {
         return;
     }
@@ -45,7 +45,7 @@ public class EnemyMove : MonoBehaviour
     {
         return false;
     }
-    public virtual void CannonShot()
+    public virtual void Attack_Order()
     {
 
     }

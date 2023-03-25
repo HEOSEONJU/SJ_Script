@@ -95,7 +95,7 @@ public class EnemyOldTankMove : EnemyMove
 
 
     }
-    public override void Cla_Dis()
+    public override void Cal_Dis()
     {
         if (_Manager.Target == null)
         {
@@ -105,7 +105,7 @@ public class EnemyOldTankMove : EnemyMove
 
         Distance_value = Vector3.Distance(_Manager.Target.position, transform.position);
     }
-    public override void CannonShot()
+    public override void Attack_Order()
     {
         
         //FireCannon();

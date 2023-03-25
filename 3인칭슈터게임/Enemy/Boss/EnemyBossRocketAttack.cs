@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.ParticleSystem;
 
 public class EnemyBossRocketAttack : MonoBehaviour
 {
@@ -19,10 +20,8 @@ public class EnemyBossRocketAttack : MonoBehaviour
         {
             list.Add(RocketParent.transform.GetChild(i).gameObject);
         }
-        for (int i = 0; i < list.Count; i++)
-        {
-            list[i].transform.parent = null;
-        }
+        RocketParent.transform.parent = null;
+        
         Stop = false;
 
         StartFire = false;
@@ -59,36 +58,31 @@ public class EnemyBossRocketAttack : MonoBehaviour
     IEnumerator AttackFunction()
     {
 
-        if (count >= list.Count || Stop == true)
+        while (count < list.Count)
         {
-            
-            float Delay = 7.5f;
-            
-            
-            
-            yield return new WaitForSeconds(Delay);
-            count = 0;
-            StartFire = false;
-        }
-        else
-        {
-            
-            Vector3 Sp=StartPoint[StartCount].position;
-            
-
-
-            list[count].GetComponent<EnemyBossEXP>().FireBullet(Targeting, Sp);
-            
-            yield return new WaitForSeconds(1.0f);
-            StartCount++;
-            if(StartCount>=3)
+            if (Stop) break;
+            Vector3 Sp = StartPoint[StartCount++].position;
+            if (StartCount >= StartPoint.Count)
             {
                 StartCount = 0;
             }
 
-            count += 1;
-            StartCoroutine(AttackFunction());
+
+            list[count++].GetComponent<EnemyBossEXP>().FireBullet(Targeting, Sp);
+
+            yield return new WaitForSeconds(1.0f);
+            
+            
         }
+        Stop = false;
+        count = 0;
+        yield return new WaitForSeconds(7.5f);
+        StartFire = false;
+
+    }
+    private void OnDisable()
+    {
+        Destroy(RocketParent);
     }
 
 }

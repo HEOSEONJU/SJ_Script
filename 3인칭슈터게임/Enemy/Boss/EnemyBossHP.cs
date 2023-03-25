@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class EnemyBossHP : EnemyHp
 {
+    [SerializeField]
+    Boss_Manager _Manager;
 
     public List<GameObject> Shield;
     public ParticleSystem DieEff;
@@ -18,25 +20,20 @@ public class EnemyBossHP : EnemyHp
     public int MAXShield;
     public bool ShieldCheck;
     public int Regentime = 15;
+    [SerializeField]
     Rigidbody R;
     public int MAXHP=20000;
-    public void Awake()
-    {
-        R = GetComponent<Rigidbody>();
-        Live = true;
-        hp = 20000;
-        ShieldPoint = MAXShield = 1000;
-        //Ani = transform.GetChild(0).transform.GetChild(3).GetComponent<Animation>();
-        //DieEff = transform.GetChild(0).transform.GetChild(4).GetComponent<ParticleSystem>();
-        
-        ShieldCheck = true;
-    }
+    
 
 
 
     private void Start()
     {
         InstID();
+        Live = true;
+        hp = 20000;
+        ShieldPoint = MAXShield = 1000;
+        ShieldCheck = true;
     }
 
     
@@ -76,8 +73,7 @@ public class EnemyBossHP : EnemyHp
         {
             hp -= Da;
         }
-        //Move.SetTargeting(GameManager.instance.Char_Player_Trace.transform);
-        //Move.LockOnTarget();
+        
         if (hp <= 0 & Live == true)
         {
             
@@ -89,19 +85,21 @@ public class EnemyBossHP : EnemyHp
 
     public void  BrokeShield()
     {
+        _Manager.SHB();
         
-        ShieldDestroy.Play();
-        for (int i = 0; i < Shield.Count; i++)
+
+        foreach(GameObject GO in Shield)
         {
-            Shield[i].SetActive(false);
+            GO.SetActive(false);
         }
+        
         
         ShieldCheck = false;
         transform.GetChild(0).GetComponent<EnemyBossBulletAttack>().StopAttack();
         transform.GetChild(0).GetComponent<EnemyBossRocketAttack>().StopAttack();
 
 
-        Move.OverHeat();
+        
         
         
     }
@@ -110,9 +108,9 @@ public class EnemyBossHP : EnemyHp
         if (Live == true)
         {
             ShieldCheck = true;
-            for (int i = 0; i < Shield.Count; i++)
+            foreach (GameObject GO in Shield)
             {
-                Shield[i].SetActive(true);
+                GO.SetActive(true);
             }
             if (MAXShield <= 2500)
             {
