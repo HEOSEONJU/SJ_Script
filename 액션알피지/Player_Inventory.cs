@@ -1,16 +1,11 @@
 
-
-
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 
 public class Player_Inventory : MonoBehaviour
 {
     [SerializeField]
-    Player_Manager _Manager;
+    
     public Equip_Weapon Main_Weapon;
     public List<Equip_Armor> Equip_Armors;
     public List<Inventory_Slot> Item_List;
@@ -29,7 +24,7 @@ public class Player_Inventory : MonoBehaviour
     public GameObject Equip_Object;
     public Transform Slot_Parent;
 
-    public UI_Manager UI;
+    
     //public List<Slot> Equip_Item_Image;
     //public List<Slot> Inventory_Item_Image;
 
@@ -40,18 +35,17 @@ public class Player_Inventory : MonoBehaviour
     //public bool Inventory_Open = false;
     //public bool Equip_Open = false;
 
-    public void Init(Player_Manager player_Manager, Player_Data Data)
+    public void Init()
     {
-        _Manager = player_Manager;
-        UI = player_Manager._UI;
+        
         //Gold = Data.Gold;
         int i;
-        Inventory_Object= UI.transform.GetChild(0).gameObject;
-        Equip_Object = UI.transform.GetChild(1).gameObject;
+        Inventory_Object= Game_Master.instance.UI.transform.GetChild(0).gameObject;
+        Equip_Object = Game_Master.instance.UI.transform.GetChild(1).gameObject;
         Slot_Parent = Inventory_Object.transform.GetChild(4);
         
         Main_Weapon = Equip_Object.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<Equip_Weapon>();
-        if(Data.Equip_Weapon_Item.Base_item!=null)
+        if(Game_Master.instance.PM.Data.Equip_Weapon_Item.Base_item!=null)
         {
             Main_Weapon.Init_Slot_item();   
         }
@@ -68,7 +62,7 @@ public class Player_Inventory : MonoBehaviour
         {
             Item_List.Add(Slot_Parent.GetChild(i).GetComponentInChildren<Inventory_Slot>());
         }
-        for (i = 0; i < Data.Items.Count; i++)
+        for (i = 0; i < Game_Master.instance.PM.Data.Items.Count; i++)
         {
             Item_List[i].Insert_Slot_Item(i);
         }
@@ -76,32 +70,24 @@ public class Player_Inventory : MonoBehaviour
         Open_Close_Equip_Window(false);
         Inventory_Object.SetActive(false);
         //Inventory_Open = false;
-        UI.Active_Windows(false);
+        Game_Master.instance.UI.Active_Windows(false);
         
         
 
     }
 
 
-    public int Current_Gold()
-    {
-        return _Manager.Call_Data().Gold;
-    }
 
 
-    public void Get_Money(int temp)
-    {
-        _Manager.Call_Data().Gold+=temp;        
-        
-    }
+    
 
 
     public bool Use_Money(int temp)
     {
         
-        if (temp <= _Manager.Call_Data().Gold)
+        if (temp <= Game_Master.instance.PM.Data.Current_Gold)
         {
-            _Manager.Call_Data().Gold -= temp;
+            Game_Master.instance.PM.Data.Current_Gold -= temp;
             return true;
         }
 
@@ -115,7 +101,7 @@ public class Player_Inventory : MonoBehaviour
         switch (temp.Base_item.Type)
         {
             case Type.Use:
-                foreach(Item_Data ID in _Manager.Call_Data().Items)
+                foreach(Item_Data ID in Game_Master.instance.PM.Data.Items)
                 {
                     if (ID.INDEX == temp.Base_item.Item_Index)
                     {
@@ -123,7 +109,7 @@ public class Player_Inventory : MonoBehaviour
                         if (Check.Max_Count >= ID.count + temp.count)
                         {
                             ID.count += temp.count;//이미 가진 소비아이템 합칠 수 있으므로 갯수 증가
-                            Load_on_Data(_Manager.Call_Data());//인벤토리 갱신
+                            Load_on_Data(Game_Master.instance.PM.Data);//인벤토리 갱신
                             //_Manager.Save_On_FireBase();//얻은내역 업로드
                             return true;
                         }
@@ -138,12 +124,12 @@ public class Player_Inventory : MonoBehaviour
         {
             return false;
         }
-        foreach (Item_Data ID in _Manager.Call_Data().Items)
+        foreach (Item_Data ID in Game_Master.instance.PM.Data.Items)
         {
             if (ID.Base_item == null)
             {
                 ID.Insert_Data(temp);//Items에 새로운 데이터 삽입
-                Load_on_Data(_Manager.Call_Data());//인벤토리 갱신
+                Load_on_Data(Game_Master.instance.PM.Data);//인벤토리 갱신
                 //_Manager.Save_On_FireBase();//얻은내역 업로드
                 return true;
             }
@@ -157,7 +143,7 @@ public class Player_Inventory : MonoBehaviour
     int _Counter_Inventory()
     {
         int temp = 0;
-        foreach(Item_Data ID in _Manager.Call_Data().Items)
+        foreach(Item_Data ID in Game_Master.instance.PM.Data.Items)
         {
             if (ID.Base_item != null)   temp++;
         }
@@ -177,14 +163,14 @@ public class Player_Inventory : MonoBehaviour
         switch(State)
         {
             case true:
-                UI.Reseting_Status();
+                Game_Master.instance.UI.Reseting_Status();
                 break;
             default:
-                UI.Active_Windows(false);
+                Game_Master.instance.UI.Active_Windows(false);
                 break;
         }
-        
-        //Equip_Open = State;
+
+        if(Equip_Object.activeSelf!=State)
         Equip_Object.SetActive(State);
     }
 
@@ -198,15 +184,17 @@ public class Player_Inventory : MonoBehaviour
         switch (State)
         {
             case true:
-                Load_on_Data(_Manager.Call_Data());
-                UI.Renewal_Gold_Text();
+                Load_on_Data(Game_Master.instance.PM.Data);
+                Game_Master.instance.UI.Renewal_Gold_Text();
                 break;
             default:
-                UI.Active_Windows(State);
+
+                Game_Master.instance.UI.Active_Windows(State);
                 
                 break;
         }
-        Inventory_Object.SetActive(State);
+        if (Inventory_Object.activeSelf != State)
+            Inventory_Object.SetActive(State);
         //Inventory_Open = State;
         //Renewal_Inventroy(_Manager.Call_Data());
     }

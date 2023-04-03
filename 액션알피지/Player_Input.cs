@@ -39,12 +39,17 @@ public class Player_Input : MonoBehaviour
         MoveAmount = Mathf.Abs(Horizontal) + Mathf.Abs(Vertical);
 
 
-
-        MouseX = Input.GetAxis("Mouse X");
-        MouseY = Input.GetAxis("Mouse Y");
-
-
-        if (Input.GetKeyDown(KeyCode.I))
+        if (manager._Connect_Object.IF)
+        {
+            MouseX = 0;
+            MouseY = 0;
+        }
+        else
+        {
+            MouseX = Input.GetAxis("Mouse X");
+            MouseY = Input.GetAxis("Mouse Y");
+        }
+            if (Input.GetKeyDown(KeyCode.I))
         {
             manager.Open_Close_Inventory_Self();
             
@@ -57,8 +62,11 @@ public class Player_Input : MonoBehaviour
         }
         // Input.GetMouseButtonDown(0)  Input.GetMouseButtonDown(1)
         // Input.GetKeyDown(KeyCode.E)
-        if (!manager.Return_Open_UI())
+        if (!manager._Connect_Object.IF)
         {
+            
+
+
             if (Input.GetMouseButtonDown(0))
             {
                 if (manager.IsGround)

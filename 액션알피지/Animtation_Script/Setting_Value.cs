@@ -17,10 +17,10 @@ public class Setting_Value : StateMachineBehaviour
         switch(TYPE)
         {
             case StateType.INT:
-                animator.SetInteger("Flight_Timer", Convert.ToInt32(Value));
+                animator.SetInteger(Key, Convert.ToInt32(Value));
                 break;
             case StateType.FLOAT:
-                animator.SetFloat("Flight_Timer", Value);
+                animator.SetFloat(Key, Value);
                 break;
         }
             }

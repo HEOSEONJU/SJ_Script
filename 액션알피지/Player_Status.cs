@@ -27,13 +27,32 @@ public class Player_Status : MonoBehaviour
     }
 
 
-    public void Heal(int T)
+    public bool Heal(int T)
     {
-        Current_HP += T;
-        if(Current_HP>MAX_HP)
+        if(Current_HP==MAX_HP)
+        {
+            return false;
+        }
+
+
+        else if(T==int.MaxValue)
         {
             Current_HP = MAX_HP;
+            Game_Master.instance.UI.View_Hp_text();
+            
+
         }
+        else
+        {
+            Current_HP += T;
+            if (Current_HP > MAX_HP)
+            {
+                Current_HP = MAX_HP;
+            }
+        }
+        
+        Game_Master.instance.UI.View_Hp_text();
+        return true;
     }
 
     public bool Damaged_HP(int T)//죽으면 트루반환
@@ -77,12 +96,12 @@ public class Player_Status : MonoBehaviour
         for (int i = 0; i < 3; i++)
         {
             
-            if (Game_Master.instance.Call_Player().Call_Data().Equip_Armor_Item[i].Base_item == null)
+            if (Game_Master.instance.PM.Data.Equip_Armor_Item[i].Base_item == null)
             {
                 continue;
             }
-            Armor_temp = (Armor_Item)Game_Master.instance.Call_Player().Call_Data().Equip_Armor_Item[i].Base_item;
-            Base += Armor_temp.HP_Point+(Game_Master.instance.Call_Player().Call_Data().Equip_Armor_Item[i].Upgrade*Armor_temp.UP_HP_Point);
+            Armor_temp = (Armor_Item)Game_Master.instance.PM.Data.Equip_Armor_Item[i].Base_item;
+            Base += Armor_temp.HP_Point+(Game_Master.instance.PM.Data.Equip_Armor_Item[i].Upgrade*Armor_temp.UP_HP_Point);
         }
         MAX_HP = Base;
 
@@ -98,21 +117,21 @@ public class Player_Status : MonoBehaviour
     public void Cal_ATK()
     {
         int Base = 0;
-        if(Game_Master.instance.Call_Player().Call_Data().Equip_Weapon_Item.Base_item!=null)
+        if(Game_Master.instance.PM.Data.Equip_Weapon_Item.Base_item!=null)
         {
-            Weapon_Item Weapon_temp = (Weapon_Item)Game_Master.instance.Call_Player().Call_Data().Equip_Weapon_Item.Base_item;
+            Weapon_Item Weapon_temp = (Weapon_Item)Game_Master.instance.PM.Data.Equip_Weapon_Item.Base_item;
 
-            Base+=Weapon_temp.Attack_Point+(Game_Master.instance.Call_Player().Call_Data().Equip_Weapon_Item.Upgrade* Weapon_temp.UP_Attack_Point);
+            Base+=Weapon_temp.Attack_Point+(Game_Master.instance.PM.Data.Equip_Weapon_Item.Upgrade* Weapon_temp.UP_Attack_Point);
         }
         Armor_Item Armor_temp;
         for (int i=0;i<3;i++)
         {
-            if(Game_Master.instance.Call_Player().Call_Data().Equip_Armor_Item[i].Base_item == null)
+            if(Game_Master.instance.PM.Data.Equip_Armor_Item[i].Base_item == null)
             {
                 continue;
             }
-            Armor_temp = (Armor_Item)Game_Master.instance.Call_Player().Call_Data().Equip_Armor_Item[i].Base_item;
-            Base += Armor_temp.Attack_Point+(Game_Master.instance.Call_Player().Call_Data().Equip_Armor_Item[i].Upgrade * Armor_temp.UP_Attack_Point);
+            Armor_temp = (Armor_Item)Game_Master.instance.PM.Data.Equip_Armor_Item[i].Base_item;
+            Base += Armor_temp.Attack_Point+(Game_Master.instance.PM.Data.Equip_Armor_Item[i].Upgrade * Armor_temp.UP_Attack_Point);
         }
         ATK_Point = Base;
 
@@ -123,34 +142,34 @@ public class Player_Status : MonoBehaviour
         Armor_Item Armor_temp;
         for (int i = 0; i < 3; i++)
         {
-            if (Game_Master.instance.Call_Player().Call_Data().Equip_Armor_Item[i].Base_item == null)
+            if (Game_Master.instance.PM.Data.Equip_Armor_Item[i].Base_item == null)
             {
                 continue;
             }
-            Armor_temp = (Armor_Item)Game_Master.instance.Call_Player().Call_Data().Equip_Armor_Item[i].Base_item;
-            Base += Armor_temp.Armor_Point + (Game_Master.instance.Call_Player().Call_Data().Equip_Armor_Item[i].Upgrade * Armor_temp.Armor_Point);
+            Armor_temp = (Armor_Item)Game_Master.instance.PM.Data.Equip_Armor_Item[i].Base_item;
+            Base += Armor_temp.Armor_Point + (Game_Master.instance.PM.Data.Equip_Armor_Item[i].Upgrade * Armor_temp.Armor_Point);
         }
         DEF_Point = Base;
     }
     public void Cal_CRP()
     {
         int Base = 5;
-        if (Game_Master.instance.Call_Player().Call_Data().Equip_Weapon_Item.Base_item != null)
+        if (Game_Master.instance.PM.Data.Equip_Weapon_Item.Base_item != null)
         {
-            Weapon_Item Weapon_temp = (Weapon_Item)Game_Master.instance.Call_Player().Call_Data().Equip_Weapon_Item.Base_item;
+            Weapon_Item Weapon_temp = (Weapon_Item)Game_Master.instance.PM.Data.Equip_Weapon_Item.Base_item;
 
-            Base += Weapon_temp.CRP + (Game_Master.instance.Call_Player().Call_Data().Equip_Weapon_Item.Upgrade * Weapon_temp.UP_CRP);
+            Base += Weapon_temp.CRP + (Game_Master.instance.PM.Data.Equip_Weapon_Item.Upgrade * Weapon_temp.UP_CRP);
         }
         CRP_Point = Base;
     }
     public void Cal_CRT()
     {
         int Base = 50;
-        if (Game_Master.instance.Call_Player().Call_Data().Equip_Weapon_Item.Base_item != null)
+        if (Game_Master.instance.PM.Data.Equip_Weapon_Item.Base_item != null)
         {
-            Weapon_Item Weapon_temp = (Weapon_Item)Game_Master.instance.Call_Player().Call_Data().Equip_Weapon_Item.Base_item;
+            Weapon_Item Weapon_temp = (Weapon_Item)Game_Master.instance.PM.Data.Equip_Weapon_Item.Base_item;
 
-            Base += Weapon_temp.CRT + (Game_Master.instance.Call_Player().Call_Data().Equip_Weapon_Item.Upgrade * Weapon_temp.UP_CRT);
+            Base += Weapon_temp.CRT + (Game_Master.instance.PM.Data.Equip_Weapon_Item.Upgrade * Weapon_temp.UP_CRT);
         }
         CRT_Point = Base;
     }

@@ -54,7 +54,7 @@ public class Inventory_Slot : Base_Slot, IBeginDragHandler, IDragHandler, IEndDr
     protected override void Image_Renewal()
     {
         //Slot_IN_Item = New_Slot;//새로운 아이템 받기
-        if (Game_Master.instance.Call_Player().Call_Data().Items[Slot_INDEX].Base_item==null)
+        if (Game_Master.instance.PM.Data.Items[Slot_INDEX].Base_item==null)
         {
             Image_Set(false);
         }
@@ -90,7 +90,7 @@ public class Inventory_Slot : Base_Slot, IBeginDragHandler, IDragHandler, IEndDr
         if (active)
         {
                 temp.a = 1;
-                Slot_Item_Image.sprite = Game_Master.instance.Call_Player().Call_Data().Items[Slot_INDEX].Base_item.Item_Icon;
+                Slot_Item_Image.sprite = Game_Master.instance.PM.Data.Items[Slot_INDEX].Base_item.Item_Icon;
         }
         else
             {
@@ -124,15 +124,15 @@ public class Inventory_Slot : Base_Slot, IBeginDragHandler, IDragHandler, IEndDr
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        transform.SetParent(Game_Master.instance.Call_UI().transform);
+        transform.SetParent(Game_Master.instance.UI.transform);
         transform.SetAsLastSibling();
         Canvas_Group.alpha = 0.6f;
         Canvas_Group.blocksRaycasts = false;
-        Game_Master.instance.Call_UI().Draging = true;
+        Game_Master.instance.UI.Draging = true;
     }
     public void OnDrag(PointerEventData eventData)
     {
-        if (Game_Master.instance.Call_Player().Call_Data().Items[Slot_INDEX].Base_item == null)
+        if (Game_Master.instance.PM.Data.Items[Slot_INDEX].Base_item == null)
         {
             return;
         }
@@ -141,7 +141,7 @@ public class Inventory_Slot : Base_Slot, IBeginDragHandler, IDragHandler, IEndDr
     }
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (transform.parent == Game_Master.instance.Call_UI().transform)
+        if (transform.parent == Game_Master.instance.UI.transform)
         {
             transform.SetParent(Slot_Position);
 
@@ -151,7 +151,7 @@ public class Inventory_Slot : Base_Slot, IBeginDragHandler, IDragHandler, IEndDr
 
         Canvas_Group.alpha = 1.0f;
         Canvas_Group.blocksRaycasts = true;
-        Game_Master.instance.Call_UI().Draging = false;
+        Game_Master.instance.UI.Draging = false;
     }
 
 
@@ -165,7 +165,7 @@ public class Inventory_Slot : Base_Slot, IBeginDragHandler, IDragHandler, IEndDr
 
             Debug.Log(temp.TYPE + "->"+ this.TYPE);
 
-            if (Game_Master.instance.Call_Player().Call_Data().Items[temp.Slot_INDEX].Base_item == null)
+            if (Game_Master.instance.PM.Data.Items[temp.Slot_INDEX].Base_item == null)
             {
                 return;
             }
@@ -175,20 +175,20 @@ public class Inventory_Slot : Base_Slot, IBeginDragHandler, IDragHandler, IEndDr
 
                 case Slot_Type.Weapon:
                     Equip_Slot_Type TW1 = this.GetComponent<Equip_Slot>().EST;
-                    Equip_Item TW = (Equip_Item)Game_Master.instance.Call_Player().Call_Data().Items[temp.Slot_INDEX].Base_item;
+                    Equip_Item TW = (Equip_Item)Game_Master.instance.PM.Data.Items[temp.Slot_INDEX].Base_item;
                     Equip_Slot_Type TW2 = TW.EST;
                     if (TW1 != TW2)//방어구에서도 다른계열 방어구
                     {
                         //Debug.Log("다른칸입니다");
                         return;
                     }
-                    Game_Master.instance.Call_Player().Call_Data().Swap_Items_ItoW(temp.Slot_INDEX);//Weapon-<ETC 
-                    Game_Master.instance.Call_Player()._WeaponSlotManager.Change_Weapon_Prefab();
+                    Game_Master.instance.PM.Data.Swap_Items_ItoW(temp.Slot_INDEX);//Weapon-<ETC 
+                    Game_Master.instance.PM._WeaponSlotManager.Change_Weapon_Prefab();
 
                     break;
                 case Slot_Type.Armor:
                     Equip_Slot_Type TA1 = this.GetComponent<Equip_Slot>().EST;
-                    Equip_Item TA = (Equip_Item)Game_Master.instance.Call_Player().Call_Data().Items[temp.Slot_INDEX].Base_item;
+                    Equip_Item TA = (Equip_Item)Game_Master.instance.PM.Data.Items[temp.Slot_INDEX].Base_item;
                     Equip_Slot_Type TA2 = TA.EST;
                     if(TA1!=TA2)//방어구에서도 다른계열 방어구
                     {
@@ -199,10 +199,10 @@ public class Inventory_Slot : Base_Slot, IBeginDragHandler, IDragHandler, IEndDr
                     switch (temp.TYPE)//출발슬롯
                     {
                         case Slot_Type.Armor:
-                            Game_Master.instance.Call_Player().Call_Data().Swap_Items_AtoA(this.Slot_INDEX, temp.Slot_INDEX);//Armor<-Armor
+                            Game_Master.instance.PM.Data.Swap_Items_AtoA(this.Slot_INDEX, temp.Slot_INDEX);//Armor<-Armor
                             break;
                         default:
-                            Game_Master.instance.Call_Player().Call_Data().Swap_Items_ItoA(this.Slot_INDEX, temp.Slot_INDEX);//Armor<-ETC
+                            Game_Master.instance.PM.Data.Swap_Items_ItoA(this.Slot_INDEX, temp.Slot_INDEX);//Armor<-ETC
                             break;
                     }
 
@@ -212,28 +212,28 @@ public class Inventory_Slot : Base_Slot, IBeginDragHandler, IDragHandler, IEndDr
                     switch (temp.TYPE)//출발슬롯
                     {
                         case Slot_Type.Weapon:
-                            Game_Master.instance.Call_Player().Call_Data().Swap_Items_WtoI(this.Slot_INDEX);//ETC<-Weapon
-                            Game_Master.instance.Call_Player()._WeaponSlotManager.Change_Weapon_Prefab();
+                            Game_Master.instance.PM.Data.Swap_Items_WtoI(this.Slot_INDEX);//ETC<-Weapon
+                            Game_Master.instance.PM._WeaponSlotManager.Change_Weapon_Prefab();
                             break;
                         case Slot_Type.Armor:
 
-                            Game_Master.instance.Call_Player().Call_Data().Swap_Items_AtoI(this.Slot_INDEX, temp.Slot_INDEX);//ETC<-Armor
+                            Game_Master.instance.PM.Data.Swap_Items_AtoI(this.Slot_INDEX, temp.Slot_INDEX);//ETC<-Armor
                             break;
                         default:
 
-                            Game_Master.instance.Call_Player().Call_Data().Swap_Items_ItoI(this.Slot_INDEX, temp.Slot_INDEX);//ETC<-ETC
+                            Game_Master.instance.PM.Data.Swap_Items_ItoI(this.Slot_INDEX, temp.Slot_INDEX);//ETC<-ETC
 
                             break;
                     }
                     break;
             }
-            if (Game_Master.instance.Call_Player().Call_Data().Items[temp.Slot_INDEX].Base_item==null)
+            if (Game_Master.instance.PM.Data.Items[temp.Slot_INDEX].Base_item==null)
             {
                 temp.Active_Slot(false);
             }
-            Game_Master.instance.Call_Player()._Manager_Inventory.Load_on_Data(Game_Master.instance.Call_Player().Call_Data());
+            Game_Master.instance.PM._Manager_Inventory.Load_on_Data(Game_Master.instance.PM.Data);
 
-            Game_Master.instance.Call_UI().Reseting_Status();
+            Game_Master.instance.UI.Reseting_Status();
         }
 
 
@@ -242,10 +242,10 @@ public class Inventory_Slot : Base_Slot, IBeginDragHandler, IDragHandler, IEndDr
     public void OnPointerEnter(PointerEventData eventData)
     {
         
-        if ((Activation && Game_Master.instance.Call_UI().Windows == false) && Game_Master.instance.Call_UI().Draging==false)
+        if ((Activation && Game_Master.instance.UI.Windows == false) && Game_Master.instance.UI.Draging==false)
         {
             
-            Game_Master.instance.Call_UI().Active_Windows(true, Game_Master.instance.Call_Player().Call_Data().Items[Slot_INDEX]);
+            Game_Master.instance.UI.Active_Windows(true, Game_Master.instance.PM.Data.Items[Slot_INDEX]);
 
         }
         
@@ -253,34 +253,34 @@ public class Inventory_Slot : Base_Slot, IBeginDragHandler, IDragHandler, IEndDr
     }
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (Game_Master.instance.Call_UI().Windows == true)
+        if (Game_Master.instance.UI.Windows == true)
         {
-            Game_Master.instance.Call_UI().Active_Windows(false);
+            Game_Master.instance.UI.Active_Windows(false);
         }
 
 
     }
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (Game_Master.instance.Call_Player().Call_Data().Items[Slot_INDEX] == null)
+        if (Game_Master.instance.PM.Data.Items[Slot_INDEX] == null)
         {
             return;
         }
         if (eventData.button == PointerEventData.InputButton.Right)
         {
-            switch (Game_Master.instance.Call_Player().Call_Data().Items[Slot_INDEX].Base_item.Type)
+            switch (Game_Master.instance.PM.Data.Items[Slot_INDEX].Base_item.Type)
             {
                 case Type.Use:
-                    Use_Item temp = (Use_Item)Game_Master.instance.Call_Player().Call_Data().Items[Slot_INDEX].Base_item;
-                    if (Game_Master.instance.Call_UI().Use_Heal_item(temp))//이미 최대체력이면flase반환 아니라면 효과적용후 true반환
+                    Use_Item temp = (Use_Item)Game_Master.instance.PM.Data.Items[Slot_INDEX].Base_item;
+                    if (Game_Master.instance.UI.Use_Heal_item(temp))//이미 최대체력이면flase반환 아니라면 효과적용후 true반환
                     {
-                        if (Game_Master.instance.Call_Player().Call_Data().Items[Slot_INDEX].UseItem())//갯수를 소모하고  갯수가 0개이하가되면 아이템인덱스삭제
+                        if (Game_Master.instance.PM.Data.Items[Slot_INDEX].UseItem())//갯수를 소모하고  갯수가 0개이하가되면 아이템인덱스삭제
                         {
-                            Game_Master.instance.Call_UI().Renewal_Text(Game_Master.instance.Call_Player().Call_Data().Items[Slot_INDEX]);
-                            if(Game_Master.instance.Call_Player().Call_Data().Items[Slot_INDEX].count==0)
+                            Game_Master.instance.UI.Renewal_Text(Game_Master.instance.PM.Data.Items[Slot_INDEX]);
+                            if(Game_Master.instance.PM.Data.Items[Slot_INDEX].count==0)
                             {
                                 Empty_Slot();
-                                Game_Master.instance.Call_UI().Active_Windows(false);
+                                Game_Master.instance.UI.Active_Windows(false);
 
                             }
                         }
@@ -295,10 +295,8 @@ public class Inventory_Slot : Base_Slot, IBeginDragHandler, IDragHandler, IEndDr
     }
     public void Empty_Slot()
     {
-        Game_Master.instance.Call_Player().Call_Data().Items[Slot_INDEX].Base_item = null;
-        Game_Master.instance.Call_Player().Call_Data().Items[Slot_INDEX].INDEX = 0;
-        Game_Master.instance.Call_Player().Call_Data().Items[Slot_INDEX].count = 0;
-        Game_Master.instance.Call_Player().Call_Data().Items[Slot_INDEX].Upgrade = 0;
+        Game_Master.instance.PM.Data.Items[Slot_INDEX].Delete_Data();
+        
         Image_Set(false);
     }
 

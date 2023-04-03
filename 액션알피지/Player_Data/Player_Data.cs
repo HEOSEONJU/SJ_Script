@@ -11,11 +11,22 @@ public class Player_Data : ScriptableObject
     public Item_Data Equip_Weapon_Item;
     public List<Item_Data> Equip_Armor_Item;
     public List<Item_Data> Items;
-
+    
     public int Gold;
+    public int Current_Gold
+    {
+        get { return Gold; }
+        set { Gold = value; }
+    }
         
 
     public Vector3 Last_Position;
+
+
+    public List<Quest_Info> Accepted_Quest;
+    public List<int> Complted_Quest;
+
+
 
 
     public void Swap_Items_WtoI(int INDEX_Arrival)//Weapon->>ETC
@@ -225,5 +236,11 @@ public class Player_Data : ScriptableObject
     }
 
 }
-
+[System.Serializable]
+public struct Quest_Info
+{
+    public int INDEX;
+    public int Progress;
+    public bool COM;
+}
 

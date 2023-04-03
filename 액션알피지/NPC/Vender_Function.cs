@@ -55,7 +55,7 @@ public class Vender_Function : MonoBehaviour, IDropHandler
 
     public void Open_Vender_Item_Info(Item_Data ID)
     {
-        Vender._manager._Manager_Inventory.UI.Active_Windows(true,ID);
+        Game_Master.instance.UI.Active_Windows(true,ID);
     }
 
 
@@ -80,21 +80,21 @@ public class Vender_Function : MonoBehaviour, IDropHandler
                 return;
             }
             
-            if (Game_Master.instance.Call_Player().Call_Data().Items[temp.Slot_INDEX].Base_item == null)
+            if (Game_Master.instance.PM.Data.Items[temp.Slot_INDEX].Base_item == null)
             {
                 return;
             }
             Current = temp;
             
             Open_Close_Sell_Window(true);
-            Sell_item_Icon.sprite = Game_Master.instance.Call_Player().Call_Data().Items[temp.Slot_INDEX].Base_item.Item_Icon;
-            switch(Game_Master.instance.Call_Player().Call_Data().Items[temp.Slot_INDEX].Base_item.Type)
+            Sell_item_Icon.sprite = Game_Master.instance.PM.Data.Items[temp.Slot_INDEX].Base_item.Item_Icon;
+            switch(Game_Master.instance.PM.Data.Items[temp.Slot_INDEX].Base_item.Type)
             {
                 case Type.Use:
-                    Sell_Value = (Game_Master.instance.Call_Player().Call_Data().Items[temp.Slot_INDEX].Base_item.Value * 7) / 10 * Game_Master.instance.Call_Player().Call_Data().Items[temp.Slot_INDEX].count;
+                    Sell_Value = (Game_Master.instance.PM.Data.Items[temp.Slot_INDEX].Base_item.Value * 7) / 10 * Game_Master.instance.PM.Data.Items[temp.Slot_INDEX].count;
                     break;
                 default:
-                    Sell_Value = (Game_Master.instance.Call_Player().Call_Data().Items[temp.Slot_INDEX].Base_item.Value * 7) / 10;
+                    Sell_Value = (Game_Master.instance.PM.Data.Items[temp.Slot_INDEX].Base_item.Value * 7) / 10;
                     
                     break;
             }
@@ -120,11 +120,10 @@ public class Vender_Function : MonoBehaviour, IDropHandler
     }
     public void Agree_Sell()
     {
-
         Current.Empty_Slot();
         Current = null;
 
-        Vender._manager._Manager_Inventory.Get_Money(Sell_Value);
+        Game_Master.instance.PM.Data.Current_Gold+=Sell_Value;
         Vender._manager.Data_Save(true);
         Sell_Value = 0;
         Vender._manager._UI.Renewal_Gold_Text();
@@ -145,7 +144,7 @@ public class Vender_Function : MonoBehaviour, IDropHandler
     public void Agree_Buy()
     {
 
-        if(Vender._manager._Manager_Inventory.Current_Gold()<Buy_Value)
+        if(Game_Master.instance.PM.Data.Current_Gold<Buy_Value)
         {
 
             Debug.Log("µ·ºÎÁ·");

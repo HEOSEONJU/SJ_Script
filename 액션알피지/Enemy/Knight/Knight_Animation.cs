@@ -15,20 +15,7 @@ public class Knight_Animation : MonoBehaviour
     public  void Init()
     {
         Weapon_Collider = GetComponentInChildren<Knight_Weapon>();
-        
-        
     }
-
-
-
-
-
-
-
-
-
-
-
     public void WeaponColliderEnable()
     {
         Manager.Clear_ID_List();

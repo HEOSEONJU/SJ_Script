@@ -15,10 +15,14 @@ public class Item_Data
     
     public int INDEX;
 
-    public void Insert_Data(item Temp)
+    public void Insert_Data(item Temp,int NUM=0)
     {
         if(Temp!= null) 
         {
+            if(Temp.Type==Type.Use)
+            {
+                count = NUM;
+            }
             Base_item = Temp;
             INDEX = Temp.Item_Index;
 
@@ -30,6 +34,14 @@ public class Item_Data
         }
         
     }
+    public void Delete_Data()
+    {
+        Base_item = null;
+        INDEX = 0;
+        Upgrade = 0;
+        count = 0;
+    }
+
     public void Insert_Data(Item_Data Temp)
     {
         if (Temp != null)

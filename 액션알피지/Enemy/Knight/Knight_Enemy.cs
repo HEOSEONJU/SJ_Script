@@ -16,7 +16,7 @@ public class Knight_Enemy : Enemy_Base_Status
     Drop_Table_Script DTS;
 
     public bool IsInteracting;
-    public bool Attacking;
+    //public bool Attacking;
 
     public float Move_Speed;
     public void Start()
@@ -49,8 +49,9 @@ public class Knight_Enemy : Enemy_Base_Status
     public override void Died()
     {
         //아이템드랍코드
-        
+        Game_Master.instance.PM.PQB.Check_Monster_Kill(Data.Monster_ID);
         Drop(Random.Range(0, 100));
+        
         Knight_Animator.WeaponColliderDisable();
         Knight_Animator._Animator.CrossFade("DeathStart", 0.1f);
         Destroy(gameObject, 5.0f);
@@ -61,9 +62,9 @@ public class Knight_Enemy : Enemy_Base_Status
     public override void Drop(int Per)
     {
         Debug.Log("드랍로그 어떻게 할지 정하기");
-        Game_Master.instance.Call_Player()._Manager_Inventory.Get_Item(Data.Drop.Return_Item(Per));
-        Game_Master.instance.Call_Player()._Manager_Inventory.Get_Money(Data.Drop.Return_Gold());
-        Game_Master.instance.Call_Player().Save_On_FireBase();
+        Game_Master.instance.PM._Manager_Inventory.Get_Item(Data.Drop.Return_Item(Per));
+        Game_Master.instance.PM.Data.Current_Gold+=Data.Drop.Return_Gold();
+        Game_Master.instance.PM.Save_On_FireBase();
     }
     public List<int> PlayerObject_ID = new List<int>();
 
@@ -73,10 +74,9 @@ public class Knight_Enemy : Enemy_Base_Status
     }
     public void Player_to_Damaged(Collider other)
     {
-
-        if (Attacking)
+        if (Knight_Animator._Animator.GetBool("Attacking"))
         {
-            Player_Manager temp = other.GetComponent<Player_Manager>();
+            Player_Manager temp = other.gameObject.transform.root.GetComponent<Player_Manager>();
             if (temp != null)
             {
                 foreach (int id in PlayerObject_ID)
@@ -86,10 +86,7 @@ public class Knight_Enemy : Enemy_Base_Status
                         return;
                     }
                 }
-
-
-
-                temp.PlayerDamaged(100, transform.position - temp.transform.position, AttackType, KnockPower);
+                temp.PlayerDamaged(ATK, transform.position - temp.transform.position, AttackType, KnockPower);
                 PlayerObject_ID.Add(temp.ObjectID);
 
 

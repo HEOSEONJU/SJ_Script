@@ -15,7 +15,7 @@ public class Equip_Weapon : Equip_Slot
 
 
         Slot_Item_Image = GetComponent<Image>();
-        if (Game_Master.instance.Call_Player().Call_Data().Equip_Weapon_Item.Base_item == null)
+        if (Game_Master.instance.PM.Data.Equip_Weapon_Item.Base_item == null)
         {
             Color Temp_Color = Color.white;
             Temp_Color.a = 0;
@@ -25,7 +25,7 @@ public class Equip_Weapon : Equip_Slot
         else
         {
             Slot_Item_Image.color = Color.white;
-            Slot_Item_Image.sprite = Game_Master.instance.Call_Player().Call_Data().Equip_Weapon_Item.Base_item.Item_Icon;
+            Slot_Item_Image.sprite = Game_Master.instance.PM.Data.Equip_Weapon_Item.Base_item.Item_Icon;
         }
         Slot_Position = transform.parent;
         rect = GetComponentInParent<RectTransform>();
@@ -47,7 +47,7 @@ public class Equip_Weapon : Equip_Slot
         Slot_Item_Image.sprite = Base_Image;
 
         Image_Set();
-        Game_Master.instance.Call_Player()._WeaponSlotManager.Change_Weapon_Prefab();
+        Game_Master.instance.PM._WeaponSlotManager.Change_Weapon_Prefab();
     }
 
 }

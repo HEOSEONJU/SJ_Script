@@ -18,26 +18,26 @@ public class Equip_Slot : Inventory_Slot
         switch(EST)
         {
             case Equip_Slot_Type.Weapon:
-                if (Game_Master.instance.Call_Player().Call_Data().Equip_Weapon_Item.Base_item == null)
+                if (Game_Master.instance.PM.Data.Equip_Weapon_Item.Base_item == null)
                 {
                     Slot_Item_Image.sprite = Base_Image;
                     Activation = false;
                 }
                 else
                 {
-                    Slot_Item_Image.sprite = Game_Master.instance.Call_Player().Call_Data().Equip_Weapon_Item.Base_item.Item_Icon;
+                    Slot_Item_Image.sprite = Game_Master.instance.PM.Data.Equip_Weapon_Item.Base_item.Item_Icon;
                     Activation = true;
                 }
                     break;
             default:
-                if (Game_Master.instance.Call_Player().Call_Data().Equip_Armor_Item[Slot_INDEX].Base_item == null)
+                if (Game_Master.instance.PM.Data.Equip_Armor_Item[Slot_INDEX].Base_item == null)
                 {
                     Slot_Item_Image.sprite = Base_Image;
                     Activation = false;
                 }
                 else
                 {
-                    Slot_Item_Image.sprite = Game_Master.instance.Call_Player().Call_Data().Equip_Armor_Item[Slot_INDEX].Base_item.Item_Icon;
+                    Slot_Item_Image.sprite = Game_Master.instance.PM.Data.Equip_Armor_Item[Slot_INDEX].Base_item.Item_Icon;
                     Activation = true;
                 }
                 break;
