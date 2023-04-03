@@ -14,11 +14,8 @@ public class Only_Gravity : StateMachineBehaviour
     }
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (animator.GetBool("IsInteracting")|| !animator.GetCurrentAnimatorStateInfo(1).IsTag("None") || !animator.GetCurrentAnimatorStateInfo(2).IsTag("None"))
-        {
-            return;
-        }
-        PAC.manager.Ground_Check();
+
+        //PAC.manager.Ground_Check();
         if (PAC.manager.IsGround)
         {
             //Debug.Log("ÂøÁö½ÃÀÛ");

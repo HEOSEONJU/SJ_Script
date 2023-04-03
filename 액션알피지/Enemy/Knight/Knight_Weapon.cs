@@ -26,7 +26,8 @@ public class Knight_Weapon : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.layer == 8)
+        
+        if (other.CompareTag("Player_Hit_Box"))
         {
             Manager.Player_to_Damaged(other);
         }

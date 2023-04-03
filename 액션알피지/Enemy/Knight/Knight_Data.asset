@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Knight_Data
   m_EditorClassIdentifier: 
   Name: Knight
-  MAXHP: 10
-  SPeed: 1
+  Monster_ID: 100
+  MAXHP: 5000
+  SPeed: 2
   Attack: 100
   Drop: {fileID: 11400000, guid: eee49d7bacd64754192a14d68f41fbe0, type: 2}

@@ -2,35 +2,41 @@
 using UnityEngine;
 using Firebase.Auth;
 using Firebase.Database;
+using Firebase.Extensions;
 using System;
 using System.Collections;
-
-
-using Firebase.Extensions;
-using UnityEngine.UI;
-using static UnityEngine.Rendering.DebugUI;
-using System.Reflection;
-using static UnityEngine.UI.CanvasScaler;
+using System.Threading.Tasks;
 using System.Linq;
+using System.Collections.Generic;
+using TMPro;
+
+using UnityEngine.SceneManagement;
+using static UnityEngine.Rendering.DebugUI;
+using System.Web;
+using UnityEditor;
 
 //using System.Threading.Tasks;
 //using System.Threading;
 
-public class FireBase_Manager:MonoBehaviour
+public class FireBase_Manager : MonoBehaviour
 {
     //생성용
     [SerializeField]
-    GameObject Player_Char;
+    public GameObject Player_Char;
     [SerializeField]
     GameObject UI_Object;
-    
-
-
-
+    #region 데이터
     [SerializeField]
     Player_Data Data;
     [SerializeField]
-    Item_List item_List_Ojbect;
+    Item_List item_List_Object;
+    [SerializeField]
+    Quest_List Quest_List_Object;
+    [SerializeField]
+    Hunt_Quest_List HQL;
+    [SerializeField]
+    Talk_Quest_List TQL;
+    #endregion
     static FireBase_Manager instance = null;
     static FireBase_Manager Instance
     {
@@ -42,75 +48,136 @@ public class FireBase_Manager:MonoBehaviour
             }
             return instance;
         }
-        
     }
 
-
     DatabaseReference Fire_DataBase;
-
     public FirebaseAuth auth;
-
     public FirebaseUser user;
-
-    
-
     public string LoginID => user.UserId;
+    [SerializeField]
+    bool LoginState = false;
+    public bool LoadingState = false;
+    bool Delay_Trigger = false;
+
+    int Choice_ID;
+
+    public int Set_ID
+    {
+        set { Choice_ID = value; }
+    }
 
     
 
     [SerializeField]
-    bool LoginState=false;
+    Transform NPC_Parent;
 
     
-    public bool LoadingState = false;
-    // Start is called before the first frame update
 
+    [SerializeField]
+    TextMeshProUGUI TEXT;
+
+    delegate void Event();
+    Event eventFunc;
+    Queue<Event> eventQueue;
+    
+    Queue<string> Text_value;//텍스트 큐형식 같이 저장
+
+    [SerializeField]
+    Vector3 Starat_Posi;
+    struct Event_Struct
+    {
+        public Event Func;
+    }
+    
+    
     void Start()
+
     {
         DontDestroyOnLoad(this.gameObject);
-        string ID= "zxaz741@gmail.com";
-        string Pass = "12as12";
+        
+        
         Init();
-        Login(ID, Pass);
-
-        while(item_List_Ojbect.Add_Item.Count>0)
-        {
-            item_List_Ojbect.Insert_New_Item(item_List_Ojbect.Add_Item.First());
-            item_List_Ojbect.Add_Item.Remove(item_List_Ojbect.Add_Item.First());
-        }
-        while (item_List_Ojbect.Delete_Item.Count > 0)
-        {
-            item_List_Ojbect.Delete_Old_item(item_List_Ojbect.Delete_Item.First());
-            item_List_Ojbect.Delete_Item.Remove(item_List_Ojbect.Delete_Item.First());
-        }
-        item_List_Ojbect.Sort_item();
-
     }
+
+
+
+
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.V))
+        if (Input.GetKeyDown(KeyCode.V))
         {
-            save();
+            //save();
         }
         if (Input.GetKeyDown(KeyCode.C))
         {
-            Load();
+            //Load();
+        }Debug.Log(eventQueue.Count);
+        
+        if (eventQueue.Count > 0)//비동기 이벤트처리
+        {
+             eventQueue.Dequeue()();
         }
-
-
 
     }
 
-    public void save()
+
+    void Init()
     {
+        Text_value = new Queue<string>();
+        eventQueue = new Queue<Event>();
+        while (item_List_Object.Add_Item.Count > 0)//추가아이템
+        {
+            item_List_Object.Insert_New_Item(item_List_Object.Add_Item.First());
+            item_List_Object.Add_Item.Remove(item_List_Object.Add_Item.First());
+        }
+        while (item_List_Object.Delete_Item.Count > 0)//삭제할 아이템
+        {
+            item_List_Object.Delete_Old_item(item_List_Object.Delete_Item.First());
+            item_List_Object.Delete_Item.Remove(item_List_Object.Delete_Item.First());
+        }
+        item_List_Object.Sort_item();//아이템 정렬
 
+        Quest_List_Object.Quests.Clear();
+        foreach (var item in HQL.Hunt_Quests)//사냥퀘스트
+        {
+            Quest_List_Object.Quests.Add(item);
+        }
+        foreach (var item in TQL.Talk_Quests)//대화형 퀘스트
+        {
+            Quest_List_Object.Quests.Add(item);
+        }
+        Quest_List_Object.Sort_List();//퀘스트정렬
+        Game_Master.instance.Load_List(item_List_Object, Quest_List_Object);//게임마스터에 아이템/퀘스트 리스트추가
 
+        Fire_DataBase = FirebaseDatabase.DefaultInstance.RootReference;
+        auth = FirebaseAuth.DefaultInstance;
+    }
+    public void NPC_Setting()//씬 이동후 스타터들이 NPC들 생성자 적용
+    {
+        GameObject GO = GameObject.Find("NPC");
+        if (GO == null)
+        {
+            return;
+        }
+        NPC_Parent = GO.transform;
+        Base_NPC[] T = NPC_Parent.GetComponentsInChildren<Base_NPC>();
+        foreach (var item in T)
+        {
+            item.Init();
+        }
+    }
+
+    public void Save_On_FireBase()
+    {
+        #region 무기
         if (Data.Equip_Weapon_Item.Base_item != null)
             Data.Equip_Weapon_Item.INDEX = Data.Equip_Weapon_Item.Base_item.Item_Index;
         else
             Data.Equip_Weapon_Item.INDEX = 0;
-
+        
+        #endregion
+        #region 방어구
         foreach (Item_Data T in Data.Equip_Armor_Item)
         {
             if (T.Base_item != null)
@@ -118,103 +185,161 @@ public class FireBase_Manager:MonoBehaviour
             else
                 T.INDEX = 0;
         }
+        #endregion
+        
+        #region 아이템
+
         foreach (Item_Data T in Data.Items)
         {
             if (T.Base_item != null)
             {
                 T.INDEX = T.Base_item.Item_Index;
-                
+
             }
             else
                 T.INDEX = 0;
         }
-        string json =JsonUtility.ToJson(Data);
-        Fire_DataBase.Child("Users").Child(LoginID).SetRawJsonValueAsync(json);
-
         
-        
-        
+        #endregion
+        #region 퀘스트 마지막위치
 
 
+        
+        if (Game_Master.instance.PM != null)
+        {
+            Data.Accepted_Quest.Clear();
+            foreach (Quest_Basic QB in Game_Master.instance.PM.PQB.QBL)
+            {
+                Quest_Info Temp = new Quest_Info();
+                Temp.INDEX = QB.Quest_ID;
+                Temp.Progress = QB.Progress;
+                Temp.COM = QB.Complete;
+                Data.Accepted_Quest.Add(Temp);
+            }
+
+            Data.Last_Position = Game_Master.instance.PM.transform.position;
+        }
+        
+        #endregion
+        string json = JsonUtility.ToJson(Data);
+        Fire_DataBase.Child("Users").Child(LoginID).Child(Choice_ID.ToString()).SetRawJsonValueAsync(json);
     }
-    public void Load()//스레드로 진행해서 i값이 전부 바뀜 for문말고 다른 방식으로 인덱스 해야함 =>콜바이밸류 함수이용해서 해결
-    {
-        StartCoroutine(Load_Data());
 
-
-    }
+    #region 로드
     IEnumerator Load_Data()
     {
+        Debug.Log("시작");
         LoadingState = false;
-
-        Fire_DataBase.Child("Users").Child(LoginID).GetValueAsync().ContinueWithOnMainThread(task =>
+        Debug.Log(3);
+        Debug.Log("로드데이터시작" + LoginID);
+        
+        Fire_DataBase.Child("Users").Child(LoginID).Child(Choice_ID.ToString()).GetValueAsync().ContinueWithOnMainThread(task =>
         {
             if (task.IsFaulted)
             {
-                Debug.Log("실패");
+                Debug.Log(4);
+                ES_ADD("데이터로드실패");
             }
             else if (task.IsCanceled)
             {
-                Debug.Log("취소");
+                Debug.Log(5);
+                ES_ADD("데이터로드취소");
             }
             else if (task.IsCompleted)
             {
-                Weapon_Load(task.Result);
-                for (int i = 0; i < 3; i++)
-                {
-                    Armor_Load(task.Result, i);
-                }
-                for (int i = 0; i < 20; i++)
-                {
-                    Item_Load(task.Result, i);
-                }
+                Debug.Log(6);
+                ES_ADD("데이터로드시작");
 
-                Gold_Load(task.Result);
 
-                Position_Load(task.Result);
                 
+                if (Weapon_Load(task.Result))
+                {
+                    Debug.Log(7);
+                    Armor_Load(task.Result);
+                    Item_Load(task.Result);
+                    Gold_Load(task.Result);
+                    Position_Load(task.Result);
+                    Quest_Load(task.Result);
+                }
+                else
+                {
+                    Debug.Log(8);
+                    Init_Char();
+                }
+                ES_ADD("데이터로드완료");
             }
             LoadingState = true;
 
         });
-        while(!LoadingState)
-        { 
-            yield return null;
+        
+        yield return null;
+        
+    }//데이터불러오기코루틴
+    bool Weapon_Load(DataSnapshot Load_Data)
+    {
+        if((Load_Data.Child("Equip_Weapon_Item").Child("INDEX").Value)==null)
+        {
+            return false;
         }
-        
-        Debug.Log("로딩완료");
-        
-    }
-
-
-
-    void Weapon_Load(DataSnapshot Load_Data)
-    {
-        
-        Data.Equip_Weapon_Item.Insert_Data(item_List_Ojbect.Search_item(Convert.ToInt32(Load_Data.Child("Equip_Weapon_Item").Child("INDEX").Value)));
+        Data.Equip_Weapon_Item.Insert_Data(item_List_Object.Search_item(Convert.ToInt32(Load_Data.Child("Equip_Weapon_Item").Child("INDEX").Value)));
         Data.Equip_Weapon_Item.Upgrade = Convert.ToInt32(Load_Data.Child("Equip_Weapon_Item").Child("Upgrade").Value);
-        Data.Equip_Weapon_Item.count = Convert.ToInt32((Load_Data.Child("Equip_Weapon_Item").Child("count").Value));
+        Data.Equip_Weapon_Item.count = 0;
+        return true;
 
     }
-    void Armor_Load(DataSnapshot Load_Data, int i)
+    void Armor_Load(DataSnapshot Load_Data)
     {
-        Data.Equip_Armor_Item[i].Insert_Data(item_List_Ojbect.Search_item(Convert.ToInt32(Load_Data.Child("Equip_Armor_Item").Child(i.ToString()).Child("INDEX").Value)));
-        Data.Equip_Armor_Item[i].Upgrade = Convert.ToInt32((Load_Data.Child("Equip_Armor_Item").Child(i.ToString()).Child("Upgrade").Value));
-        Data.Equip_Armor_Item[i].count = Convert.ToInt32((Load_Data.Child("Equip_Armor_Item").Child(i.ToString()).Child("count").Value));
-        
+        Data.Equip_Armor_Item = new List<Item_Data>();
+        Item_Data Temp;
+        for (int i = 0; i < 3; i++)
+        {
+            Temp = new Item_Data();
+            item T = item_List_Object.Search_item(Convert.ToInt32(Load_Data.Child("Equip_Armor_Item").Child(i.ToString()).Child("INDEX").Value));
+            if (T == null)
+            {
+                Temp.Upgrade = 0;
+                Temp.INDEX = 0;
+                Temp.count = 0;
+            }
+            else
+            {
+                Temp.Insert_Data(T);
+                Temp.Upgrade = Convert.ToInt32((Load_Data.Child("Equip_Armor_Item").Child(i.ToString()).Child("Upgrade").Value));
+
+            }
+
+            Data.Equip_Armor_Item.Add(Temp);
+        }
+
+
     }
-    void Item_Load(DataSnapshot Load_Data,int i)
+    void Item_Load(DataSnapshot Load_Data)
     {
 
-        Data.Items[i].Insert_Data(item_List_Ojbect.Search_item(Convert.ToInt32(Load_Data.Child("Items").Child(i.ToString()).Child("INDEX").Value)));
-        Data.Items[i].Upgrade = Convert.ToInt32((Load_Data.Child("Items").Child(i.ToString()).Child("Upgrade").Value));
-        Data.Items[i].count = Convert.ToInt32((Load_Data.Child("Items").Child(i.ToString()).Child("count").Value));
+        Data.Items = new List<Item_Data>();
+        Item_Data Temp;
+        for (int i = 0; i < 20; i++)
+        {
+            Temp = new Item_Data();
+            item T = item_List_Object.Search_item(Convert.ToInt32(Load_Data.Child("Items").Child(i.ToString()).Child("INDEX").Value));
+            if (T == null)
+            {
+                Temp.Upgrade = 0;
+                Temp.count = 0;
+                Temp.INDEX = 0;
+            }
+            else
+            {
+                Temp.Insert_Data(T, Convert.ToInt32((Load_Data.Child("Items").Child(i.ToString()).Child("count").Value)));
+                Temp.Upgrade = Convert.ToInt32((Load_Data.Child("Items").Child(i.ToString()).Child("Upgrade").Value));
+            }
 
+            Data.Items.Add(Temp);
+        }
     }
-
     public void Gold_Load(DataSnapshot Load_Data)
     {
-        Data.Gold = Convert.ToInt32(Load_Data.Child("Gold").Value);
+        Data.Current_Gold = Convert.ToInt32(Load_Data.Child("Gold").Value);
     }
     public void Position_Load(DataSnapshot Load_Data)
     {
@@ -223,120 +348,143 @@ public class FireBase_Manager:MonoBehaviour
         Data.Last_Position.z = Convert.ToInt32(Load_Data.Child("Last_Position").Child("z").Value);
 
     }
-    public bool Use_Money(int n, Player_Data Data)
+    public void Quest_Load(DataSnapshot Load_Data)
     {
-        Fire_DataBase.Child("Users").Child(LoginID).Child("Gold").GetValueAsync().ContinueWithOnMainThread(task =>
+        Data.Accepted_Quest = new List<Quest_Info>();
+        for (int i = 0; i < Load_Data.Child("Accepted_Quest").ChildrenCount; i++)
         {
+            Quest_Info TEMPINFO = new Quest_Info();
 
-            Data.Gold = (int)task.Result.Value;
-        });
-        if(Data.Gold >= n) 
-        {
-            Data.Gold-= n;
-            Fire_DataBase.Child("Users").Child(LoginID).Child("Gold").SetValueAsync(Data.Gold);
-            return true;
+            TEMPINFO.INDEX = Convert.ToInt32(Load_Data.Child("Accepted_Quest").Child(i.ToString()).Child("INDEX").Value);
+            TEMPINFO.Progress = Convert.ToInt32(Load_Data.Child("Accepted_Quest").Child(i.ToString()).Child("Progress").Value);
+            TEMPINFO.COM = Convert.ToBoolean(Load_Data.Child("Accepted_Quest").Child(i.ToString()).Child("COM").Value);
+            Data.Accepted_Quest.Add(TEMPINFO);
         }
-        return false;
+        Data.Complted_Quest = new List<int>();
+        for (int i = 0; i < Load_Data.Child("Complted_Quest").ChildrenCount; i++)
+        {
+            Data.Complted_Quest.Add(Convert.ToInt32(Load_Data.Child("Complted_Quest").Child(i.ToString()).Value));
+        }
+
+
+
     }
 
-    void Init()
-    {
-        Fire_DataBase = FirebaseDatabase.DefaultInstance.RootReference;
-        auth = FirebaseAuth.DefaultInstance;
-        auth.StateChanged += OnChange;
-    }
-    void OnChange(object sender, EventArgs e) 
+
+    public void Init_Char()
     {
         
-        if(auth.CurrentUser !=user)
+        Data=new Player_Data();
+        Data.Equip_Weapon_Item = new Item_Data();
+        Data.Equip_Armor_Item = new List<Item_Data>();
+        Data.Items = new List<Item_Data>();
+        Debug.Log("생성시작");
+        Data.Equip_Weapon_Item.Insert_Data(item_List_Object.Search_item(1000));
+        Debug.Log("무기생성완료");
+        
+        Item_Data Temp;
+        
+        for (int i = 0; i < 3; i++)
         {
-            bool signed = (auth.CurrentUser !=user && auth.CurrentUser!=null);
-            if(!signed && user !=null) 
-            {
-                //로그아웃
-                LoginState = false;
-            }
-            
-            user = auth.CurrentUser;
-            
-            
-            if (signed)
-            {
-                LoginState = true;
-                //로그인
-                Load();
-
-                StartCoroutine(Init_Player_Char());
-            }
+            Temp = new Item_Data();
+            Temp.Upgrade = 0;
+            Temp.INDEX = 0;
+            Temp.count = 0;
+            Data.Equip_Armor_Item.Add(Temp);
         }
+        Debug.Log("방어구생성완료");
+        
+        
+        for (int i = 0; i < 20; i++)
+        {
+            Temp = new Item_Data();
+            Temp.Upgrade = 0;
+            Temp.count = 0;
+            Temp.INDEX = 0;
+            Data.Items.Add(Temp);
+        }
+        Debug.Log("아이템생성완료");
+        Data.Current_Gold = 0;
+        Data.Last_Position = Starat_Posi;
+        Data.Accepted_Quest = new List<Quest_Info>();
+        Data.Complted_Quest = new List<int>();
+        Debug.Log("생성종료");
+        Save_On_FireBase();
     }
-    IEnumerator Init_Player_Char()
+    #endregion
+
+    public IEnumerator Init_Player_Char()//플레이어 캐릭터 생성
     {
-        while(!LoadingState)
+        while (!LoadingState)
         {
             yield return null;
         }
 
-        var Temp = Instantiate(Player_Char, Data.Last_Position+Vector3.up, Quaternion.identity).GetComponent<Player_Manager>();
+        var Temp = Instantiate(Player_Char, Data.Last_Position + Vector3.up, Quaternion.identity).GetComponent<Player_Manager>();
         Temp.FireBase_M = this;
         Temp._UI = Instantiate(UI_Object).GetComponent<UI_Manager>();
-        Temp.Init(Data);
-        
-        
-    }
-    
+        Game_Master.instance.Load(Temp, Temp._UI);
+        Temp.Init();
 
-    
-    void CreateUser(string ID,string Password)
+
+    }
+
+    public IEnumerator SceneLoading(string SceneName)
     {
-        auth.CreateUserWithEmailAndPasswordAsync(ID, Password).ContinueWith(task =>
+        Debug.Log(2);
+        StartCoroutine(Load_Data());
+        
+        while (!LoadingState)
         {
-            if (task.IsCanceled)
-            {
-                return;
-            }
-            if(task.IsFaulted)
-            {
-                return;
-            }
-            FirebaseUser Temp = task.Result;
+            
+            yield return null;
         }
         
-        );
+        AsyncOperation operation = SceneManager.LoadSceneAsync(SceneName);
+        operation.allowSceneActivation = true;
+
         
-
-
-
-    }
-    void Login(string ID, string Password)
-    {
-        auth.SignInWithEmailAndPasswordAsync(ID, Password).ContinueWith(task =>
+        while (!operation.isDone)
         {
-            if (task.IsCanceled)
-            {
-                return;
-            }
-            if (task.IsFaulted)
-            {
-                return;
-            }
-            if (task.IsCompleted)
-            {
-                
-                Debug.Log("로그인시도  성공");
-
-                
-            }
+            
+            yield return null;
         }
+        ES_ADD("불러오기 완료");
+        yield break;
 
-);
+        
     }
-    void Logout()
+
+    #region 이벤트 큐영역
+    
+    
+    public void ES_ADD(string value)
     {
-        auth.SignOut();
+        
+        Text_value.Enqueue(value);
+        eventQueue.Enqueue(Text_Function);
     }
 
 
 
+    void Text_Function()//비동기 텍스트변경
+    {
+        string T= Text_value.Dequeue();
+        if(T!=null) 
+        {
+            TEXT.text = T;
+        }
+        else
+        {
+            TEXT.text = "큐가 빔";
+        }
+        
+    }
+    #endregion
+    public Player_Data CPD()
+    {
+        return Data;
+    }
 }
+
 

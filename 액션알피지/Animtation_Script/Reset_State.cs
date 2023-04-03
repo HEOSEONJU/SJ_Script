@@ -9,7 +9,7 @@ public class Reset_State : StateMachineBehaviour
 
 
     
-    int Combo_Stack;
+    
 
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
@@ -19,7 +19,7 @@ public class Reset_State : StateMachineBehaviour
         }
 
 
-        animator.SetInteger("Combo_Stack", 0);
+        //animator.SetInteger("Combo_Stack", 0);
 
 
 

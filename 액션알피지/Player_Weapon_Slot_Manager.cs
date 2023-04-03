@@ -26,7 +26,7 @@ public class Player_Weapon_Slot_Manager : MonoBehaviour
             {
                 Main_Weapon = weaponHolderSlot;
                 
-                Main_Weapon.Init((Weapon_Item)Game_Master.instance.Call_Player().Call_Data().Equip_Weapon_Item.Base_item);
+                Main_Weapon.Init((Weapon_Item)Game_Master.instance.PM.Data.Equip_Weapon_Item.Base_item);
 
 
 
@@ -36,7 +36,7 @@ public class Player_Weapon_Slot_Manager : MonoBehaviour
         }
 
 
-        if(Game_Master.instance.Call_Player().Call_Data().Equip_Weapon_Item.Base_item != null)
+        if(Game_Master.instance.PM.Data.Equip_Weapon_Item.Base_item != null)
         {
             Change_Weapon_Prefab();
         }
@@ -46,15 +46,15 @@ public class Player_Weapon_Slot_Manager : MonoBehaviour
     public void Change_Weapon_Prefab()
     {
 
-        if (Game_Master.instance.Call_Player().Call_Data().Equip_Weapon_Item == null || Main_Weapon==null)
+        if (Game_Master.instance.PM.Data.Equip_Weapon_Item == null || Main_Weapon==null)
         {
             return;
         }
 
         
-        if(Game_Master.instance.Call_Player().Call_Data().Equip_Weapon_Item!=null)
+        if(Game_Master.instance.PM.Data.Equip_Weapon_Item!=null)
         {
-            Weapon_Item temp = (Weapon_Item)Game_Master.instance.Call_Player().Call_Data().Equip_Weapon_Item.Base_item;
+            Weapon_Item temp = (Weapon_Item)Game_Master.instance.PM.Data.Equip_Weapon_Item.Base_item;
             
             Main_Weapon.Change_Weapon(temp);
             _Attack_Animator.Change_Weapon_Type(temp.Attack_List, temp.Air_Attack_List);

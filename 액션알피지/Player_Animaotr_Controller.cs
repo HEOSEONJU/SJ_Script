@@ -34,6 +34,7 @@ public class Player_Animaotr_Controller : MonoBehaviour
     [SerializeField]
     public ParticleSystem temp;
 
+    
 
     private void Awake()
     {

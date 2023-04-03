@@ -30,24 +30,46 @@ public class Game_Master : MonoBehaviour
     Player_Manager player_manager;
     [SerializeField]
     UI_Manager _UI;
+    [SerializeField]
+    Item_List item_List_Object;
+    [SerializeField]
+    Quest_List Quest_List_Object;
 
-    public UI_Manager Call_UI()
-    {
-        return _UI;
-    }
-    public void Load_UI(UI_Manager temp)
-    {
-        _UI = temp;
-    }
 
-    public Player_Manager Call_Player()
+    public Player_Manager PM
     {
-        return player_manager;
+        get { return player_manager; }
+        
     }
-    public void Load_Player(Player_Manager temp)
+    public  UI_Manager UI
     {
-        player_manager=temp;
+        get { return _UI; }
     }
 
+    public Item_List ILO
+    {
+        get { return item_List_Object; }
+    }
+    
+    public Quest_List QLO 
+    { 
+        get { return Quest_List_Object; } 
+    }
+
+    
+    public void Load_List(Item_List Temp_Item, Quest_List Temp_Quset)
+    {
+        item_List_Object = Temp_Item;
+        Quest_List_Object = Temp_Quset;
+    }
+
+
+    
+    public void Load(Player_Manager Temp_PM, UI_Manager Temp_UI)
+    {
+        player_manager = Temp_PM;
+        _UI = Temp_UI;
+        
+    }
 
 }

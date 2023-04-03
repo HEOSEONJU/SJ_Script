@@ -44,18 +44,18 @@ public class Upgrade_Slot_Vender : MonoBehaviour, IDropHandler
         if (eventData.pointerDrag != null)
         {
             Inventory_Slot temp = eventData.pointerDrag.transform.GetComponent<Inventory_Slot>();
-            if (Game_Master.instance.Call_Player().Call_Data().Items[temp.Slot_INDEX].Base_item == null)
+            if (Game_Master.instance.PM.Data.Items[temp.Slot_INDEX].Base_item == null)
             {
                 return;
             }
             Slot_Into_item(temp);
-            Game_Master.instance.Call_UI().Reseting_Status();
+            Game_Master.instance.UI.Reseting_Status();
         }
 
     }
     public void Slot_Into_item(Inventory_Slot Current_Position)
     {
-        if(Game_Master.instance.Call_Player().Call_Data().Items[Current_Position.Slot_INDEX].Base_item.Type==Type.Use)
+        if(Game_Master.instance.PM.Data.Items[Current_Position.Slot_INDEX].Base_item.Type==Type.Use)
         {
             return;
         }
@@ -63,9 +63,9 @@ public class Upgrade_Slot_Vender : MonoBehaviour, IDropHandler
         {
             Current.Set_HIde(false);
         }
-        _NPC._manager._Manager_Inventory.Load_on_Data(_NPC._manager.Call_Data());
+        _NPC._manager._Manager_Inventory.Load_on_Data(Game_Master.instance.PM.Data);
         Current_INDEX = Current_Position.Slot_INDEX;
-        Slot_IN_item = Game_Master.instance.Call_Player().Call_Data().Items[Current_Position.Slot_INDEX];
+        Slot_IN_item = Game_Master.instance.PM.Data.Items[Current_Position.Slot_INDEX];
         Current = Current_Position;
         Current_Position.Set_HIde(true);
         

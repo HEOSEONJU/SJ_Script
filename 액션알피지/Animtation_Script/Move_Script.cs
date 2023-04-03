@@ -12,13 +12,6 @@ public class Move_Script : StateMachineBehaviour
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        PAC.manager.Ground_Check();
-        if (animator.GetCurrentAnimatorStateInfo(1).IsTag("Attack"))
-        {
-            return;
-        }
-
-        
         if (animator.GetBool("IsInteracting")|| !PAC.manager.IsGround)
         {
             return;
@@ -28,4 +21,6 @@ public class Move_Script : StateMachineBehaviour
         
         //_Move.Speed_Control();
     }
+
+    
 }

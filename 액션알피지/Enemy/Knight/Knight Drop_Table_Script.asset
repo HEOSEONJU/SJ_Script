@@ -14,16 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Drop_Talbe:
     Table_List:
-    - item:
-        Base_item: {fileID: 11400000, guid: 5dda053e421c9a540b23640b433b2cf1, type: 2}
-        count: 1
-        Upgrade: 0
-        INDEX: 3000
+    - Drop_Item_INDEX: 1001
       percentage: 10
-    - item:
-        Base_item: {fileID: 11400000, guid: 9b55ed8f199d78a488590c3ca955e033, type: 2}
-        count: 1
-        Upgrade: 0
-        INDEX: 1000
+    - Drop_Item_INDEX: 3000
       percentage: 90
   Gold: 100

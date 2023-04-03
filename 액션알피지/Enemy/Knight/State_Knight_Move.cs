@@ -11,12 +11,13 @@ public class State_Knight_Move : StateMachineBehaviour
     }
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        
         if(!animator.GetCurrentAnimatorStateInfo(1).IsTag("None") || !animator.GetCurrentAnimatorStateInfo(2).IsTag("None"))
         {
             return;
         }
-
-        if(KN._Knight_AI.Move_Target(animator))
+        
+        if (KN._Knight_AI.Move_Target(animator))
         {
             animator.SetBool("Target", false);
         }

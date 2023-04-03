@@ -5,16 +5,26 @@ using Hit_Type_NameSpace;
 using UnityEditor;
 using System.ComponentModel;
 using Unity.Burst.CompilerServices;
+using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
+using Unity.Mathematics;
 
 public class Player_Manager : MonoBehaviour
 {
     [SerializeField]
-    Player_Data Data;
+    public Player_Data Data
+    {
+        get 
+        {
+            return FireBase_M.CPD();
+        }
+        
+    }
     public FireBase_Manager FireBase_M;
     public int ObjectID = 0;
 
-
+    [SerializeField]
     Player_Input _Input;
+    [SerializeField]
     Player_Move _Move;
     public Player_Animator _Animator;
     public Player_Camera _Camera;
@@ -23,6 +33,7 @@ public class Player_Manager : MonoBehaviour
     public Player_Inventory _Manager_Inventory;
     public Player_Status _Status;
     public Player_Connect_Object _Connect_Object;
+    public Player_Quest_Box PQB;
     public bool Infinity = false;
     public bool IsGround = false;
     public bool Jump = false;
@@ -32,18 +43,26 @@ public class Player_Manager : MonoBehaviour
     public bool IsInteracting;
     public bool LockOnMode;
     public bool Attacking;
-
+    
+    public float Combo_Timer;
 
     public float Magnification;
     bool Live = true;
     [SerializeField]
-    bool Open_UI;
+    public bool Open_UI
+    {
+        get { return Check_UI(); }
+        
+    }
+
 
     public Transform Char_Center_Posi;
 
     public UI_Manager _UI;
 
     public Vector3 CC_VELOCITY;
+
+
 
     public List<int> Enemy_IDList = new List<int>();//적 중복공격방지
     [SerializeField]
@@ -54,33 +73,36 @@ public class Player_Manager : MonoBehaviour
     [SerializeField]
     LayerMask GroundLayer;
     // Start is called before the first frame update
-    public void Init(Player_Data Load_Data)
+    public void Init()
     {
-        Data=Load_Data;
-        Game_Master.instance.Load_Player(this);
-        Game_Master.instance.Load_UI(_UI);
+        Debug.Log("init시작");
+        
+        //Game_Master.instance.Load_Player(this);
+        //Game_Master.instance.Load_UI(_UI);
         ColliderList =new List<GameObject>();
         _Camera = Player_Camera.instance;
         _Camera.Init(transform);
-        _Input = GetComponent<Player_Input>();
+        
         _Input.Init();
-        _Move = GetComponent<Player_Move>();
+        
         _Move.Init();
-        _Animator = GetComponent<Player_Animator>();
+        
         _Animator.Init();
         _Attacker = GetComponentInChildren<Player_Animaotr_Controller>();
-        _WeaponSlotManager = GetComponent<Player_Weapon_Slot_Manager>();
+        
 
-        _Manager_Inventory = gameObject.GetComponent<Player_Inventory>();
+        
         _UI.Init();
         
-        _Manager_Inventory.Init(this, Data);
+        _Manager_Inventory.Init();
         _WeaponSlotManager.Init();
         _Status = GetComponent<Player_Status>();
         _Status.init();
         _Connect_Object = GetComponentInChildren<Player_Connect_Object>();
-        _Connect_Object.Init(this);
+        _Connect_Object.Init();
+        PQB.Init();
         State = true;
+        Debug.Log("initi종료");
     }
 
     // Update is called once per frame
@@ -120,7 +142,16 @@ public class Player_Manager : MonoBehaviour
         {
             return;
         }
-
+        if(Combo_Timer>0)
+        {
+            Combo_Timer -= Time.fixedDeltaTime;
+            if (Combo_Timer <= 0)
+            {
+                _Animator._animator.SetInteger("Combo_Stack", 0);
+            }
+        }
+        
+        Ground_Check();
         CC_VELOCITY = _Move.rb.velocity;
         _Move.CalDir();
         //Ground_Check();
@@ -131,6 +162,16 @@ public class Player_Manager : MonoBehaviour
             case true:
 
                 break;
+        }
+        if (_Camera != null)
+        {
+
+            _Camera.FollowTarget(Time.deltaTime);
+            if (!Open_UI)//나중에 UI오픈으로 바꿀것
+            {
+
+                _Camera.HandleCameraRotation(Time.deltaTime, _Input.MouseX, _Input.MouseY);
+            }
         }
 
 
@@ -153,16 +194,7 @@ public class Player_Manager : MonoBehaviour
                 float delta = Time.deltaTime;
 
 
-                if (_Camera != null)
-                {
 
-                    _Camera.FollowTarget(delta);
-                    if (!Open_UI)//나중에 UI오픈으로 바꿀것
-                    {
-
-                        _Camera.HandleCameraRotation(delta, _Input.MouseX, _Input.MouseY);
-                    }
-                }
                 
                 //IsGround = _Move.CC.isGrounded;
                 _Animator._animator.SetBool("IsGround", IsGround);
@@ -194,45 +226,34 @@ public class Player_Manager : MonoBehaviour
 
     }
 
-    public Player_Data Call_Data()
-    {
-        return Data;
-    }
+
 
 
 
 
     #region UI관련
-    public void Check_UI()
+    public bool Check_UI()
     {
 
         if (_Manager_Inventory.Inventory_Object.activeSelf || _Manager_Inventory.Equip_Object.activeSelf)
         {
-            Open_UI = true;
-            return;
+            
+            return true;
         }
-
-        Open_UI = false;
+        return false;
+        
 
     }
-    public bool Return_Open_UI()
-    {
-        return Open_UI;
-    }
-
-    public void Setting_UI_Open(bool state)
-    {
-        Open_UI = state;
-    }
+    
 
     public void Open_Close_Inventory_Self()
     {
-        if (_Connect_Object.Connecting_Check())
+        if (_Connect_Object.IF)
         {
             return;
         }
-        Check_UI();
-        if (Return_Open_UI())
+        
+        if (Open_UI)
         {
             _Manager_Inventory.Open_Close_Equip_Window(false);
             _Manager_Inventory.Open_Close_Inventory_Window(false);
@@ -242,7 +263,7 @@ public class Player_Manager : MonoBehaviour
             _Manager_Inventory.Open_Close_Equip_Window(true);
             _Manager_Inventory.Open_Close_Inventory_Window(true);
         }
-        Check_UI();
+        
     }
     #endregion
 
@@ -250,28 +271,14 @@ public class Player_Manager : MonoBehaviour
 
     public void Connect_Object_Function()
     {
-        if (!_Connect_Object.Connect())
-        {
-            return;
 
-        }
-        if (_Connect_Object.Connecting_Check())
-        {
-            _Connect_Object.DisConnect_Object();
-            _Manager_Inventory.Open_Close_Inventory_Window(false);
-            Check_UI();
-            return;
-        }
-
-
+        //if (_Connect_Object.Connecting)//이미연결되어있다면
+        //{
+        //    _Connect_Object.DisConnect_Object();
+            
+        //    return;
+        //}
         _Connect_Object.Connect_IF_Function();
-        _Manager_Inventory.Open_Close_Inventory_Window(true);
-        if (_Manager_Inventory.Equip_Object.activeSelf)//장비창이 켜져있엇다면 장비창 오프
-        {
-            _Manager_Inventory.Open_Close_Equip_Window(false);
-        }
-
-        Check_UI();
     }
     #endregion
 
@@ -285,7 +292,7 @@ public class Player_Manager : MonoBehaviour
             _Attacker.temp.transform.position = Vector3.Lerp(_Attacker.temp.transform.position, Weapon_Position, 0.9f);
             _Attacker.temp.transform.rotation = _WeaponSlotManager.Main_Weapon.Current_Weapon.transform.rotation;
             _Attacker.temp.Play();
-            int CR = Random.Range(1, 101);
+            int CR = UnityEngine.Random.Range(1, 101);
             float Damage_Point = _Status.ATK_Point;
 
             if (CR >= 100 - _Status.CRP_Point)
@@ -322,30 +329,40 @@ public class Player_Manager : MonoBehaviour
             return;
         }
 
-        transform.LookAt(Dir);
+        
+        Debug.Log(Vector3.Angle(transform.forward, Dir));
 
+        Damage = (int)(Damage + (KnockPower / 3));
 
+        
+        Quaternion Q = transform.rotation;
 
-        Quaternion temp = transform.rotation;
-        temp.Set(0, temp.y, 0, temp.w);
-        transform.rotation = temp;
-
-
+        Vector3 temp = Q.eulerAngles;
+        //Debug.Log("Before" + temp.y);
+        temp.y -= Vector3.Angle(transform.forward, Dir);
+        temp.x = 0;
+        temp.z = 0;
+        Q = Quaternion.Euler(temp);
+        //Debug.Log("Before" + Q.eulerAngles);
+        //Debug.Log("After" + transform.rotation.eulerAngles);
+        transform.rotation = Q;
+        
+        _Animator._animator.SetFloat("Knock", KnockPower);
         if (IsGround)
         {
             switch (AttackType)
             {
                 case Hit_AnimationNumber.Weak:
                     _Animator.PlayerTargetAnimation("Damage_Front_Big_ver_A", true);
-                    //_Move.rb.AddForce(KnockPower * -transform.forward, ForceMode.VelocityChange);
+                    _Move.rb.AddForce(KnockPower * -transform.forward, ForceMode.VelocityChange);
                     break;
                 case Hit_AnimationNumber.Nomal:
                     _Animator.PlayerTargetAnimation("Damage_Front_Big_ver_C", true);
-                    //_Move.rb.AddForce(KnockPower * -transform.forward, ForceMode.VelocityChange);
+                    _Move.rb.AddForce(KnockPower * -transform.forward, ForceMode.VelocityChange);
                     break;
                 case Hit_AnimationNumber.Hard:
                     _Animator.PlayerTargetAnimation("Damage_Front_High_KnockDown", true);
-                    //_Move.rb.AddForce(KnockPower / 2f * -transform.forward, ForceMode.VelocityChange);
+                    _Move.rb.AddForce(KnockPower / 2f * -transform.forward, ForceMode.VelocityChange);
                     //_Move.rb.AddForce(KnockPower / 4f * transform.up, ForceMode.VelocityChange);
                     break;
                 default:
@@ -387,7 +404,7 @@ public class Player_Manager : MonoBehaviour
 
     public void Save_On_FireBase()
     {
-        FireBase_M.save();
+        FireBase_M.Save_On_FireBase();
     }
     
 
@@ -417,6 +434,11 @@ public class Player_Manager : MonoBehaviour
     public void Ground_Check()//땅에 닿을 위치면 땅위치로 이동시킴
     {
         
+        if(_Animator._animator.GetBool("JUMP"))
+        {
+            IsGround = false;
+            return;
+        }
         Vector3 RaycastOrigin = transform.position;
         RaycastOrigin.y += 1f;
         Vector3 Last_Posi= transform.position;

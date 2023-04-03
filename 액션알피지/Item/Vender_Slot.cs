@@ -1,9 +1,6 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+
 using UnityEngine.EventSystems;
-using static UnityEditor.Progress;
+
 
 public class Vender_Slot : Base_Slot, IPointerEnterHandler, IPointerExitHandler
 {
@@ -33,9 +30,9 @@ public class Vender_Slot : Base_Slot, IPointerEnterHandler, IPointerExitHandler
     public void OnPointerEnter(PointerEventData eventData)
     {
 
-        if ((Game_Master.Instance.Call_UI().Windows == false) && Game_Master.Instance.Call_UI().Draging == false)
+        if ((Game_Master.Instance.UI.Windows == false) && Game_Master.Instance.UI.Draging == false)
         {
-            Game_Master.Instance.Call_UI().Active_Windows(true, ITEM);
+            Game_Master.Instance.UI.Active_Windows(true, ITEM);
 
         }
 
@@ -43,9 +40,9 @@ public class Vender_Slot : Base_Slot, IPointerEnterHandler, IPointerExitHandler
     }
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (Game_Master.Instance.Call_UI().Windows == true)
+        if (Game_Master.Instance.UI.Windows == true)
         {
-            Game_Master.Instance.Call_UI().Active_Windows(false);
+            Game_Master.Instance.UI.Active_Windows(false);
         }
 
 

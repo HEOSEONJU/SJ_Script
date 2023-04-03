@@ -48,37 +48,33 @@ public class UI_Manager : MonoBehaviour
 
     public bool Use_Heal_item(Use_Item temp)
     {
-        if (Game_Master.instance.Call_Player()._Status.Current_HP == Game_Master.instance.Call_Player()._Status.MAX_HP)
-        {
-            return false;
-        }
-
-        Game_Master.instance.Call_Player()._Status.Heal(temp.Point);
-        View_Hp_text();
-        return true;
+        return Game_Master.instance.PM._Status.Heal(temp.Point);
+        
     }
     public void View_Hp_text()
     {
-        Status_Text_HP.text = Game_Master.instance.Call_Player()._Status.Current_HP.ToString() + "/" + Game_Master.instance.Call_Player()._Status.MAX_HP.ToString();
+        Status_Text_HP.text = Game_Master.instance.PM._Status.Current_HP.ToString() + "/" + Game_Master.instance.PM._Status.MAX_HP.ToString();
     }
 
     public void Reseting_Status()
     {
-        Game_Master.instance.Call_Player()._Status.Cal_All();
-        Status_Text_Level.text = Game_Master.instance.Call_Player()._Status.Level.ToString();
-        Status_Text_ATK.text = Game_Master.instance.Call_Player()._Status.ATK_Point.ToString();
-        Status_Text_DEF.text = Game_Master.instance.Call_Player()._Status.DEF_Point.ToString();
+        Game_Master.instance.PM._Status.Cal_All();
+        Status_Text_Level.text = Game_Master.instance.PM._Status.Level.ToString();
+        Status_Text_ATK.text = Game_Master.instance.PM._Status.ATK_Point.ToString();
+        Status_Text_DEF.text = Game_Master.instance.PM._Status.DEF_Point.ToString();
         View_Hp_text();
-        Status_Text_CRP.text = Game_Master.instance.Call_Player()._Status.CRP_Point.ToString() + "%";
-        Status_Text_CRT.text = Game_Master.instance.Call_Player()._Status.CRT_Point.ToString() + "%";
+        Status_Text_CRP.text = Game_Master.instance.PM._Status.CRP_Point.ToString() + "%";
+        Status_Text_CRT.text = Game_Master.instance.PM._Status.CRT_Point.ToString() + "%";
 
     }
 
 
     public void Active_Windows(bool state, Item_Data Item_temp = null)
     {
-
-        Windows_Object.gameObject.SetActive(state);
+        if (Windows_Object.gameObject.activeSelf != state)
+        {
+            Windows_Object.gameObject.SetActive(state);
+        }
         if (Item_temp == null)
         {
             return;
@@ -172,7 +168,7 @@ public class UI_Manager : MonoBehaviour
 
     public void Renewal_Gold_Text()
     {
-        Gold_Text.text = Game_Master.instance.Call_Player()._Manager_Inventory.Current_Gold().ToString();
+        Gold_Text.text = Game_Master.instance.PM.Data.Current_Gold.ToString();
     }
 
 

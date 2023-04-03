@@ -71,6 +71,10 @@ public class Knight_AI : MonoBehaviour
 
     public bool Move_Target(Animator _Animator)
     {
+        if(Current_Player==null)
+        {
+            return false;
+        }
         Vector3 Dir = Current_Player.position - transform.position;
         Distance_Currennt_Player = Vector3.Distance(Current_Player.position, transform.position);
         if(Distance_Currennt_Player> MaxDistance)
@@ -141,10 +145,7 @@ public class Knight_AI : MonoBehaviour
                 Quaternion TargetRotation = Quaternion.LookRotation(Dir);
                 transform.rotation = TargetRotation;
 
-                int temp = UnityEngine.Random.Range(0, AttackList.Count);
-
-                string AttackOrder = AttackList[temp];
-
+                string AttackOrder = AttackList[UnityEngine.Random.Range(0, AttackList.Count)];
                 _Knight_Enemy.Knight_Animator.PlayerTargetAnimation(AttackOrder, true);
                 AttackDelay += 5;
                 return true;

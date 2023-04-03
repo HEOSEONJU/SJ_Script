@@ -6,16 +6,21 @@ using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 public class Ground_Attack : StateMachineBehaviour
 {
     Player_Animaotr_Controller PAC;
+    [SerializeField]
+    float Combo_Timer;
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         
         PAC = animator.GetComponent<Player_Animaotr_Controller>();
+        PAC.manager.Combo_Timer = Combo_Timer;
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        //Vector3 deltaPosition = animator.deltaPosition;
-        //deltaPosition.y = Physics.gravity.y * Time.deltaTime;
+
+
+
+
         Vector3 deltaPosition = PAC.deltaPosition / Time.deltaTime;
 
         deltaPosition.y = 0;
@@ -33,5 +38,12 @@ public class Ground_Attack : StateMachineBehaviour
 
         //PAC._Move.rb.Move(deltaPosition); base.OnStateUpdate(animator, stateInfo, layerIndex);
     }
-    
+    public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    {
+        if (animator.GetBool("Infinity"))
+        {
+            return;
+        }
+        PAC._Move.rb.velocity = Vector3.zero;
+    }
 }
