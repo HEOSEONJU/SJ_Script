@@ -12,8 +12,7 @@ public class Knight_Enemy : Enemy_Base_Status
         
     public Knight_Animation Knight_Animator;
     public Knight_AI _Knight_AI;
-    [SerializeField]
-    Drop_Table_Script DTS;
+
 
     public bool IsInteracting;
     //public bool Attacking;

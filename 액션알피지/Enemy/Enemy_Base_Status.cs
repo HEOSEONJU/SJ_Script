@@ -24,7 +24,7 @@ public abstract class Enemy_Base_Status : MonoBehaviour
 
 
     [SerializeField]
-    Drop_Table_Script DTS;
+    protected Drop_Table_Script DTS;
 
     public void init()
     {

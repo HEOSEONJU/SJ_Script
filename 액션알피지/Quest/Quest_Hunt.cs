@@ -8,35 +8,37 @@ public class Quest_Hunt : Quest_Basic
     public int Hunt_ID;
     [SerializeField]
     int Hunt_Count;
+
     
 
-    public override float Progress_float()
+    public override float Progress_float(int point)
     {
-        return ((Progress * 1f) / Hunt_Count)*100f;
+        return ((point * 1f) / Hunt_Count)*100f;
     }
-    protected override  void Complete_Check()
+    public override  bool Complete_Check(int point=0)
     {
-        Debug.Log(Progress + "/" + Hunt_Count);
-        if(Progress == Hunt_Count)
+        //Debug.Log(Current_Hunt + "/" + Hunt_Count);
+        if(point == Hunt_Count)
         {
-            Complete = true;
-            return;
+            return true;
         }
 
-        Complete= false;
+        return false;
     }
 
-    public void Hunt_Check(int Monster_ID)
+    public override void  Hunt_Check(int Monster_ID,int Current_point, out int Result_point)
     {
-        if(Complete)
+        Result_point = Current_point;
+        if (Complete_Check(Current_point))
         {
+            
             return;
         }
 
         if(Monster_ID==Hunt_ID)
         {
-            Progress++;
-            Complete_Check();
+            Result_point = Current_point + 1;
+            
         }
     }
 }

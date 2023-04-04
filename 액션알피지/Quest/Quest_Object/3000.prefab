@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2922122799678346780
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8638113066321313158}
+  - component: {fileID: 5408323992896033394}
+  - component: {fileID: 4448021025399519717}
+  - component: {fileID: -8183076432988381654}
+  m_Layer: 0
+  m_Name: 3000
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8638113066321313158
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2922122799678346780}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5408323992896033394
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2922122799678346780}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 288b903826a71df438b4ef25bf8c858a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  QUEST_TYPE: 1
+  Quest_Description: 
+  Talk_Quest_Object_ID: 53
+  Talk_Value_List: "\u3147\u3147\uC704\uCE58\uC5D0 \uC801\uC774\uC788\uB2E4 \uAE30\uC0AC\uB97C
+    \uC7A1\uC544\uB77C"
+  DO: 0
+--- !u!114 &4448021025399519717
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2922122799678346780}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0746575b0efd8ce4f89c2d0722f995cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  QUEST_TYPE: 0
+  Quest_Description: "\u3147\u3147\uC704\uCE58\uB85C\uAC00 \uAE30\uC0AC\uB97C \uC0AC\uB0E5\uD558\uC790"
+  Hunt_ID: 100
+  Hunt_Count: 1
+  Current_Hunt: 0
+--- !u!114 &-8183076432988381654
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2922122799678346780}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 288b903826a71df438b4ef25bf8c858a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  QUEST_TYPE: 1
+  Quest_Description: "\uBCF4\uACE0\uD558\uACE0 \uBCF4\uC0C1\uC744\uBC1B\uC790"
+  Talk_Quest_Object_ID: 53
+  Talk_Value_List: "\uC798\uD588\uB2E4 \uBCF4\uC0C1\uBC1B\uC544\uB77C"
+  DO: 0

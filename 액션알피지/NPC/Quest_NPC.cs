@@ -7,7 +7,7 @@ public class Quest_NPC : Normal_NPC
 {
     [SerializeField]
     const int Max_Quset = 6;
-    public List<Quest_Set> Have_Quest_ID;
+    public List<int> Have_Quest_ID;
     //public Vender_Function Function;
     public Quest_Function QF;
     public GameObject Quest_UI;

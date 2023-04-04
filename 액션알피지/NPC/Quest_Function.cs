@@ -39,7 +39,7 @@ public class Quest_Function : MonoBehaviour
 
     [SerializeField]
     VerticalLayoutGroup VLG;
-    public void Init(Quest_NPC NPC, List<Quest_Set> Quest_List)
+    public void Init(Quest_NPC NPC, List<int> Quest_List)
     {
         _NPC = NPC;
         Title_Text.text = "";
@@ -49,7 +49,7 @@ public class Quest_Function : MonoBehaviour
         {
             var e = Instantiate(Init_Quest_Object, Init_Posi);
             e.name= Quest_List[i].ToString();
-            Quest_Basic T = Game_Master.instance.QLO.Search_Quest(Quest_List[i].Quset_ID);
+            Quest_Process T = Game_Master.instance.QLO.Search_Quest(Quest_List[i]);
             e.transform.GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>().text = T.Quest_Title;
             int temp = i;
             e.transform.GetComponentInChildren<Button>().onClick.AddListener(delegate { View_Quest(temp); });
@@ -69,8 +69,8 @@ public class Quest_Function : MonoBehaviour
     public void View_Quest(int Selected_INDEX)
     {
         
-        Current_INDEX = _NPC.Have_Quest_ID[Selected_INDEX].Quset_ID;
-        Quest_Basic QB = Game_Master.instance.QLO.Search_Quest(Current_INDEX);
+        Current_INDEX = _NPC.Have_Quest_ID[Selected_INDEX];
+        Quest_Process QB = Game_Master.instance.QLO.Search_Quest(Current_INDEX);
         if (Game_Master.instance.PM.Data.Complted_Quest.FindIndex(x => x == Current_INDEX) != -1)//이미 클리어한 퀘스트
         {
             Title_Text.text = QB.Quest_Title;
@@ -105,7 +105,7 @@ public class Quest_Function : MonoBehaviour
 
             Title_Text.text = QB.Quest_Title;
             Description_Text.text = QB.Quest_Description;
-            Complte_Text.text = "0%";
+            Complte_Text.text = "보상 :" + QB.View_Reward_List();
             /*
             switch (QB.QUEST_TYPE)
             {
@@ -132,22 +132,12 @@ public class Quest_Function : MonoBehaviour
 
         else//받은 퀘스트 정보 있음
         {
+            Quest_Process QH = Game_Master.instance.PM.PQB.QBL[INDEX];
+            Title_Text.text = QH.Quest_Title;
+            Description_Text.text = QH.Quest_Description;
+            if (QH.Progress < QH.MaxProgress) 
+            Complte_Text.text = QH.List_Process[QH.Progress].Progress_float(0) + "%";
             
-            switch (Game_Master.Instance.PM.PQB.QBL[INDEX].QUEST_TYPE)
-            {
-                case Quest_Type.Hunt:
-                    Quest_Hunt QH = (Quest_Hunt)Game_Master.instance.PM.PQB.QBL[INDEX];
-                    Title_Text.text = QH.Quest_Title;
-                    Description_Text.text = QH.Quest_Description;
-                    Complte_Text.text = QH.Progress_float() + "%";
-                    break;
-                case Quest_Type.Talk:
-                    Quest_Talk QT = (Quest_Talk)Game_Master.instance.PM.PQB.QBL[INDEX];
-                    Title_Text.text = QT.Quest_Title;
-                    Description_Text.text = QT.Quest_Description;
-                    Complte_Text.text = QT.Progress_float() + "%";
-                    break;
-            }
             OK_Button.SetActive(false);
             Clear_Button.SetActive(true);
         }
@@ -171,7 +161,7 @@ public class Quest_Function : MonoBehaviour
             return;
         }
         
-        Quest_Basic QB = Game_Master.instance.QLO.Search_Quest(Current_INDEX);
+        Quest_Process QB = Game_Master.instance.QLO.Search_Quest(Current_INDEX);
         
         if (QB!=null && QB.Accept())
         {

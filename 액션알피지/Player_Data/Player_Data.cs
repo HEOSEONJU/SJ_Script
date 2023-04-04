@@ -241,6 +241,6 @@ public struct Quest_Info
 {
     public int INDEX;
     public int Progress;
-    public bool COM;
+    public int Point;
 }
 

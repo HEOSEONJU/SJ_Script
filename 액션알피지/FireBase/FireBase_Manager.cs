@@ -32,10 +32,7 @@ public class FireBase_Manager : MonoBehaviour
     Item_List item_List_Object;
     [SerializeField]
     Quest_List Quest_List_Object;
-    [SerializeField]
-    Hunt_Quest_List HQL;
-    [SerializeField]
-    Talk_Quest_List TQL;
+
     #endregion
     static FireBase_Manager instance = null;
     static FireBase_Manager Instance
@@ -138,15 +135,7 @@ public class FireBase_Manager : MonoBehaviour
         }
         item_List_Object.Sort_item();//아이템 정렬
 
-        Quest_List_Object.Quests.Clear();
-        foreach (var item in HQL.Hunt_Quests)//사냥퀘스트
-        {
-            Quest_List_Object.Quests.Add(item);
-        }
-        foreach (var item in TQL.Talk_Quests)//대화형 퀘스트
-        {
-            Quest_List_Object.Quests.Add(item);
-        }
+
         Quest_List_Object.Sort_List();//퀘스트정렬
         Game_Master.instance.Load_List(item_List_Object, Quest_List_Object);//게임마스터에 아이템/퀘스트 리스트추가
 
@@ -208,15 +197,15 @@ public class FireBase_Manager : MonoBehaviour
         if (Game_Master.instance.PM != null)
         {
             Data.Accepted_Quest.Clear();
-            foreach (Quest_Basic QB in Game_Master.instance.PM.PQB.QBL)
+            foreach (Quest_Process QB in Game_Master.instance.PM.PQB.QBL)
             {
                 Quest_Info Temp = new Quest_Info();
                 Temp.INDEX = QB.Quest_ID;
                 Temp.Progress = QB.Progress;
-                Temp.COM = QB.Complete;
+                Temp.Point = QB.Point;
+                
                 Data.Accepted_Quest.Add(Temp);
             }
-
             Data.Last_Position = Game_Master.instance.PM.transform.position;
         }
         
@@ -350,6 +339,7 @@ public class FireBase_Manager : MonoBehaviour
     }
     public void Quest_Load(DataSnapshot Load_Data)
     {
+        Debug.Log("퀘스트로드시작");
         Data.Accepted_Quest = new List<Quest_Info>();
         for (int i = 0; i < Load_Data.Child("Accepted_Quest").ChildrenCount; i++)
         {
@@ -357,7 +347,7 @@ public class FireBase_Manager : MonoBehaviour
 
             TEMPINFO.INDEX = Convert.ToInt32(Load_Data.Child("Accepted_Quest").Child(i.ToString()).Child("INDEX").Value);
             TEMPINFO.Progress = Convert.ToInt32(Load_Data.Child("Accepted_Quest").Child(i.ToString()).Child("Progress").Value);
-            TEMPINFO.COM = Convert.ToBoolean(Load_Data.Child("Accepted_Quest").Child(i.ToString()).Child("COM").Value);
+            TEMPINFO.Point = Convert.ToInt32(Load_Data.Child("Accepted_Quest").Child(i.ToString()).Child("COM").Value);
             Data.Accepted_Quest.Add(TEMPINFO);
         }
         Data.Complted_Quest = new List<int>();
@@ -365,7 +355,7 @@ public class FireBase_Manager : MonoBehaviour
         {
             Data.Complted_Quest.Add(Convert.ToInt32(Load_Data.Child("Complted_Quest").Child(i.ToString()).Value));
         }
-
+        
 
 
     }
@@ -442,14 +432,15 @@ public class FireBase_Manager : MonoBehaviour
         
         AsyncOperation operation = SceneManager.LoadSceneAsync(SceneName);
         operation.allowSceneActivation = true;
-
         
+
         while (!operation.isDone)
         {
             
             yield return null;
         }
-        ES_ADD("불러오기 완료");
+        
+        //ES_ADD("불러오기 완료");
         yield break;
 
         
