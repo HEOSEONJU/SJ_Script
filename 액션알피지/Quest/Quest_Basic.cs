@@ -36,6 +36,10 @@ public class Quest_Basic :MonoBehaviour
     {
         return false;
     }
+    public virtual bool Give_Check(int Item_ID)
+    {
+        return false;
+    }
     public virtual string Return_Value()
     {
 
@@ -47,5 +51,6 @@ public class Quest_Basic :MonoBehaviour
 public enum Quest_Type//퀘스트 타입 
 {
     Hunt,//사냥퀘스트
-    Talk//대화형퀘스트
+    Talk,//대화형퀘스트
+    Give    //상납형퀘스트
 }

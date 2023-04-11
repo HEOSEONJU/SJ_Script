@@ -22,4 +22,8 @@ public class State_Boar_Move : StateMachineBehaviour
             animator.SetBool("Target", false);
         }
     }
+    public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    {
+        KN._RD.velocity = Vector3.zero;
+    }
 }

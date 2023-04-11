@@ -58,11 +58,11 @@ public class Player_Input : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.E))
         {
-            manager.Connect_Object_Function();
+            manager._Connect_Object.Connect_IF_Function();
         }
         // Input.GetMouseButtonDown(0)  Input.GetMouseButtonDown(1)
         // Input.GetKeyDown(KeyCode.E)
-        if (!manager._Connect_Object.IF)
+        if (!manager.Check_UI())
         {
             
 

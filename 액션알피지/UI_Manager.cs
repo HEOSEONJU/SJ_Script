@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Linq;
+
 public class UI_Manager : MonoBehaviour
 {
 
@@ -30,6 +32,13 @@ public class UI_Manager : MonoBehaviour
     [SerializeField]
     CanvasGroup Canvas_Group;
 
+    
+     LinkedList<GameObject> Open_Object;
+    public int Count_Open_UI
+    {
+        get { return Open_Object.Count; }
+    }
+
 
     public void Init()
     {
@@ -44,6 +53,7 @@ public class UI_Manager : MonoBehaviour
             slot.Setting_Slot( INDEX++);
         }
         Windows_Object.gameObject.SetActive(false);
+        Open_Object=new LinkedList<GameObject>();
     }
 
     public bool Use_Heal_item(Use_Item temp)
@@ -67,25 +77,51 @@ public class UI_Manager : MonoBehaviour
         Status_Text_CRT.text = Game_Master.instance.PM._Status.CRT_Point.ToString() + "%";
 
     }
-
-
-    public void Active_Windows(bool state, Item_Data Item_temp = null)
+    public void Open_UI(GameObject GO)
     {
-        if (Windows_Object.gameObject.activeSelf != state)
+        
+        if (GO.activeSelf == false)
         {
-            Windows_Object.gameObject.SetActive(state);
+            GO.SetActive(true);
+            Open_Object.AddLast(GO);
         }
+    }
+    public void Close_UI(GameObject GO)
+    {
+        
+        if (GO.activeSelf == true)
+        {
+            GO.SetActive(false);
+            Open_Object.Remove(GO);
+        }
+    }
+
+    public void Close_All_UI()
+    {
+        
+        while (Open_Object.Count>0)
+        {
+            
+            Open_Object.First().SetActive(false);
+            Open_Object.Remove(Open_Object.First());
+
+        }
+    }
+
+    public void Open_Small_Windows(Item_Data Item_temp = null)//확대창
+    {
+        
         if (Item_temp == null)
         {
             return;
         }
         if (Item_temp.Base_item != null)
             Renewal_Text(Item_temp);
-
-
-
-
-
+        Open_UI(Windows_Object.gameObject);
+    }
+    public void Close_Small_Windows()//확대창
+    {
+        Close_UI(Windows_Object.gameObject);
     }
     public void Renewal_Text(Item_Data Item_temp)
     {

@@ -245,7 +245,7 @@ public class Inventory_Slot : Base_Slot, IBeginDragHandler, IDragHandler, IEndDr
         if ((Activation && Game_Master.instance.UI.Windows == false) && Game_Master.instance.UI.Draging==false)
         {
             
-            Game_Master.instance.UI.Active_Windows(true, Game_Master.instance.PM.Data.Items[Slot_INDEX]);
+            Game_Master.instance.UI.Open_Small_Windows(Game_Master.instance.PM.Data.Items[Slot_INDEX]);
 
         }
         
@@ -255,7 +255,7 @@ public class Inventory_Slot : Base_Slot, IBeginDragHandler, IDragHandler, IEndDr
     {
         if (Game_Master.instance.UI.Windows == true)
         {
-            Game_Master.instance.UI.Active_Windows(false);
+            Game_Master.instance.UI.Close_Small_Windows();
         }
 
 
@@ -266,13 +266,11 @@ public class Inventory_Slot : Base_Slot, IBeginDragHandler, IDragHandler, IEndDr
         {
             return;
         }
-        if (eventData.button == PointerEventData.InputButton.Right)
+        if (eventData.button == PointerEventData.InputButton.Right)//우클릭
         {
-            switch (Game_Master.instance.PM.Data.Items[Slot_INDEX].Base_item.Type)
+           if (Game_Master.instance.PM.Data.Items[Slot_INDEX].Base_item.Type==Type.Use)//우클릭 대상이 소비
             {
-                case Type.Use:
-                    Use_Item temp = (Use_Item)Game_Master.instance.PM.Data.Items[Slot_INDEX].Base_item;
-                    if (Game_Master.instance.UI.Use_Heal_item(temp))//이미 최대체력이면flase반환 아니라면 효과적용후 true반환
+                    if (Game_Master.instance.UI.Use_Heal_item(Game_Master.instance.PM.Data.Items[Slot_INDEX].Base_item as Use_Item))//이미 최대체력이면flase반환 아니라면 효과적용후 true반환
                     {
                         if (Game_Master.instance.PM.Data.Items[Slot_INDEX].UseItem())//갯수를 소모하고  갯수가 0개이하가되면 아이템인덱스삭제
                         {
@@ -280,12 +278,11 @@ public class Inventory_Slot : Base_Slot, IBeginDragHandler, IDragHandler, IEndDr
                             if(Game_Master.instance.PM.Data.Items[Slot_INDEX].count==0)
                             {
                                 Empty_Slot();
-                                Game_Master.instance.UI.Active_Windows(false);
-
+                                Game_Master.instance.UI.Close_Small_Windows();
                             }
                         }
                     }
-                    break;
+                    
             }
         }
 

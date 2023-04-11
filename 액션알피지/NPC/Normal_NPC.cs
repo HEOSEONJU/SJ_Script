@@ -9,8 +9,8 @@ public class Normal_NPC : Base_NPC
         get { return NPC_ID; }
     }
 
-    [SerializeField]
-    TextMeshProUGUI Text;
+    
+    public TextMeshProUGUI Text;
     [SerializeField]
     string Start_Text;
 
@@ -33,7 +33,7 @@ public class Normal_NPC : Base_NPC
 
     public override bool Check_UI()
     {
-        Debug.Log("Normal_UI" + UI.activeSelf);
+        //Debug.Log("Normal_UI" + UI.activeSelf);
         return UI.activeSelf;
     }
 
@@ -43,37 +43,25 @@ public class Normal_NPC : Base_NPC
     }
     public override void DisConnecting_NPC()
     {
-        UI.SetActive(false);
-        
-
+        Game_Master.instance.UI.Close_All_UI();
     }
 
     public override void Open_Window()
     {
         if (Check_UI())
             return;
-        UI.SetActive(true);
+        Game_Master.instance.UI.Close_All_UI();
+        Game_Master.instance.UI.Open_UI(UI);
         Text.text = Start_Text;
-        Game_Master.Instance.PM._Manager_Inventory.Open_Close_Inventory_Window(false);
-        Game_Master.Instance.PM._Manager_Inventory.Open_Close_Equip_Window(false);
+        
     }
 
     public override void Close_Window()
     {
-        
-        UI.SetActive(false);
-        
-
+        Game_Master.instance.PM._Connect_Object.DisConnect_Object();
     }
 
-    public override void Close_ALL_Window()
-    {
-        Close_Window();
-        if (_manager != null)
-            _manager._Connect_Object.Make_IF_NULL();
-        
-    }
-    public void Talk()
+    public void Talk()//버툰으로구현
     {
         string s = Game_Master.Instance.PM.PQB.Call_Talk_Script(ID);
         if(s==null)

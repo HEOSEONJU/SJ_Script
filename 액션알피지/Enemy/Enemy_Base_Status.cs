@@ -16,7 +16,7 @@ public abstract class Enemy_Base_Status : MonoBehaviour
     public int ID;
     public Transform Object_Postion;
 
-    public ParticleSystem baseParticle;
+   // public ParticleSystem baseParticle;
 
 
 
@@ -26,6 +26,8 @@ public abstract class Enemy_Base_Status : MonoBehaviour
     [SerializeField]
     protected Drop_Table_Script DTS;
 
+
+    public float Aggro_Time;
     public void init()
     {
         
@@ -43,7 +45,7 @@ public abstract class Enemy_Base_Status : MonoBehaviour
 }
 public enum Monster_Size
 {
-    S,
-    M,
-    B
+    S_Size,
+    M_Size,
+    B_Size
 }

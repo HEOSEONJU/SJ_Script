@@ -55,7 +55,7 @@ public class Vender_Function : MonoBehaviour, IDropHandler
 
     public void Open_Vender_Item_Info(Item_Data ID)
     {
-        Game_Master.instance.UI.Active_Windows(true,ID);
+        Game_Master.instance.UI.Open_Small_Windows(ID);
     }
 
 
@@ -110,13 +110,15 @@ public class Vender_Function : MonoBehaviour, IDropHandler
     public void Open_Close_Sell_Window(bool state)
     {
 
-        Sell_Window.SetActive(state);
+        
         if (state == false)
         {
+            Game_Master.instance.UI.Close_UI(Sell_Window);
             Current = null;
-            
             Sell_Value = 0;
+            return;
         }
+        Game_Master.instance.UI.Open_UI(Sell_Window);
     }
     public void Agree_Sell()
     {
@@ -129,24 +131,22 @@ public class Vender_Function : MonoBehaviour, IDropHandler
         Vender._manager._UI.Renewal_Gold_Text();
 
 
-        Open_Close_Sell_Window(false);
-    }
-    public void Cancle_Sell()
-    {
 
         Open_Close_Sell_Window(false);
+        
     }
-    public void Cancle_Buy()
+    public void Cancle_Sell()//¹öÅ÷À¸·Î±¸Çö
     {
-
-        Buy_Window.SetActive(false);
+        Open_Close_Sell_Window(false);
+    }
+    public void Cancle_Buy()//¹öÅ÷À¸·Î±¸Çö
+    {
+        Game_Master.instance.UI.Close_UI(Buy_Window);   
     }
     public void Agree_Buy()
     {
-
         if(Game_Master.instance.PM.Data.Current_Gold<Buy_Value)
         {
-
             Debug.Log("µ·ºÎÁ·");
             return;
         }
@@ -156,25 +156,21 @@ public class Vender_Function : MonoBehaviour, IDropHandler
         if (Sell_Item[Selected_INDEX].Type==Type.Use)
         {
             Temp.count = 1;
-            if (!Vender._manager._Manager_Inventory.Get_Item(Temp))
-            {
-                return;
-            }
         }
         else
         {
             Temp.count = 0;
-            if (!Vender._manager._Manager_Inventory.Get_Item(Temp))
-            {
-                return;
-            }
-
+        }
+        if (!Game_Master.instance.PM._Manager_Inventory.Get_Item(Temp))
+        {
+            return;
         }
 
-        Vender._manager._Manager_Inventory.Use_Money(Sell_Item[Selected_INDEX].Value);
-        Vender._manager._UI.Renewal_Gold_Text();
-        Vender._manager.Data_Save(true);
-        Buy_Window.SetActive(false);
+        Game_Master.instance.PM._Manager_Inventory.Use_Money(Sell_Item[Selected_INDEX].Value);
+        Game_Master.instance.UI.Renewal_Gold_Text();
+        Game_Master.instance.PM.Data_Save(true);
+        
+        Game_Master.instance.UI.Close_UI(Buy_Window);
     }
 
 }

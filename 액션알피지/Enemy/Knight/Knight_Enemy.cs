@@ -35,6 +35,7 @@ public class Knight_Enemy : Enemy_Base_Status
         if(_Knight_AI.Current_Player==null)
         {
             _Knight_AI.Current_Player= Player;
+            Aggro_Time = 15;
         }
         if (HP <= 0)
         {

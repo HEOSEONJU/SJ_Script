@@ -43,10 +43,8 @@ public class Quest_List : ScriptableObject
     {
         Quests = Quests.OrderBy(x => x.Quest_ID).ToList();
         Prefabs = Prefabs.OrderBy(x => x.name).ToList();
-
         for(int i=0;i<Quests.Count;i++)
         {
-            
             Quests[i].List_Process = Prefabs[i].GetComponents<Quest_Basic>().ToList();
             Quests[i].MaxProgress = Quests[i].List_Process.Count;
         }

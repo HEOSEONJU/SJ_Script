@@ -52,16 +52,35 @@ public class Player_Quest_Box : MonoBehaviour
 
     public string Call_Talk_Script(int ID)//대화를 하는 NPC의 고유 아이디
     {
-        List<Quest_Process> QTS = QBL.FindAll(x=>x.List_Process[x.Progress].QUEST_TYPE == Quest_Type.Talk);
-        foreach (Quest_Process QP in QTS)
+        foreach (Quest_Process QP in QBL.FindAll(x => x.List_Process[x.Progress].QUEST_TYPE == Quest_Type.Talk&& x.Progress != x.MaxProgress))
         {
             if (QP.List_Process[QP.Progress].Talk_Check(ID))
                 {
-                    
-                    return QP.List_Process[QP.Progress++].Return_Value();
+                string Temp_String = QP.List_Process[QP.Progress++].Return_Value();
+                Game_Master.instance.PM.Save_On_FireBase();
+                return Temp_String;
                 }
         }
         return null;
+    }
+    public string Check_Give_Item()
+    {
+        int c = 0;
+        foreach (Quest_Process QP in QBL.FindAll(x => x.List_Process[x.Progress].QUEST_TYPE == Quest_Type.Give && x.Progress != x.MaxProgress))
+        {
+            c++;
+            if (QP.List_Process[QP.Progress].Give_Check((QP.List_Process[QP.Progress] as Quest_Give).Item_ID))
+            {
+                QP.List_Process[QP.Progress++].Return_Value();
+                Game_Master.instance.PM.Save_On_FireBase();
+                return "아이템 잘 건네 받았네";
+            }
+        }
+        if(c==0)
+        {
+            return "자네에게 받을 아이템은 없네만";
+        }
+        return "아이템이 모자란거만 같네만";
     }
 
 }

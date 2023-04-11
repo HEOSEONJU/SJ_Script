@@ -23,26 +23,14 @@ public class Upgrade_NPC : Normal_NPC
 
     public void Open_Upgrade_Function()
     {
-
-
-        Upgrade_UI.SetActive(true);
+        Game_Master.Instance.UI.Close_All_UI();
+        Game_Master.Instance.UI.Open_UI(Upgrade_UI);
         Game_Master.Instance.PM._Manager_Inventory.Open_Close_Inventory_Window(true);
-        Close_Window();
+        
     }
     
-    public void Close_Upgrade_Function()
-    {
-        Close_ALL_Window();
-        
 
-
-    }
-    public override void Close_ALL_Window()
-    {
-        Upgrade_UI.SetActive(false);
-        Game_Master.Instance.PM._Manager_Inventory.Open_Close_Inventory_Window(false);
-        base.Close_ALL_Window();
-    }
+    
     public void Upgrade_Item()
     {
 

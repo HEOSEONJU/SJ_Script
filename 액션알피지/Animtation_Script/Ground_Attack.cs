@@ -45,5 +45,8 @@ public class Ground_Attack : StateMachineBehaviour
             return;
         }
         PAC._Move.rb.velocity = Vector3.zero;
+
+        Debug.Log(animator.name + "쿼터니언초기화");
+        animator.transform.localRotation= Quaternion.identity;
     }
 }

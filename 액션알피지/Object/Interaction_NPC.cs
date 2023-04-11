@@ -55,7 +55,7 @@ public class Interaction_NPC : Interaction_Function
     }
     public override void Close_Window()
     {
-        
-        _NPC.Close_ALL_Window();
+
+        Game_Master.instance.UI.Close_All_UI();
     }
 }

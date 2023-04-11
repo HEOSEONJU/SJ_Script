@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class State_Boar_Search : StateMachineBehaviour
+public class Cal_Boar_Attack_Delay : StateMachineBehaviour
 {
+
     Boar_Enemy KN;
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
@@ -15,10 +16,8 @@ public class State_Boar_Search : StateMachineBehaviour
         {
             return;
         }
-        if (KN._Boar_AI.Detection())
-        {
-            animator.SetBool("Target", true);
-        }
+        KN._Boar_AI.Update_Attack_Delay(Time.deltaTime);
 
     }
+
 }

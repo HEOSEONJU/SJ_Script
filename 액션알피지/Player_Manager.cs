@@ -41,7 +41,15 @@ public class Player_Manager : MonoBehaviour
     public bool WalkState = false;
     public bool SprintState = false;
     public bool IsInteracting;
-    public bool LockOnMode;
+
+    bool Lock = false;
+    public bool LockOnMode
+    {
+        get { return Lock; }
+        set{
+            Lock = value;
+        }
+    }
     public bool Attacking;
     
     public float Combo_Timer;
@@ -167,7 +175,7 @@ public class Player_Manager : MonoBehaviour
         {
 
             _Camera.FollowTarget(Time.deltaTime);
-            if (!Open_UI)//나중에 UI오픈으로 바꿀것
+            if (!Open_UI)
             {
 
                 _Camera.HandleCameraRotation(Time.deltaTime, _Input.MouseX, _Input.MouseY);
@@ -235,9 +243,8 @@ public class Player_Manager : MonoBehaviour
     public bool Check_UI()
     {
 
-        if (_Manager_Inventory.Inventory_Object.activeSelf || _Manager_Inventory.Equip_Object.activeSelf)
+        if (Game_Master.instance.UI.Count_Open_UI>0)
         {
-            
             return true;
         }
         return false;
@@ -267,20 +274,7 @@ public class Player_Manager : MonoBehaviour
     }
     #endregion
 
-    #region NPC접촉
 
-    public void Connect_Object_Function()
-    {
-
-        //if (_Connect_Object.Connecting)//이미연결되어있다면
-        //{
-        //    _Connect_Object.DisConnect_Object();
-            
-        //    return;
-        //}
-        _Connect_Object.Connect_IF_Function();
-    }
-    #endregion
 
     #region 데미지관련
 
@@ -302,10 +296,11 @@ public class Player_Manager : MonoBehaviour
             Damage_Point *= Magnification;
             int INT_DAMGE = (int)Damage_Point;
             Enemy_IDList.Add(temp.ID);
-            if (temp.Damaged(INT_DAMGE, this.transform))
+            if (temp.Damaged(INT_DAMGE, this.transform,1))
             {
                 LockOnMode = false;
                 _Camera.ClearListTarget();
+
                 if (WalkState == true)
                 {
                     WalkState = false;
@@ -371,24 +366,7 @@ public class Player_Manager : MonoBehaviour
         }
         else
         {
-            switch (AttackType)
-            {
-                case Hit_AnimationNumber.Weak:
-                    _Animator.PlayerTargetAnimation("Damage_Front_Big_ver_A", true);
-                    //_Move.rb.AddForce(KnockPower / 10f * -transform.forward, ForceMode.Impulse);
-                    break;
-                case Hit_AnimationNumber.Nomal:
-                    _Animator.PlayerTargetAnimation("Damage_Front_Big_ver_C", true);
-                    //_Move.rb.AddForce(KnockPower / 10f * -transform.forward, ForceMode.Impulse);
-                    break;
-                case Hit_AnimationNumber.Hard:
-                    _Animator.PlayerTargetAnimation("Damage_Front_High_KnockDown", true);
-                    //_Move.rb.AddForce(KnockPower / 20f * -transform.forward, ForceMode.Impulse);
-                    //_Move.rb.AddForce(KnockPower / 40f * transform.up, ForceMode.Impulse);
-                    break;
-                default:
-                    break;
-            }
+            _Animator.PlayerTargetAnimation("Damage_Front_Flying_ver_B", true);
         }
         if (_Status.Damaged_HP(Damage))
         {

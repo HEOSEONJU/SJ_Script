@@ -16,12 +16,18 @@ public class Boar_Enemy : Enemy_Base_Status
     //public bool Attacking;
 
     public float Move_Speed;
+
+    [SerializeField]
+    Collider _Collider;
+    
+    public Rigidbody _RD;
     public void Start()
     {
 
         init();
         Boar_Animator.Init();
         _Boar_AI.Init();
+
     }
 
     public Hit_AnimationNumber AttackType;
@@ -29,10 +35,19 @@ public class Boar_Enemy : Enemy_Base_Status
 
     public override bool Damaged(float Damaged_Point, Transform Player, int Type = 0)
     {
+        if (Type == 1)
+        {
+            Boar_Animator._Animator.SetTrigger("Air_Hit");
+        }
+        else
+        {
+            Boar_Animator._Animator.SetTrigger("Hit");
+        }
         HP -= Damaged_Point;
         if (_Boar_AI.Current_Player == null)
         {
             _Boar_AI.Current_Player = Player;
+            Aggro_Time = 15;
         }
         if (HP <= 0)
         {
@@ -48,7 +63,11 @@ public class Boar_Enemy : Enemy_Base_Status
         //아이템드랍코드
         Game_Master.instance.PM.PQB.Check_Monster_Kill(Data.Monster_ID);
         Drop(Random.Range(0, 100));
+        _Collider.isTrigger = true;
+        _RD.useGravity = false;
+        _RD.velocity = Vector3.zero;
 
+            
         Boar_Animator.WeaponColliderDisable();
         Boar_Animator._Animator.CrossFade("DeathStart", 0.1f);
         Destroy(gameObject, 5.0f);
@@ -71,25 +90,22 @@ public class Boar_Enemy : Enemy_Base_Status
     }
     public void Player_to_Damaged(Collider other)
     {
-        
-        if (Boar_Animator._Animator.GetBool("Attacking"))
+        Player_Manager temp = other.gameObject.transform.root.GetComponent<Player_Manager>();
+        if (temp != null)
         {
-            Player_Manager temp = other.gameObject.transform.root.GetComponent<Player_Manager>();
-            if (temp != null)
+            foreach (int id in PlayerObject_ID)
             {
-                foreach (int id in PlayerObject_ID)
+                if (id == temp.ObjectID)
                 {
-                    if (id == temp.ObjectID)
-                    {
-                        return;
-                    }
+                    return;
                 }
-                temp.PlayerDamaged(ATK, transform.position - temp.transform.position, AttackType, KnockPower);
-                PlayerObject_ID.Add(temp.ObjectID);
-
-
             }
+            temp.PlayerDamaged(ATK, transform.position - temp.transform.position, AttackType, KnockPower);
+            PlayerObject_ID.Add(temp.ObjectID);
+
+
         }
+
 
         
 

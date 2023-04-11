@@ -6,9 +6,9 @@ using System.Linq;
 
 public class Player_Connect_Object : MonoBehaviour
 {
-    
+
     [SerializeField]
-    List<Interaction_Function> Object_List;
+    LinkedList<Interaction_Function> Object_List;
     [SerializeField]
     Interaction_Function Connect_IF;
 
@@ -16,7 +16,7 @@ public class Player_Connect_Object : MonoBehaviour
     {
         get
         {
-            if(Connect_IF==null)
+            if (Connect_IF == null)
             {
                 return false;
             }
@@ -27,26 +27,26 @@ public class Player_Connect_Object : MonoBehaviour
     Collider Object_Detect_Collider;
     Transform CharPosi;
 
-    
+
 
 
     public void Init()
     {
-        Object_Detect_Collider= GetComponent<Collider>();
-        
-        Object_List=new List<Interaction_Function>();
-        
+        Object_Detect_Collider = GetComponent<Collider>();
+
+        Object_List = new LinkedList<Interaction_Function>();
+
         CharPosi = Game_Master.instance.PM.transform;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.CompareTag("Object"))
+        if (other.CompareTag("Object"))
         {
             Interaction_Function temp = other.GetComponent<Interaction_Function>();
-            Object_List.Add(temp);
+            Object_List.AddLast(temp);
             temp.Connect_Object(Game_Master.instance.PM);
-            
+
         }
     }
     private void OnTriggerExit(Collider other)
@@ -54,14 +54,14 @@ public class Player_Connect_Object : MonoBehaviour
         if (other.CompareTag("Object"))
         {
             Interaction_Function temp = other.GetComponent<Interaction_Function>();
-            if(temp==null)
+            if (temp == null)
             {
                 return;
             }
             Object_List.Remove(temp);
 
 
-            if(Connect_IF!=null)
+            if (Connect_IF != null)
             {
                 foreach (Interaction_Function func in Object_List)//아직 주변에 연결된NPC가있을때
                 {
@@ -73,48 +73,41 @@ public class Player_Connect_Object : MonoBehaviour
                     }
                 }
 
-                
+
             }
             DisConnect_Object();
             temp.DisConnect_Object();//NPC에 매니저할당해제
-
-
-
-
-
-
-
-
-
-
         }
     }
 
-
-
-    public void Connect_IF_Function()
+    public void Connect_IF_Function()//플레이어 입력으로 주변 IF와 접촉시도
     {
-        if(Object_List.Count==0)//접촉할 오브젝트 없음
+        if (Object_List.Count == 0)//접촉할 오브젝트 없음 혹은 이미 접촉중
         {
             return;
         }
+        else if (IF)
+        {
+            Connect_IF.Function(false);
+            Make_IF_NULL();
+                
+            return;
+        }
 
-        Sorting_Distance();
-        Connect_IF = Object_List.First();
+        Connect_IF = Return_Close_IF();
         Connect_IF.Function(IF);
 
     }
 
-    public void DisConnect_Object()//내상태에서 NPC관련해제
+    public void DisConnect_Object()// 접속상태 해제
     {
-        if(Connect_IF == null)
+        if (Connect_IF == null)
         {
             return;
         }
-        Game_Master.instance.PM._Manager_Inventory.Open_Close_Inventory_Window(false);
-        
-        Connect_IF.Function(false);
-        Make_IF_NULL();
+        Game_Master.instance.UI.Close_All_UI();
+        Connect_IF = null;
+
 
     }
 
@@ -122,15 +115,26 @@ public class Player_Connect_Object : MonoBehaviour
     {
         Connect_IF = null;
     }
-    public void Sorting_Distance()
+    public Interaction_Function Return_Close_IF()
     {
-        if(Object_List.Count>=2)
+        if (Object_List.Count == 1)
         {
-            foreach(Interaction_Function func in Object_List)
-            {
-                func.Distance = Vector3.Distance(CharPosi.position, func.transform.position);
-            }
-            Object_List.Sort((Interaction_Function x, Interaction_Function y) => x.Distance.CompareTo(y.Distance));
+            return Object_List.First();
         }
+        Interaction_Function TEMP = null;
+        float Value = float.MaxValue;
+
+        foreach (Interaction_Function func in Object_List)
+        {
+            Debug.Log(func.name +Vector3.Distance(CharPosi.position, func.transform.position));
+            float distance = Vector3.Distance(CharPosi.position, func.transform.position);
+            if (Value > distance)
+            {
+                Value = distance;
+                TEMP = func;
+            }
+        }
+        return TEMP;
+        //Object_List.Sort((Interaction_Function x, Interaction_Function y) => x.Distance.CompareTo(y.Distance));
     }
 }

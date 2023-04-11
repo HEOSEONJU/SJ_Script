@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Player_Inventory : MonoBehaviour
 {
-    [SerializeField]
     
     public Equip_Weapon Main_Weapon;
     public List<Equip_Armor> Equip_Armors;
@@ -16,7 +15,7 @@ public class Player_Inventory : MonoBehaviour
         get { return _Counter_Inventory(); } 
     }
 
-    //public int Gold = 0;
+    
 
 
 
@@ -25,20 +24,9 @@ public class Player_Inventory : MonoBehaviour
     public Transform Slot_Parent;
 
     
-    //public List<Slot> Equip_Item_Image;
-    //public List<Slot> Inventory_Item_Image;
-
-
-
-
-
-    //public bool Inventory_Open = false;
-    //public bool Equip_Open = false;
-
     public void Init()
     {
         
-        //Gold = Data.Gold;
         int i;
         Inventory_Object= Game_Master.instance.UI.transform.GetChild(0).gameObject;
         Equip_Object = Game_Master.instance.UI.transform.GetChild(1).gameObject;
@@ -70,7 +58,7 @@ public class Player_Inventory : MonoBehaviour
         Open_Close_Equip_Window(false);
         Inventory_Object.SetActive(false);
         //Inventory_Open = false;
-        Game_Master.instance.UI.Active_Windows(false);
+        Game_Master.instance.UI.Close_Small_Windows();
         
         
 
@@ -97,6 +85,10 @@ public class Player_Inventory : MonoBehaviour
     public bool Get_Item(Item_Data temp)
     {
         
+        if(temp==null)
+        {
+            return false;
+        }
         
         switch (temp.Base_item.Type)
         {
@@ -105,10 +97,10 @@ public class Player_Inventory : MonoBehaviour
                 {
                     if (ID.INDEX == temp.Base_item.Item_Index)
                     {
-                        Use_Item Check = (Use_Item)ID.Base_item;
-                        if (Check.Max_Count >= ID.count + temp.count)
+                        if ((ID.Base_item as Use_Item).Max_Count >= ID.count + temp.count)
                         {
                             ID.count += temp.count;//이미 가진 소비아이템 합칠 수 있으므로 갯수 증가
+                            
                             Load_on_Data(Game_Master.instance.PM.Data);//인벤토리 갱신
                             //_Manager.Save_On_FireBase();//얻은내역 업로드
                             return true;
@@ -164,14 +156,15 @@ public class Player_Inventory : MonoBehaviour
         {
             case true:
                 Game_Master.instance.UI.Reseting_Status();
+                Game_Master.instance.UI.Open_UI(Equip_Object);
                 break;
             default:
-                Game_Master.instance.UI.Active_Windows(false);
+                Game_Master.instance.UI.Close_Small_Windows();
+                Game_Master.instance.UI.Close_UI(Equip_Object);
                 break;
         }
 
-        if(Equip_Object.activeSelf!=State)
-        Equip_Object.SetActive(State);
+        
     }
 
     public void Open_Close_Inventory_Window(bool State)
@@ -186,15 +179,15 @@ public class Player_Inventory : MonoBehaviour
             case true:
                 Load_on_Data(Game_Master.instance.PM.Data);
                 Game_Master.instance.UI.Renewal_Gold_Text();
+                Game_Master.instance.UI.Open_UI(Inventory_Object);
                 break;
             default:
 
-                Game_Master.instance.UI.Active_Windows(State);
-                
+                Game_Master.instance.UI.Close_Small_Windows();
+                Game_Master.instance.UI.Close_UI(Inventory_Object);
                 break;
         }
-        if (Inventory_Object.activeSelf != State)
-            Inventory_Object.SetActive(State);
+        
         //Inventory_Open = State;
         //Renewal_Inventroy(_Manager.Call_Data());
     }

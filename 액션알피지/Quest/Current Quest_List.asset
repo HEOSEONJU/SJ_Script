@@ -13,6 +13,22 @@ MonoBehaviour:
   m_Name: Current Quest_List
   m_EditorClassIdentifier: 
   Quests:
+  - Quest_ID: 2000
+    Quest_Title: "\uC18C\uBE44\uD615\uC544\uC774\uC0C1\uB0A9\uD615\uD018\uC2A4\uD2B8"
+    Quest_Description: "\uD018\uC2A4\uD2B8\uC0C1\uC778\uC5D0\uAC8C \uC790\uC138\uD55C\uB0B4\uC6A9\uB4E3\uAE30"
+    Value_Gold: 5000
+    Value_item:
+    - Base_item: {fileID: 11400000, guid: 8daae6bebdf43d44fb04d1f5bd1c176f, type: 2}
+      count: 0
+      Upgrade: 0
+      INDEX: 0
+    Progress: 1
+    MaxProgress: 2
+    List_Process:
+    - {fileID: 5408323992896033394, guid: e16bce59fb38a014a98c6d2225f24376, type: 3}
+    - {fileID: 7226535061266827851, guid: e16bce59fb38a014a98c6d2225f24376, type: 3}
+    Point: 0
+    Before_List: 
   - Quest_ID: 3000
     Quest_Title: "\uBAAC\uC2A4\uD130\uC0AC\uB0E5"
     Quest_Description: "\uB9C8\uC744\uC0AC\uB78C\uC5D0\uAC8C \uBAAC\uC2A4\uD130\uC758
@@ -25,6 +41,22 @@ MonoBehaviour:
     - {fileID: 5408323992896033394, guid: ecaf175851db6944dabae5e54a193ce7, type: 3}
     - {fileID: 4448021025399519717, guid: ecaf175851db6944dabae5e54a193ce7, type: 3}
     - {fileID: -8183076432988381654, guid: ecaf175851db6944dabae5e54a193ce7, type: 3}
+    Point: 0
+    Before_List: 
+  - Quest_ID: 4000
+    Quest_Title: "\uC7A5\uBE44\uC544\uC774\uD15C\uC0C1\uB0A9\uD615\uD018\uC2A4\uD2B8"
+    Quest_Description: "\uD018\uC2A4\uD2B8\uC0C1\uC778\uC5D0\uAC8C \uC790\uC138\uD55C\uB0B4\uC6A9\uB4E3\uAE30"
+    Value_Gold: 0
+    Value_item:
+    - Base_item: {fileID: 11400000, guid: 8daae6bebdf43d44fb04d1f5bd1c176f, type: 2}
+      count: 0
+      Upgrade: 0
+      INDEX: 0
+    Progress: 1
+    MaxProgress: 2
+    List_Process:
+    - {fileID: 5408323992896033394, guid: c50378fe71d87b94080547a4d046e745, type: 3}
+    - {fileID: 7226535061266827851, guid: c50378fe71d87b94080547a4d046e745, type: 3}
     Point: 0
     Before_List: 
   - Quest_ID: 5000
@@ -53,5 +85,7 @@ MonoBehaviour:
     Point: 0
     Before_List: 
   Prefabs:
+  - {fileID: 2922122799678346780, guid: e16bce59fb38a014a98c6d2225f24376, type: 3}
   - {fileID: 2922122799678346780, guid: ecaf175851db6944dabae5e54a193ce7, type: 3}
+  - {fileID: 2922122799678346780, guid: c50378fe71d87b94080547a4d046e745, type: 3}
   - {fileID: 2922122799678346780, guid: 770d1cac3e11d0640aaf6f7391403ac2, type: 3}
