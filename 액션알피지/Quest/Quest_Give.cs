@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 using UnityEngine;
-
+using Item_Enum;
 [System.Serializable]
 public class Quest_Give : Quest_Basic
 {
@@ -35,7 +31,9 @@ public class Quest_Give : Quest_Basic
         
         switch( Game_Master.instance.ILO.Search_item(Item_ID).Type)
         {
-            case Type.Use:
+            case EItem_Slot_Type.ETC:
+                break;
+            case EItem_Slot_Type.Use:
                 int Max_count = 0;
                 foreach (Item_Data ID in Game_Master.instance.PM.Data.Items.FindAll(x => x.INDEX == Item_ID))
                 {

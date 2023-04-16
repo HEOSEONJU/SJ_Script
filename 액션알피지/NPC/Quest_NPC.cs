@@ -35,10 +35,3 @@ public class Quest_NPC : Normal_NPC
 
 
 }
-[System.Serializable]
-public struct Quest_Set
-{
-    public int Quset_ID;
-    public Quest_Type TYPE;
-
-}

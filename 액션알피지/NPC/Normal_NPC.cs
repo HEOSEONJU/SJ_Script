@@ -58,12 +58,12 @@ public class Normal_NPC : Base_NPC
 
     public override void Close_Window()
     {
-        Game_Master.instance.PM._Connect_Object.DisConnect_Object();
+        Game_Master.instance.PM._connect_Object.DisConnect_Object();
     }
 
     public void Talk()//버툰으로구현
     {
-        string s = Game_Master.Instance.PM.PQB.Call_Talk_Script(ID);
+        string s = Game_Master.Instance.PM._playerQuestBox.Call_Talk_Script(ID);
         if(s==null)
         {
             Text.text = Default_Text;

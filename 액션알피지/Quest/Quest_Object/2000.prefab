@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 288b903826a71df438b4ef25bf8c858a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  QUEST_TYPE: 1
+  _questType: 1
   Quest_Description: "\uC0C1\uC810\uC8FC\uC778\uC5D0\uAC8C \uAC00\uAE30"
   Talk_Quest_Object_ID: 53
   Talk_Value_List: "\uD3EC\uC158\uC744 \uC0AC\uC11C \uC804\uB2EC\uD558\uAE30"
@@ -60,7 +60,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 672c40540770f3349b2d33cafb0630d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  QUEST_TYPE: 2
+  _questType: 2
   Quest_Description: "\uD018\uC2A4\uD2B8\uC0C1\uC778\uC5D0\uAC8C \uD3EC\uC1585\uAC1C\uC804\uB2EC"
   Item_ID: 3000
   Item_Count: 5

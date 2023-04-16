@@ -22,7 +22,7 @@ public class Boar_Animation : MonoBehaviour
         Debug.Log("АјАн");
         Manager.Clear_ID_List();
         //Debug.Log((Hit_AnimationNumber)_Animator.GetInteger("Attack"));
-        Manager.AttackType = (Hit_AnimationNumber)_Animator.GetInteger("Attack");
+        Manager.AttackType = (EHit_AnimationNumber)_Animator.GetInteger("Attack");
         Manager.KnockPower = _Animator.GetFloat("KnockPower");
 
         Weapon_Collider.WeaponColliderEnable();

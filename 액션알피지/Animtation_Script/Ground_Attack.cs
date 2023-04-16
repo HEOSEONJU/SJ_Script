@@ -10,9 +10,8 @@ public class Ground_Attack : StateMachineBehaviour
     float Combo_Timer;
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        
-        PAC = animator.GetComponent<Player_Animaotr_Controller>();
-        PAC.manager.Combo_Timer = Combo_Timer;
+        animator.TryGetComponent<Player_Animaotr_Controller>(out PAC);
+        PAC.manager._comboTimer = Combo_Timer;
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -24,10 +23,10 @@ public class Ground_Attack : StateMachineBehaviour
         Vector3 deltaPosition = PAC.deltaPosition / Time.deltaTime;
 
         deltaPosition.y = 0;
-        PAC._Move.rb.velocity = deltaPosition;
+        PAC._Move._rigidBody.velocity = deltaPosition;
         if (PAC.manager.LockOnMode)
         {
-            PAC.transform.LookAt(PAC.manager._Camera.CurrentLockonTarget);
+            PAC.transform.LookAt(PAC.manager._camera.CurrentLockonTarget);
             Quaternion temp = PAC.transform.rotation;
             temp.Set(0, temp.y, 0, temp.w);
             PAC.transform.rotation = temp;
@@ -44,9 +43,9 @@ public class Ground_Attack : StateMachineBehaviour
         {
             return;
         }
-        PAC._Move.rb.velocity = Vector3.zero;
+        PAC._Move._rigidBody.velocity = Vector3.zero;
 
-        Debug.Log(animator.name + "쿼터니언초기화");
+        //Debug.Log(animator.name + "쿼터니언초기화");
         animator.transform.localRotation= Quaternion.identity;
     }
 }

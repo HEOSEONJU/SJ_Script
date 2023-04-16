@@ -23,7 +23,7 @@ public class Player_Connect_Object : MonoBehaviour
             return true;
         }
     }
-
+    [SerializeField]
     Collider Object_Detect_Collider;
     Transform CharPosi;
 
@@ -32,7 +32,7 @@ public class Player_Connect_Object : MonoBehaviour
 
     public void Init()
     {
-        Object_Detect_Collider = GetComponent<Collider>();
+        
 
         Object_List = new LinkedList<Interaction_Function>();
 

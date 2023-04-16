@@ -4,9 +4,12 @@ using UnityEngine;
 
 public class Player_Animaotr_Controller : MonoBehaviour
 {
-    public Player_Move _Move;
-    Player_Animator _Animator;
+
     public Player_Manager manager;
+    public Player_Move _Move;
+    [SerializeField]
+    Player_Animator _Animator;
+    [SerializeField]
     Player_Input _Input;
 
 
@@ -39,10 +42,6 @@ public class Player_Animaotr_Controller : MonoBehaviour
     private void Awake()
     {
 
-        _Move = GetComponentInParent<Player_Move>();
-        _Animator = GetComponentInParent<Player_Animator>();
-        manager = GetComponentInParent<Player_Manager>();
-        _Input = GetComponentInParent<Player_Input>();
         _Weapon_Slot_Manager = GetComponentInParent<Player_Weapon_Slot_Manager>();
         Player_Camera_Transform = Camera.main.transform;
     }
@@ -202,10 +201,10 @@ public class Player_Animaotr_Controller : MonoBehaviour
     public void ChangeDir()
     {
         Vector3 targetDir = Vector3.zero;
-        float moveOverrride = _Input.MoveAmount;
+        float moveOverrride = _Input._moveAmount;
 
-        targetDir = Player_Camera_Transform.transform.forward * _Input.Vertical;
-        targetDir += Player_Camera_Transform.transform.right * _Input.Horizontal;
+        targetDir = Player_Camera_Transform.transform.forward * _Input._vertical;
+        targetDir += Player_Camera_Transform.transform.right * _Input._horizontal;
 
 
         targetDir.Normalize();
@@ -216,7 +215,7 @@ public class Player_Animaotr_Controller : MonoBehaviour
         }
         float rotationSpeed = 100;
         float rs;
-        if (manager.IsGround)
+        if (manager._isGround)
         {
             rs = rotationSpeed;
         }

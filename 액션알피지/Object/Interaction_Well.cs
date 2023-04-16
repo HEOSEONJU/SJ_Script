@@ -16,10 +16,10 @@ public class Interaction_Well : Interaction_Function
         {
             return;
         }
-        if (Game_Master.instance.PM._Status.Heal(int.MaxValue))
+        if (Game_Master.instance.PM._status.Heal(int.MaxValue))
         {
             
-            Game_Master.instance.PM._Connect_Object.Make_IF_NULL();
+            Game_Master.instance.PM._connect_Object.Make_IF_NULL();
             
             StartCoroutine(Idle_Time());
             WaterMesh.enabled = false;

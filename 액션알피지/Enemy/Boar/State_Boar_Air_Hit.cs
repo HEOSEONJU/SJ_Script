@@ -11,8 +11,9 @@ public class State_Boar_Air_Hit : StateMachineBehaviour
     LayerMask Layer;
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        
-        KN = animator.GetComponent<Boar_Enemy>();
+
+        if (animator.TryGetComponent<Boar_Enemy>(out Boar_Enemy E))
+            KN = E;
         animator.SetBool("Air", true);
         
         Ray ray = new Ray();

@@ -22,14 +22,14 @@ public class Knight_Enemy : Enemy_Base_Status
     {
 
         init();
-        Knight_Animator.Init();
+
         _Knight_AI.Init();
     }
 
-    public Hit_AnimationNumber AttackType;
+    public EHit_AnimationNumber AttackType;
     public float KnockPower;
 
-    public override bool Damaged(float Damaged_Point,Transform Player, int Type = 0)
+    public override bool Damaged(float Damaged_Point,Transform Player, EAttack_Special AC)
     {
         HP -= Damaged_Point;
         if(_Knight_AI.Current_Player==null)
@@ -49,7 +49,7 @@ public class Knight_Enemy : Enemy_Base_Status
     public override void Died()
     {
         //아이템드랍코드
-        Game_Master.instance.PM.PQB.Check_Monster_Kill(Data.Monster_ID);
+        Game_Master.instance.PM._playerQuestBox.Check_Monster_Kill(Data.Monster_ID);
         Drop(Random.Range(0, 100));
         
         Knight_Animator.WeaponColliderDisable();
@@ -62,7 +62,7 @@ public class Knight_Enemy : Enemy_Base_Status
     public override void Drop(int Per)
     {
         Debug.Log("드랍로그 어떻게 할지 정하기");
-        Game_Master.instance.PM._Manager_Inventory.Get_Item(Data.Drop.Return_Item(Per));
+        Game_Master.instance.PM._manager_Inventory.Get_Item(Data.Drop.Return_Item(Per));
         Game_Master.instance.PM.Data.Current_Gold+=Data.Drop.Return_Gold();
         Game_Master.instance.PM.Save_On_FireBase();
     }
@@ -81,13 +81,13 @@ public class Knight_Enemy : Enemy_Base_Status
             {
                 foreach (int id in PlayerObject_ID)
                 {
-                    if (id == temp.ObjectID)
+                    if (id == temp._objectID)
                     {
                         return;
                     }
                 }
                 temp.PlayerDamaged(ATK, transform.position - temp.transform.position, AttackType, KnockPower);
-                PlayerObject_ID.Add(temp.ObjectID);
+                PlayerObject_ID.Add(temp._objectID);
 
 
             }

@@ -9,8 +9,8 @@ public class Upper_Attack : StateMachineBehaviour
     Player_Animaotr_Controller PAC;
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        PAC = animator.GetComponent<Player_Animaotr_Controller>();
-        PAC._Move.rb.velocity = Vector3.zero;
+        animator.TryGetComponent<Player_Animaotr_Controller>(out PAC);
+        PAC._Move._rigidBody.velocity = Vector3.zero;
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -19,10 +19,10 @@ public class Upper_Attack : StateMachineBehaviour
         Vector3 deltaPosition_air = PAC.deltaPosition/Time.deltaTime; 
 
         
-        PAC._Move.rb.velocity=deltaPosition_air;
+        PAC._Move._rigidBody.velocity=deltaPosition_air;
         if (PAC.manager.LockOnMode)
         {
-            PAC.transform.LookAt(PAC.manager._Camera.CurrentLockonTarget);
+            PAC.transform.LookAt(PAC.manager._camera.CurrentLockonTarget);
             Quaternion temp = PAC.transform.rotation;
             temp.Set(0, temp.y, 0, temp.w);
             PAC.transform.rotation = temp;

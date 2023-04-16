@@ -11,8 +11,8 @@ public class State_Boar_Gravity : StateMachineBehaviour
 
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-
-        KN = animator.GetComponent<Boar_Enemy>();
+        if (animator.TryGetComponent<Boar_Enemy>(out Boar_Enemy E))
+            KN = E;
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -20,10 +20,11 @@ public class State_Boar_Gravity : StateMachineBehaviour
         Ray ray = new Ray();
         ray.direction = Vector3.down;
         ray.origin = animator.transform.position + new Vector3(0, 0.5f, 0);
-        RaycastHit[] hits = Physics.RaycastAll(ray, 0.6f, Layer);
+        RaycastHit[] hits = Physics.RaycastAll(ray, 0.7f, Layer);
 
         if (hits.Length != 0)
         {
+            
             animator.SetBool("Air", false);
 
         }

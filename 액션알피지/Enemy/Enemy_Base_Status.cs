@@ -1,7 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
+using UnityEngine;
+using Hit_Type_NameSpace;
+using Enemy;
 public abstract class Enemy_Base_Status : MonoBehaviour
 {
 
@@ -12,7 +12,7 @@ public abstract class Enemy_Base_Status : MonoBehaviour
     protected float Speed;
     protected int ATK;
 
-    public Monster_Size MS;
+    public EMonster_Size MS;
     public int ID;
     public Transform Object_Postion;
 
@@ -39,13 +39,7 @@ public abstract class Enemy_Base_Status : MonoBehaviour
         ID = gameObject.GetInstanceID();
     }
     public abstract void Drop(int Per);
-    public abstract bool Damaged(float Damaged_Point,Transform Player, int Type = 0);//데미지량,플레이어위치,이펙트발생지점,공격타입
+    public abstract bool Damaged(float Damaged_Point,Transform Player, EAttack_Special AC);//데미지량,플레이어위치,이펙트발생지점,공격타입
     public abstract void Died();//사망
 
-}
-public enum Monster_Size
-{
-    S_Size,
-    M_Size,
-    B_Size
 }

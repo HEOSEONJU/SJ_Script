@@ -22,6 +22,6 @@ public class Vender_NPC: Normal_NPC
     {
         Game_Master.Instance.UI.Close_All_UI();
         Game_Master.Instance.UI.Open_UI(Vender_UI);
-        Game_Master.Instance.PM._Manager_Inventory.Open_Close_Inventory_Window(true);
+        Game_Master.Instance.PM._manager_Inventory.Open_Close_Inventory_Window(true);
     }
 }

@@ -11,8 +11,7 @@ public class Jump_Script : StateMachineBehaviour
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         animator.SetBool("JUMP", true);
-
-        PAC = animator.GetComponent<Player_Animaotr_Controller>();
+        animator.TryGetComponent<Player_Animaotr_Controller>(out PAC);
         PAC._Move.Jumping();
     }
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

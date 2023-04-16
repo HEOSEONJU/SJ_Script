@@ -7,7 +7,8 @@ public class State_Boar_Search : StateMachineBehaviour
     Boar_Enemy KN;
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        KN = animator.GetComponent<Boar_Enemy>();
+        if (animator.TryGetComponent<Boar_Enemy>(out Boar_Enemy E))
+            KN = E;
     }
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
@@ -15,7 +16,7 @@ public class State_Boar_Search : StateMachineBehaviour
         {
             return;
         }
-        if (KN._Boar_AI.Detection())
+        if (KN._boar_AI.Detection())
         {
             animator.SetBool("Target", true);
         }

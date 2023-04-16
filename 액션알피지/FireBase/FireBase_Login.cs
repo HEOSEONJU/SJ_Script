@@ -30,7 +30,7 @@ public class FireBase_Login : MonoBehaviour
         State = false;
         if(RV.ID_Value!= null) 
         {
-            Debug.Log(RV.ID_Value + "/" + RV.PW_Value);
+            
             ID.text = RV.ID_Value;
             PW.text = RV.PW_Value;
         }

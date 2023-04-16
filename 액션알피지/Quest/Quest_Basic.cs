@@ -1,15 +1,11 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.ConstrainedExecution;
-using System.Threading;
+using Quests;
 using UnityEngine;
 
 [System.Serializable]
 public class Quest_Basic :MonoBehaviour
 {
     
-    public Quest_Type QUEST_TYPE;
+    public EQuest_Type _questType;
     
     public string Quest_Description;//이번 단계의설명
 
@@ -48,9 +44,4 @@ public class Quest_Basic :MonoBehaviour
 
 }
 
-public enum Quest_Type//퀘스트 타입 
-{
-    Hunt,//사냥퀘스트
-    Talk,//대화형퀘스트
-    Give    //상납형퀘스트
-}
+

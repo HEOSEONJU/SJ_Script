@@ -4,51 +4,41 @@ using UnityEngine;
 
 public class Weapon_Slot : MonoBehaviour
 {
-    public bool Right;
-    public bool Left;
+    public bool _isRight;
+    public bool _isLeft;
 
     //public Weapon_Item Weapon_Item;
-    public Transform HandPosition;
+    public Transform _handPosition;
 
-    public Player_Weapon_Collider Weapon_Colldier;
+    public Player_Weapon_Collider _weaponColldier;
 
-    public GameObject Current_Weapon;
+    public GameObject _currentWeapon;
 
 
     public void Init(Weapon_Item Main_Weapon)
     {
-        HandPosition = this.transform;
+        _handPosition = this.transform;
         Change_Weapon(Main_Weapon);
     }
     
-
-    public void Setting(Weapon_Item Info)
-    {
-
-        //Weapon_Item = Info;
-
-
-
-    }
-
     public void Destroy_Current_Weapon()
     {
-        Destroy(Current_Weapon);
+        Destroy(_currentWeapon);
     }
     public void Change_Weapon(Weapon_Item temp)
     {
         
-        if(Current_Weapon !=null)
+        if(_currentWeapon !=null)
         {
             
-            Destroy(Current_Weapon);
+            Destroy(_currentWeapon);
         }
         
         if (temp != null)
         {
-            Current_Weapon = Instantiate(temp.WeaponPrefab, HandPosition);
-            Current_Weapon.transform.GetChild(0).GetChild(0).tag = "Weapon";
-            Weapon_Colldier = Current_Weapon.GetComponentInChildren<Player_Weapon_Collider>();
+            _currentWeapon = Instantiate(temp.WeaponPrefab, _handPosition);
+            _currentWeapon.transform.GetChild(0).GetChild(0).tag = "Weapon";
+            _weaponColldier = _currentWeapon.GetComponentInChildren<Player_Weapon_Collider>();
         }
         
 
@@ -56,9 +46,9 @@ public class Weapon_Slot : MonoBehaviour
 
     public void ableWeaponCollider(bool able)
     {
-        if (Weapon_Colldier != null)
+        if (_weaponColldier != null)
         {
-            Weapon_Colldier.AbleCollider(able);
+            _weaponColldier.AbleCollider(able);
         }
     }
 

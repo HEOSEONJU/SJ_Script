@@ -56,7 +56,7 @@ public class Player_Inventory : MonoBehaviour
         }
         
         Open_Close_Equip_Window(false);
-        Inventory_Object.SetActive(false);
+        Game_Master.instance.UI.Close_UI(Inventory_Object);
         //Inventory_Open = false;
         Game_Master.instance.UI.Close_Small_Windows();
         
@@ -90,9 +90,11 @@ public class Player_Inventory : MonoBehaviour
             return false;
         }
         
+
+
         switch (temp.Base_item.Type)
         {
-            case Type.Use:
+            case Item_Enum.EItem_Slot_Type.Use:
                 foreach(Item_Data ID in Game_Master.instance.PM.Data.Items)
                 {
                     if (ID.INDEX == temp.Base_item.Item_Index)
@@ -211,27 +213,5 @@ public class Player_Inventory : MonoBehaviour
             
         }
     }
-    /*
-    public void Renewal_Inventroy(Player_Data Data)
-    {
-        Main_Weapon.Init_Slot_item(Data.Equip_Weapon_Item);
-        for(int i=0;i<Equip_Armors.Count;i++)
-        {
-            Equip_Armors[i].Init_Slot_item(Data.Equip_Armor_Item[i],i);
 
-        }
-
-        for(int i=0;i<Item_List.Count;i++)
-        {
-            if (Data.Items[i].Base_item == null)
-            {
-                Item_List[i].Delete_Slot_Item();
-            }
-            else
-            {
-                Item_List[i].Insert_Slot_Item(Data.Items[i],i);
-            }
-        }
-    }
-    */
 }

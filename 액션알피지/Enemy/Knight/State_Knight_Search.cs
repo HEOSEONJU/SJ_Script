@@ -7,7 +7,8 @@ public class State_Knight_Search : StateMachineBehaviour
     Knight_Enemy KN;
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        KN=animator.GetComponent<Knight_Enemy>();
+        if (animator.TryGetComponent<Knight_Enemy>(out Knight_Enemy E))
+            KN = E;
     }
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {

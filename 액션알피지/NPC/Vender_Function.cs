@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
-
+using Item_Enum;
 public class Vender_Function : MonoBehaviour, IDropHandler
 {
     Vender_NPC Vender;
@@ -43,9 +43,13 @@ public class Vender_Function : MonoBehaviour, IDropHandler
         {
             var e = Instantiate(Sell_Icon, this.transform.GetChild(0));
             e.GetComponent<Vender_Slot>().Init(Sell_Item[i]);
-            e.transform.GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>().text = Sell_Item[i].Item_Name;
-            e.transform.GetChild(3).GetComponent<Image>().sprite = Sell_Item[i].Item_Icon;
-            e.transform.GetChild(4).GetChild(1).GetComponent<TextMeshProUGUI>().text = Sell_Item[i].Value.ToString();
+
+            if(e.transform.GetChild(1).GetChild(0).TryGetComponent<TextMeshProUGUI>(out TextMeshProUGUI Sell_TEXT))
+            Sell_TEXT.text= Sell_Item[i].Item_Name;
+            if(e.transform.GetChild(3).TryGetComponent<Image>(out Image Temp_Image))
+            Temp_Image.sprite=    Sell_Item[i].Item_Icon;
+            if(e.transform.GetChild(4).GetChild(1).TryGetComponent<TextMeshProUGUI>(out TextMeshProUGUI Value_TEXT))
+            Value_TEXT.text = Sell_Item[i].Value.ToString();
             int temp = i;
             e.transform.GetChild(5).GetComponent<Button>().onClick.AddListener(delegate { Buy_Item(temp); }) ;
 
@@ -73,13 +77,11 @@ public class Vender_Function : MonoBehaviour, IDropHandler
         Debug.Log("µå¶ø");
         if (eventData.pointerDrag != null)
         {
-            
-            Inventory_Slot temp = eventData.pointerDrag.transform.GetComponent<Inventory_Slot>();
-            if (temp == null)
+            if(!eventData.pointerDrag.transform.TryGetComponent<Inventory_Slot>(out Inventory_Slot temp))
             {
                 return;
             }
-            
+
             if (Game_Master.instance.PM.Data.Items[temp.Slot_INDEX].Base_item == null)
             {
                 return;
@@ -88,16 +90,17 @@ public class Vender_Function : MonoBehaviour, IDropHandler
             
             Open_Close_Sell_Window(true);
             Sell_item_Icon.sprite = Game_Master.instance.PM.Data.Items[temp.Slot_INDEX].Base_item.Item_Icon;
-            switch(Game_Master.instance.PM.Data.Items[temp.Slot_INDEX].Base_item.Type)
+            if(Game_Master.instance.PM.Data.Items[temp.Slot_INDEX].Base_item.Type==EItem_Slot_Type.Use||
+                Game_Master.instance.PM.Data.Items[temp.Slot_INDEX].Base_item.Type == EItem_Slot_Type.ETC)
             {
-                case Type.Use:
-                    Sell_Value = (Game_Master.instance.PM.Data.Items[temp.Slot_INDEX].Base_item.Value * 7) / 10 * Game_Master.instance.PM.Data.Items[temp.Slot_INDEX].count;
-                    break;
-                default:
-                    Sell_Value = (Game_Master.instance.PM.Data.Items[temp.Slot_INDEX].Base_item.Value * 7) / 10;
-                    
-                    break;
+                Sell_Value = (Game_Master.instance.PM.Data.Items[temp.Slot_INDEX].Base_item.Value * 7) / 10 * Game_Master.instance.PM.Data.Items[temp.Slot_INDEX].count;
+
             }
+            else
+            {
+                Sell_Value = (Game_Master.instance.PM.Data.Items[temp.Slot_INDEX].Base_item.Value * 7) / 10;
+            }
+            
             Sell_TEXT.text = Sell_Value.ToString();
 
 
@@ -126,9 +129,9 @@ public class Vender_Function : MonoBehaviour, IDropHandler
         Current = null;
 
         Game_Master.instance.PM.Data.Current_Gold+=Sell_Value;
-        Vender._manager.Data_Save(true);
+        Game_Master.instance.PM.Data_Save(true);
         Sell_Value = 0;
-        Vender._manager._UI.Renewal_Gold_Text();
+        Game_Master.instance.UI.Renewal_Gold_Text();
 
 
 
@@ -153,7 +156,7 @@ public class Vender_Function : MonoBehaviour, IDropHandler
         Item_Data Temp = new Item_Data();
         Temp.Base_item = Sell_Item[Selected_INDEX];
         Temp.Upgrade = 0;
-        if (Sell_Item[Selected_INDEX].Type==Type.Use)
+        if (Sell_Item[Selected_INDEX].Type==EItem_Slot_Type.Use)
         {
             Temp.count = 1;
         }
@@ -161,12 +164,12 @@ public class Vender_Function : MonoBehaviour, IDropHandler
         {
             Temp.count = 0;
         }
-        if (!Game_Master.instance.PM._Manager_Inventory.Get_Item(Temp))
+        if (!Game_Master.instance.PM._manager_Inventory.Get_Item(Temp))
         {
             return;
         }
 
-        Game_Master.instance.PM._Manager_Inventory.Use_Money(Sell_Item[Selected_INDEX].Value);
+        Game_Master.instance.PM._manager_Inventory.Use_Money(Sell_Item[Selected_INDEX].Value);
         Game_Master.instance.UI.Renewal_Gold_Text();
         Game_Master.instance.PM.Data_Save(true);
         

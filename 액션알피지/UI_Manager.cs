@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Linq;
-
+using Item_Enum;
 public class UI_Manager : MonoBehaviour
 {
 
@@ -46,9 +46,9 @@ public class UI_Manager : MonoBehaviour
         DontDestroyOnLoad(this.gameObject);
         
 
-        Inventory_Slot[] temp = GetComponentsInChildren<Inventory_Slot>();
+        
         int INDEX = 0;
-        foreach (Inventory_Slot slot in temp)
+        foreach (Inventory_Slot slot in GetComponentsInChildren<Inventory_Slot>())
         {
             slot.Setting_Slot( INDEX++);
         }
@@ -58,23 +58,23 @@ public class UI_Manager : MonoBehaviour
 
     public bool Use_Heal_item(Use_Item temp)
     {
-        return Game_Master.instance.PM._Status.Heal(temp.Point);
+        return Game_Master.instance.PM._status.Heal(temp.Point);
         
     }
     public void View_Hp_text()
     {
-        Status_Text_HP.text = Game_Master.instance.PM._Status.Current_HP.ToString() + "/" + Game_Master.instance.PM._Status.MAX_HP.ToString();
+        Status_Text_HP.text = Game_Master.instance.PM._status.Current_HP.ToString() + "/" + Game_Master.instance.PM._status.MAX_HP.ToString();
     }
 
     public void Reseting_Status()
     {
-        Game_Master.instance.PM._Status.Cal_All();
-        Status_Text_Level.text = Game_Master.instance.PM._Status.Level.ToString();
-        Status_Text_ATK.text = Game_Master.instance.PM._Status.ATK_Point.ToString();
-        Status_Text_DEF.text = Game_Master.instance.PM._Status.DEF_Point.ToString();
+        Game_Master.instance.PM._status.Cal_All();
+        Status_Text_Level.text = Game_Master.instance.PM._status.Level.ToString();
+        Status_Text_ATK.text = Game_Master.instance.PM._status.ATK_Point.ToString();
+        Status_Text_DEF.text = Game_Master.instance.PM._status.DEF_Point.ToString();
         View_Hp_text();
-        Status_Text_CRP.text = Game_Master.instance.PM._Status.CRP_Point.ToString() + "%";
-        Status_Text_CRT.text = Game_Master.instance.PM._Status.CRT_Point.ToString() + "%";
+        Status_Text_CRP.text = Game_Master.instance.PM._status.CRP_Point.ToString() + "%";
+        Status_Text_CRT.text = Game_Master.instance.PM._status.CRT_Point.ToString() + "%";
 
     }
     public void Open_UI(GameObject GO)
@@ -116,7 +116,10 @@ public class UI_Manager : MonoBehaviour
             return;
         }
         if (Item_temp.Base_item != null)
+        {
+            
             Renewal_Text(Item_temp);
+        }
         Open_UI(Windows_Object.gameObject);
     }
     public void Close_Small_Windows()//확대창
@@ -128,78 +131,71 @@ public class UI_Manager : MonoBehaviour
 
         INFO.Name.text = Item_temp.Base_item.Item_Name;
 
-        switch (Item_temp.Base_item.Type)
+        if(Item_temp.Base_item.Type.HasFlag(EItem_Slot_Type.Weapon))
         {
-            case Type.Use:
-                INFO.Upgarde.text = "";
-                INFO.Type.text = "Use";
-                Use_Item temp_U = (Use_Item)Item_temp.Base_item;
-                INFO.Header[0].text = "회복양 :";
-                INFO.Point[0].text = temp_U.Point.ToString();
-                INFO.Header[1].text = "개수:";
-                INFO.Point[1].text = Item_temp.count.ToString();
-                for (int i = 2; i < INFO.Header.Count; i++)
-                {
-                    INFO.Header[i].text = "";
-                    INFO.Point[i].text = "";
-                }
-                break;
-
-            case Type.Equip:
-
-                Equip_Item EI = (Equip_Item)Item_temp.Base_item;
-                switch (EI.EST)
-                {
-
-                    case Equip_Slot_Type.Weapon:
-                        INFO.Type.text = "무기";
-                        Weapon_Item temp_W = (Weapon_Item)Item_temp.Base_item;
-                        INFO.Upgarde.text = "+" + Item_temp.Upgrade;
-                        INFO.Header[0].text = "공격력 :";
-                        INFO.Point[0].text = (temp_W.Attack_Point + (temp_W.UP_Attack_Point * Item_temp.Upgrade)).ToString();
-                        INFO.Header[1].text = "치명타확률 :";
-                        INFO.Point[1].text = (temp_W.CRP + (temp_W.UP_CRP * Item_temp.Upgrade)).ToString() + "%";
-                        INFO.Header[2].text = "치명타데미지 :";
-                        INFO.Point[2].text = (temp_W.CRT + (temp_W.UP_CRT * Item_temp.Upgrade)).ToString() + "%";
-                        for (int i = 3; i < INFO.Header.Count; i++)
-                        {
-                            INFO.Header[i].text = "";
-                            INFO.Point[i].text = "";
-                        }
-
-                        break;
-                    default:
-                        Armor_Item temp_A = (Armor_Item)Item_temp.Base_item;
-                        switch (temp_A.EST)
-                        {
-                            case Equip_Slot_Type.Breastplate:
-                                INFO.Type.text = "갑옷";
-                                break;
-                            case Equip_Slot_Type.Glove:
-                                INFO.Type.text = "장갑";
-                                break;
-                            case Equip_Slot_Type.Helmet:
-                                INFO.Type.text = "투구";
-                                break;
-
-                        }
-                        INFO.Upgarde.text = "+" + Item_temp.Upgrade;
-                        INFO.Header[0].text = "공격력 :";
-                        INFO.Point[0].text = (temp_A.Attack_Point + (temp_A.UP_Attack_Point * Item_temp.Upgrade)).ToString();
-                        INFO.Header[1].text = "방어력 :";
-                        INFO.Point[1].text = (temp_A.Armor_Point + (temp_A.UP_Armor_Point * Item_temp.Upgrade)).ToString();
-                        INFO.Header[2].text = "체력  :";
-                        INFO.Point[2].text = (temp_A.HP_Point + (temp_A.UP_HP_Point * Item_temp.Upgrade)).ToString();
-                        for (int i = 3; i < INFO.Header.Count; i++)
-                        {
-                            INFO.Header[i].text = "";
-                            INFO.Point[i].text = "";
-                        }
-                        break;
-                }
-                break;
+            INFO.Type.text = "무기";
+            Weapon_Item temp_W = Item_temp.Base_item as Weapon_Item;
+            INFO.Upgarde.text = "+" + Item_temp.Upgrade;
+            INFO.Header[0].text = "공격력 :";
+            INFO.Point[0].text = (temp_W.Attack_Point + (temp_W.UP_Attack_Point * Item_temp.Upgrade)).ToString();
+            INFO.Header[1].text = "치명타확률 :";
+            INFO.Point[1].text = (temp_W.CRP + (temp_W.UP_CRP * Item_temp.Upgrade)).ToString() + "%";
+            INFO.Header[2].text = "치명타데미지 :";
+            INFO.Point[2].text = (temp_W.CRT + (temp_W.UP_CRT * Item_temp.Upgrade)).ToString() + "%";
+            for (int i = 3; i < INFO.Header.Count; i++)
+            {
+                INFO.Header[i].text = "";
+                INFO.Point[i].text = "";
+            }
         }
+        else if(Item_temp.Base_item.Type.HasFlag(EItem_Slot_Type.Helmet)||
+            Item_temp.Base_item.Type.HasFlag(EItem_Slot_Type.Breastplate)||
+            Item_temp.Base_item.Type.HasFlag(EItem_Slot_Type.Glove))
+            {
+            Armor_Item temp_A = Item_temp.Base_item as Armor_Item;
+            switch (Item_temp.Base_item.Type)
+            {
+                case EItem_Slot_Type.Breastplate:
+                    INFO.Type.text = "갑옷";
+                    break;
+                case EItem_Slot_Type.Glove:
+                    INFO.Type.text = "장갑";
+                    break;
+                case EItem_Slot_Type.Helmet:
+                    INFO.Type.text = "투구";
+                    break;
 
+            }
+            INFO.Upgarde.text = "+" + Item_temp.Upgrade;
+            INFO.Header[0].text = "공격력 :";
+            INFO.Point[0].text = (temp_A.Attack_Point + (temp_A.UP_Attack_Point * Item_temp.Upgrade)).ToString();
+            INFO.Header[1].text = "방어력 :";
+            INFO.Point[1].text = (temp_A.Armor_Point + (temp_A.UP_Armor_Point * Item_temp.Upgrade)).ToString();
+            INFO.Header[2].text = "체력  :";
+            INFO.Point[2].text = (temp_A.HP_Point + (temp_A.UP_HP_Point * Item_temp.Upgrade)).ToString();
+            for (int i = 3; i < INFO.Header.Count; i++)
+            {
+                INFO.Header[i].text = "";
+                INFO.Point[i].text = "";
+            }
+
+
+        }
+        else if(Item_temp.Base_item.Type.HasFlag(EItem_Slot_Type.Use))
+        {
+            INFO.Upgarde.text = "";
+            INFO.Type.text = "Use";
+            Use_Item temp_U = (Use_Item)Item_temp.Base_item;
+            INFO.Header[0].text = "회복양 :";
+            INFO.Point[0].text = temp_U.Point.ToString();
+            INFO.Header[1].text = "개수:";
+            INFO.Point[1].text = Item_temp.count.ToString();
+            for (int i = 2; i < INFO.Header.Count; i++)
+            {
+                INFO.Header[i].text = "";
+                INFO.Point[i].text = "";
+            }
+        }
     }
 
     public void Renewal_Gold_Text()

@@ -17,6 +17,6 @@ MonoBehaviour:
   Item_Icon: {fileID: 21300000, guid: f9f257215d4c96746a697818fd077bb5, type: 3}
   exp: 
   Value: 100
-  Type: 1
+  Type: 16
   Point: 50
   Max_Count: 10

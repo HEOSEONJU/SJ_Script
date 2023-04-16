@@ -13,40 +13,40 @@ MonoBehaviour:
   m_Name: New Player_Data
   m_EditorClassIdentifier: 
   Equip_Weapon_Item:
-    Base_item: {fileID: 11400000, guid: 9b55ed8f199d78a488590c3ca955e033, type: 2}
+    Base_item: {fileID: 11400000, guid: b0ce95a1699e9f945ba20dd6d714561d, type: 2}
     count: 0
     Upgrade: 0
-    INDEX: 1000
+    INDEX: 1002
   Equip_Armor_Item:
-  - Base_item: {fileID: 0}
-    count: 0
-    Upgrade: 0
-    INDEX: 0
-  - Base_item: {fileID: 0}
-    count: 0
-    Upgrade: 0
-    INDEX: 0
-  - Base_item: {fileID: 0}
-    count: 0
-    Upgrade: 0
-    INDEX: 0
-  Items:
-  - Base_item: {fileID: 11400000, guid: 5dda053e421c9a540b23640b433b2cf1, type: 2}
-    count: 2
-    Upgrade: 0
-    INDEX: 3000
   - Base_item: {fileID: 11400000, guid: 473a7a063e97f7c4b9758c7add579b36, type: 2}
     count: 0
     Upgrade: 0
     INDEX: 2100
-  - Base_item: {fileID: 11400000, guid: 3a06affbe6aa4ff4f8cf4e50e740b1e5, type: 2}
-    count: 0
-    Upgrade: 0
-    INDEX: 2200
   - Base_item: {fileID: 11400000, guid: e4b6224f3a020924db7719e358c67210, type: 2}
     count: 0
     Upgrade: 0
     INDEX: 2000
+  - Base_item: {fileID: 11400000, guid: 3a06affbe6aa4ff4f8cf4e50e740b1e5, type: 2}
+    count: 0
+    Upgrade: 0
+    INDEX: 2200
+  Items:
+  - Base_item: {fileID: 11400000, guid: 8daae6bebdf43d44fb04d1f5bd1c176f, type: 2}
+    count: 0
+    Upgrade: 0
+    INDEX: 1001
+  - Base_item: {fileID: 11400000, guid: 5dda053e421c9a540b23640b433b2cf1, type: 2}
+    count: 1
+    Upgrade: 0
+    INDEX: 3000
+  - Base_item: {fileID: 11400000, guid: 9b55ed8f199d78a488590c3ca955e033, type: 2}
+    count: 0
+    Upgrade: 0
+    INDEX: 1000
+  - Base_item: {fileID: 11400000, guid: e466f5251e90be44fa93115b3a419a8f, type: 2}
+    count: 0
+    Upgrade: 0
+    INDEX: 1003
   - Base_item: {fileID: 0}
     count: 0
     Upgrade: 0
@@ -111,10 +111,7 @@ MonoBehaviour:
     count: 0
     Upgrade: 0
     INDEX: 0
-  Gold: 3750
-  Last_Position: {x: 4.8800645, y: 0, z: -3.8057573}
-  Accepted_Quest:
-  - INDEX: 3000
-    Progress: 1
-    Point: 0
-  Complted_Quest: 0000000088130000
+  Gold: 10
+  Last_Position: {x: -2, y: 0, z: -1}
+  Accepted_Quest: []
+  Complted_Quest: d0070000

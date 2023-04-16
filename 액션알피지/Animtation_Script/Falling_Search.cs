@@ -7,14 +7,13 @@ public class Falling_Search : StateMachineBehaviour
     Player_Animaotr_Controller PAC;
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        
-        PAC = animator.GetComponent<Player_Animaotr_Controller>();
+        animator.TryGetComponent<Player_Animaotr_Controller>(out PAC);
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         
-        if (!PAC.manager.IsGround && animator.GetFloat("Flight_Timer") > 0.1f)
+        if (!PAC.manager._isGround && animator.GetFloat("Flight_Timer") > 0.1f)
         {
 
 
@@ -23,7 +22,7 @@ public class Falling_Search : StateMachineBehaviour
 
             return;
         }
-        if (!PAC.manager.IsGround)
+        if (!PAC.manager._isGround)
         {
             animator.SetFloat("Flight_Timer", animator.GetFloat("Flight_Timer") + Time.deltaTime);
             //Debug.Log("¿€µø");

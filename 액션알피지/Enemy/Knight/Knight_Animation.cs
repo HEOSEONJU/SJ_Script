@@ -12,15 +12,12 @@ public class Knight_Animation : MonoBehaviour
     [SerializeField]
     Knight_Enemy Manager;
 
-    public  void Init()
-    {
-        Weapon_Collider = GetComponentInChildren<Knight_Weapon>();
-    }
+
     public void WeaponColliderEnable()
     {
         Manager.Clear_ID_List();
         //Debug.Log((Hit_AnimationNumber)_Animator.GetInteger("Attack"));
-        Manager.AttackType = (Hit_AnimationNumber)_Animator.GetInteger("Attack");
+        Manager.AttackType = (EHit_AnimationNumber)_Animator.GetInteger("Attack");
         Manager.KnockPower = _Animator.GetFloat("KnockPower");
 
         Weapon_Collider.WeaponColliderEnable();

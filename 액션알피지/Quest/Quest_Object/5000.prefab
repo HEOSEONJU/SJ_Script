@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 288b903826a71df438b4ef25bf8c858a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  QUEST_TYPE: 1
+  _questType: 1
   Quest_Description: "\uC0C1\uC810\uC8FC\uC778\uC5D0\uAC8C \uAC00\uAE30"
   Talk_Quest_Object_ID: 53
   Talk_Value_List: "\uC0C1\uC810\uC8FC\uC778\uC5D0\uAC8C\uAC00\uB77C"
@@ -61,7 +61,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 288b903826a71df438b4ef25bf8c858a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  QUEST_TYPE: 1
+  _questType: 1
   Quest_Description: "\uB300\uC7A5\uC7A5\uC774\uC5D0\uAC8C \uAC00\uAE30"
   Talk_Quest_Object_ID: 52
   Talk_Value_List: "\uB300\uC7A5\uC7A5\uC774\uC5D0\uAC8C\uAC00\uB77C"
@@ -77,7 +77,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 288b903826a71df438b4ef25bf8c858a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  QUEST_TYPE: 1
+  _questType: 1
   Quest_Description: "\uC758\uB8B0\uC0C1\uC5D0\uAC8C \uBCF4\uC0C1\uBC1B\uAE30"
   Talk_Quest_Object_ID: 54
   Talk_Value_List: "\uC758\uB8B0\uC0C1\uC5D0\uAC8C \uB3CC\uC544\uAC00\uB77C"

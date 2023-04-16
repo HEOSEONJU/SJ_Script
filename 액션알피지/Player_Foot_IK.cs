@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Player_Foot_IK : MonoBehaviour
 {
+    [SerializeField]
     Animator _animator;
 
 
@@ -11,10 +12,7 @@ public class Player_Foot_IK : MonoBehaviour
 
     [Range(0f, 1f)]
     public float DistanceToGround;
-    void Start()
-    {
-        _animator=GetComponent<Animator>();
-    }
+    
 
     // Update is called once per frame
 

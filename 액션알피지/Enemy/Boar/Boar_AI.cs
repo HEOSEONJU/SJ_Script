@@ -44,7 +44,7 @@ public class Boar_AI : MonoBehaviour
     public void Init()
     {
 
-        Agent.speed = _Boar_Enemy.Move_Speed;
+        Agent.speed = _Boar_Enemy._move_Speed;
 
     }
 
@@ -94,7 +94,7 @@ public class Boar_AI : MonoBehaviour
 
         _Animator.SetFloat("Attack_Range", Distance_Currennt_Player);
 
-        _Boar_Enemy.Boar_Animator._Animator.SetFloat("Vertical", 1, 0.1f, Time.deltaTime);
+        _Boar_Enemy._boar_Animator._Animator.SetFloat("Vertical", 1, 0.1f, Time.deltaTime);
         Rotate_Target(true);
         Agent.transform.localPosition = Vector3.zero;
         Agent.transform.localRotation = Quaternion.identity;
@@ -102,7 +102,7 @@ public class Boar_AI : MonoBehaviour
     }
     public void Move_OFF()
     {
-        _Boar_Enemy.Boar_Animator._Animator.SetFloat("Vertical", 0, 0.1f, Time.deltaTime);
+        _Boar_Enemy._boar_Animator._Animator.SetFloat("Vertical", 0, 0.1f, Time.deltaTime);
         Agent.velocity = Vector3.zero;
         Agent.enabled = false;
         Agent.transform.localPosition = Vector3.zero;
@@ -119,7 +119,7 @@ public class Boar_AI : MonoBehaviour
             case true:
                 return;
             case false:
-                _Boar_Enemy.Boar_Animator._Animator.SetFloat("Vertical", 1, 0.1f, Time.deltaTime);
+                _Boar_Enemy._boar_Animator._Animator.SetFloat("Vertical", 1, 0.1f, Time.deltaTime);
                 Vector3 Dir = transform.InverseTransformDirection(Agent.desiredVelocity);
                 Vector3 TargetVelocity = _Rigidbody.velocity;
 
@@ -166,7 +166,7 @@ public class Boar_AI : MonoBehaviour
                 
                 string AttackOrder = AttackList[UnityEngine.Random.Range(0, AttackList.Count)];
                 Debug.Log(AttackOrder);
-                _Boar_Enemy.Boar_Animator.PlayerTargetAnimation(AttackOrder, true);
+                _Boar_Enemy._boar_Animator.PlayerTargetAnimation(AttackOrder, true);
                 AttackDelay += 5;
                 _Boar_Enemy._RD.velocity = Vector3.zero;
                 return true;

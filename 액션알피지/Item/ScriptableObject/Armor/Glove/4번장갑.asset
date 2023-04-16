@@ -17,8 +17,7 @@ MonoBehaviour:
   Item_Icon: {fileID: 21300000, guid: b76685075d2f5274bae2e3e5e5b516c0, type: 3}
   exp: 
   Value: 6000
-  Type: 0
-  EST: 3
+  Type: 8
   Armor_Point: 80
   HP_Point: 0
   Attack_Point: 40

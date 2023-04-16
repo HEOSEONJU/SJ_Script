@@ -6,12 +6,9 @@ public class Player_Weapon_Collider : MonoBehaviour
 {
     public Collider _Collider;
 
-    Player_Manager _manager;
+    
 
-    private void Start()
-    {
-        _manager = GetComponentInParent<Player_Manager>();
-    }
+    
 
 
     public void AbleCollider(bool able)
@@ -33,12 +30,12 @@ public class Player_Weapon_Collider : MonoBehaviour
     {
         if (other.CompareTag("Enemy_Hit_Box"))
         {
-            if (_manager.Attacking)
+            if (Game_Master.instance.PM._isAttacking)
             {
                 Enemy_Base_Status temp = other.GetComponentInParent<Enemy_Base_Status>();
-                if (_manager.Enemy_IDList.Count >= 1)
+                if (Game_Master.instance.PM._enemyIDList.Count >= 1)
                 {
-                    foreach (int id in _manager.Enemy_IDList)
+                    foreach (int id in Game_Master.instance.PM._enemyIDList)
                     {
                         if (id == temp.ID)
                         {                   
@@ -46,7 +43,7 @@ public class Player_Weapon_Collider : MonoBehaviour
                         }
                     }
                 }
-                _manager.Enemy_Damaged(temp);
+                Game_Master.instance.PM.Enemy_Damaged(temp);
                 //Debug.Log(other.name);
             }
         }

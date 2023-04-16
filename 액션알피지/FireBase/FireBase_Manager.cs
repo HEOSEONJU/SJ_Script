@@ -14,6 +14,7 @@ using UnityEngine.SceneManagement;
 using static UnityEngine.Rendering.DebugUI;
 using System.Web;
 using UnityEditor;
+using Quests;
 
 //using System.Threading.Tasks;
 //using System.Threading;
@@ -109,7 +110,7 @@ public class FireBase_Manager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.C))
         {
             //Load();
-        }Debug.Log(eventQueue.Count);
+        }
         
         if (eventQueue.Count > 0)//비동기 이벤트처리
         {
@@ -197,7 +198,7 @@ public class FireBase_Manager : MonoBehaviour
         if (Game_Master.instance.PM != null)
         {
             Data.Accepted_Quest.Clear();
-            foreach (Quest_Process QB in Game_Master.instance.PM.PQB.QBL)
+            foreach (Quest_Process QB in Game_Master.instance.PM._playerQuestBox.QBL)
             {
                 Quest_Info Temp = new Quest_Info();
                 Temp.INDEX = QB.Quest_ID;
@@ -217,33 +218,33 @@ public class FireBase_Manager : MonoBehaviour
     #region 로드
     IEnumerator Load_Data()
     {
-        Debug.Log("시작");
+        //Debug.Log("시작");
         LoadingState = false;
-        Debug.Log(3);
-        Debug.Log("로드데이터시작" + LoginID);
+        
+        //Debug.Log("로드데이터시작" + LoginID);
         
         Fire_DataBase.Child("Users").Child(LoginID).Child(Choice_ID.ToString()).GetValueAsync().ContinueWithOnMainThread(task =>
         {
             if (task.IsFaulted)
             {
-                Debug.Log(4);
+                
                 ES_ADD("데이터로드실패");
             }
             else if (task.IsCanceled)
             {
-                Debug.Log(5);
+                
                 ES_ADD("데이터로드취소");
             }
             else if (task.IsCompleted)
             {
-                Debug.Log(6);
+                
                 ES_ADD("데이터로드시작");
 
 
                 
                 if (Weapon_Load(task.Result))
                 {
-                    Debug.Log(7);
+                    
                     Armor_Load(task.Result);
                     Item_Load(task.Result);
                     Gold_Load(task.Result);
@@ -252,7 +253,7 @@ public class FireBase_Manager : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log(8);
+                    
                     Init_Char();
                 }
                 ES_ADD("데이터로드완료");
@@ -339,7 +340,7 @@ public class FireBase_Manager : MonoBehaviour
     }
     public void Quest_Load(DataSnapshot Load_Data)
     {
-        Debug.Log("퀘스트로드시작");
+        //Debug.Log("퀘스트로드시작");
         Data.Accepted_Quest = new List<Quest_Info>();
         for (int i = 0; i < Load_Data.Child("Accepted_Quest").ChildrenCount; i++)
         {
@@ -368,9 +369,9 @@ public class FireBase_Manager : MonoBehaviour
         Data.Equip_Weapon_Item = new Item_Data();
         Data.Equip_Armor_Item = new List<Item_Data>();
         Data.Items = new List<Item_Data>();
-        Debug.Log("생성시작");
+        //Debug.Log("생성시작");
         Data.Equip_Weapon_Item.Insert_Data(item_List_Object.Search_item(1000));
-        Debug.Log("무기생성완료");
+        //Debug.Log("무기생성완료");
         
         Item_Data Temp;
         
@@ -382,7 +383,7 @@ public class FireBase_Manager : MonoBehaviour
             Temp.count = 0;
             Data.Equip_Armor_Item.Add(Temp);
         }
-        Debug.Log("방어구생성완료");
+        //Debug.Log("방어구생성완료");
         
         
         for (int i = 0; i < 20; i++)
@@ -393,12 +394,12 @@ public class FireBase_Manager : MonoBehaviour
             Temp.INDEX = 0;
             Data.Items.Add(Temp);
         }
-        Debug.Log("아이템생성완료");
+        //Debug.Log("아이템생성완료");
         Data.Current_Gold = 0;
         Data.Last_Position = Starat_Posi;
         Data.Accepted_Quest = new List<Quest_Info>();
         Data.Complted_Quest = new List<int>();
-        Debug.Log("생성종료");
+        //Debug.Log("생성종료");
         Save_On_FireBase();
     }
     #endregion
@@ -410,18 +411,22 @@ public class FireBase_Manager : MonoBehaviour
             yield return null;
         }
 
-        var Temp = Instantiate(Player_Char, Data.Last_Position + Vector3.up, Quaternion.identity).GetComponent<Player_Manager>();
-        Temp.FireBase_M = this;
-        Temp._UI = Instantiate(UI_Object).GetComponent<UI_Manager>();
-        Game_Master.instance.Load(Temp, Temp._UI);
-        Temp.Init();
+        Instantiate(Player_Char, Data.Last_Position + Vector3.up, Quaternion.identity).TryGetComponent<Player_Manager>(out Player_Manager PM);
+        PM._fireBaseManger = this;
+        Instantiate(UI_Object).TryGetComponent<UI_Manager>(out UI_Manager _UI);
+         
+
+        Game_Master.instance.Load(PM, _UI);
+        _UI.Init();
+        PM.Init();
+        
 
 
     }
 
     public IEnumerator SceneLoading(string SceneName)
     {
-        Debug.Log(2);
+        
         StartCoroutine(Load_Data());
         
         while (!LoadingState)

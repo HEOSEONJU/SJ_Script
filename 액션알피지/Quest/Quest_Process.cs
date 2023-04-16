@@ -1,6 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Item_Enum;
+using System.Text;
+using Quests;
+
 [System.Serializable]
 public class Quest_Process
 {
@@ -32,22 +36,23 @@ public class Quest_Process
             return Check();
         }
     }
-    public string View_Reward_List()
+    public StringBuilder View_Reward_List()
     {
-        string s="";
-        s += Value_Gold + "G";
+        StringBuilder s=new StringBuilder();
+        s .Append(Value_Gold + "G");
+
         foreach(var item in Value_item) 
         {
-            switch(item.Base_item.Type)
+            if(item.Base_item.Type==EItem_Slot_Type.ETC||
+                item.Base_item.Type==EItem_Slot_Type.Use)
             {
-                case Type.Equip:
-                    s += ","+item.Base_item.name;
-                    break;
-                case Type.Use:
-                    s += "," + item.Base_item.name+item.count + "개";
-                    break;
-
+                s.AppendLine( "," + item.Base_item.name + item.count + "개");
             }
+            else
+            {
+                s.AppendLine("," + item.Base_item.name);
+            }
+
 
             
         }
@@ -81,7 +86,7 @@ public class Quest_Process
             Debug.Log("이미완료기록");
             return false;
         }
-        if (Game_Master.instance.PM.PQB.QBL.FindIndex(x => x.Quest_ID == Quest_ID) != -1)
+        if (Game_Master.instance.PM._playerQuestBox.QBL.FindIndex(x => x.Quest_ID == Quest_ID) != -1)
         {
             Debug.Log("이미받은퀘스트");
             return false;
@@ -97,20 +102,16 @@ public class Quest_Process
             Debug.Log("조건미만족");
             return false;
         }
-        else if ((Game_Master.instance.PM._Manager_Inventory.Inventroy_Count + Value_item.Count) >= 20)
+        else if ((Game_Master.instance.PM._manager_Inventory.Inventroy_Count + Value_item.Count) >= 20)
         {
             Debug.Log("공간부족");
             return false;
         }
         foreach (var item in Value_item)
         {
-            Game_Master.instance.PM._Manager_Inventory.Get_Item(item);
+            Game_Master.instance.PM._manager_Inventory.Get_Item(item);
         }
         Game_Master.instance.PM.Data.Current_Gold += Value_Gold;
-
-
-
-
 
         return true;
 
@@ -119,9 +120,7 @@ public class Quest_Process
     public Quest_Process Clone()
     {
 
-
-
-        return (Quest_Process)this.MemberwiseClone();
+        return this.MemberwiseClone()as Quest_Process;
     }
 
 
@@ -135,16 +134,16 @@ public class Quest_Process
             return;
         }
 
-        switch (List_Process[Progress].QUEST_TYPE) 
+        switch (List_Process[Progress]._questType) 
         {
-            case Quest_Type.Talk:
+            case EQuest_Type.Talk:
                 if (List_Process[Progress].Talk_Check(ID))
                 {
                     Point = 1;
                 }
                 else { Point = 0; }
                 break;
-            case Quest_Type.Hunt:
+            case EQuest_Type.Hunt:
                 List_Process[Progress].Hunt_Check(ID,Point,out int RP);
                 Point = RP;
                 

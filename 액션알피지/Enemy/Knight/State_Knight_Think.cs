@@ -9,8 +9,9 @@ public class State_Knight_Think : StateMachineBehaviour
     float Max_Time = 2.0f;
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        
-        KN = animator.GetComponent<Knight_Enemy>();
+
+        if (animator.TryGetComponent<Knight_Enemy>(out Knight_Enemy E))
+            KN = E;
         KN._Knight_AI.Move_OFF();
     }
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
