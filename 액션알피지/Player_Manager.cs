@@ -1,229 +1,165 @@
-using System.Collections;
+
 using System.Collections.Generic;
 using UnityEngine;
 using Hit_Type_NameSpace;
-using UnityEditor;
-using System.ComponentModel;
-using Unity.Burst.CompilerServices;
-using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
-using Unity.Mathematics;
+
 
 public class Player_Manager : MonoBehaviour
 {
     [SerializeField]
     public Player_Data Data
     {
-        get 
+        get
         {
-            return FireBase_M.CPD();
+            return _fireBaseManger.CPD();
         }
-        
+
     }
-    public FireBase_Manager FireBase_M;
-    public int ObjectID = 0;
+    public FireBase_Manager _fireBaseManger;
+    public int _objectID = 0;
 
     [SerializeField]
-    Player_Input _Input;
+    Player_Input _input;
     [SerializeField]
-    Player_Move _Move;
-    public Player_Animator _Animator;
-    public Player_Camera _Camera;
-    public Player_Weapon_Slot_Manager _WeaponSlotManager;
-    Player_Animaotr_Controller _Attacker;
-    public Player_Inventory _Manager_Inventory;
-    public Player_Status _Status;
-    public Player_Connect_Object _Connect_Object;
-    public Player_Quest_Box PQB;
-    public bool Infinity = false;
-    public bool IsGround = false;
-    public bool Jump = false;
-    public bool Rotate = true;
-    public bool WalkState = false;
-    public bool SprintState = false;
-    public bool IsInteracting;
-    public bool LockOnMode;
-    public bool Attacking;
-    
-    public float Combo_Timer;
+    Player_Move _move;
 
-    public float Magnification;
-    bool Live = true;
+    public Player_Animator _animator;
+    public Player_Camera _camera;
+    public Player_Weapon_Slot_Manager _weaponSlotManager;
+    [SerializeField]
+    Player_Animaotr_Controller _attackerController;
+    public Player_Inventory _manager_Inventory;
+    public Player_Status _status;
+    public Player_Connect_Object _connect_Object;
+    public Player_Quest_Box _playerQuestBox;
+
+    public bool _isInfinity = false;
+    public bool _isGround = false;
+    public bool _isJump = false;
+    public bool _isRotate = true;
+    public bool _isWalkState = false;
+    public bool _isSprintState = false;
+    public bool _isInteracting;
+
+    bool _isLock = false;
+    public bool LockOnMode
+    {
+        get { return _isLock; }
+        set
+        {
+            _isLock = value;
+        }
+    }
+    public bool _isAttacking;
+    public float _comboTimer;
+    public float _magnification;
+    bool _isLive = true;
     [SerializeField]
     public bool Open_UI
     {
         get { return Check_UI(); }
-        
+
     }
-
-
-    public Transform Char_Center_Posi;
-
-    public UI_Manager _UI;
-
-    public Vector3 CC_VELOCITY;
-
-
-
-    public List<int> Enemy_IDList = new List<int>();//적 중복공격방지
+    public Transform _charCentePosi;
+    public Vector3 _move_VELOCITY;
+    public List<int> _enemyIDList = new List<int>();//적 중복공격방지
     [SerializeField]
-    bool State = false;
+    bool _isState = false;
     
     [SerializeField]
-    List<GameObject> ColliderList;//땅에 접촉한 오브젝트갯수
-    [SerializeField]
-    LayerMask GroundLayer;
-    // Start is called before the first frame update
+    LayerMask _groundLayer;
+    public EAttack_Special _Attack_Effect;
     public void Init()
     {
-        Debug.Log("init시작");
         
-        //Game_Master.instance.Load_Player(this);
-        //Game_Master.instance.Load_UI(_UI);
-        ColliderList =new List<GameObject>();
-        _Camera = Player_Camera.instance;
-        _Camera.Init(transform);
-        
-        _Input.Init();
-        
-        _Move.Init();
-        
-        _Animator.Init();
-        _Attacker = GetComponentInChildren<Player_Animaotr_Controller>();
-        
+        _camera = Player_Camera.instance;
 
-        
-        _UI.Init();
-        
-        _Manager_Inventory.Init();
-        _WeaponSlotManager.Init();
-        _Status = GetComponent<Player_Status>();
-        _Status.init();
-        _Connect_Object = GetComponentInChildren<Player_Connect_Object>();
-        _Connect_Object.Init();
-        PQB.Init();
-        State = true;
-        Debug.Log("initi종료");
+        _camera.Init(transform);
+        _move.Init(_input, _animator);
+        _animator.Init(_input);
+        _input.Init(_animator, _attackerController);
+        _manager_Inventory.Init();
+        _weaponSlotManager.Init();
+        _status.init();
+        _connect_Object.Init();
+        _playerQuestBox.Init();
+        _isState = true;
     }
 
     // Update is called once per frame
     void Update()
     {
-        switch(State)
-        {
-            case true:
-
-                if (!Live)
-                {
-                    return;
-                }
-                
-                _Input.Player_Key_Input();
-
-                if (Input.GetKeyDown(KeyCode.V))
-                {
-                    //Data_Save();
-                }
-
-
-                _Move.SpeedSetting();
-                
-                _Attacker.Update_Attack_Timer();
-
-
-                break;
-
-        }
-
-
-    }
-    private void FixedUpdate()
-    {
-        if (!Live)
+        if (!_isState)
         {
             return;
         }
-        if(Combo_Timer>0)
+        if(Input.GetKeyDown(KeyCode.V)) 
         {
-            Combo_Timer -= Time.fixedDeltaTime;
-            if (Combo_Timer <= 0)
+            Save_On_FireBase();
+        }
+        _input.Player_Key_Input();
+        _move.SpeedSetting();
+        _attackerController.Update_Attack_Timer();
+    }
+    private void FixedUpdate()
+    {
+        if (!_isLive)
+        {
+            return;
+        }
+
+        if (_comboTimer > 0)
+        {
+            _comboTimer -= Time.fixedDeltaTime;
+            if (_comboTimer <= 0)
             {
-                _Animator._animator.SetInteger("Combo_Stack", 0);
+                _animator._animator.SetInteger("Combo_Stack", 0);
             }
         }
-        
+
         Ground_Check();
-        CC_VELOCITY = _Move.rb.velocity;
-        _Move.CalDir();
-        //Ground_Check();
-        _Move.Jump_Function();
-        _Animator.UpdataAnimation(_Input.Vertical, _Input.Horizontal, SprintState);
-        switch (State)
+        _move_VELOCITY = _move._rigidBody.velocity;
+        _move.CalDir();
+        _move.Jump_Function();
+        _animator.UpdataAnimation(_input._vertical, _input._horizontal, _isSprintState);
+        
+        if (_camera != null)
         {
-            case true:
-
-                break;
-        }
-        if (_Camera != null)
-        {
-
-            _Camera.FollowTarget(Time.deltaTime);
-            if (!Open_UI)//나중에 UI오픈으로 바꿀것
+            _camera.FollowTarget(Time.deltaTime);
+            if (!Open_UI)
             {
-
-                _Camera.HandleCameraRotation(Time.deltaTime, _Input.MouseX, _Input.MouseY);
+                _camera.HandleCameraRotation(Time.deltaTime, _input._mouseX, _input._mouseY);
             }
         }
-
-
-
-
     }
     private void LateUpdate()
     {
-        switch(State)
+        if (!_isLive)
         {
-            case true:
-
-                if (!Live)
-                {
-                    return;
-                }
-
-                
-
-                float delta = Time.deltaTime;
-
-
-
-                
-                //IsGround = _Move.CC.isGrounded;
-                _Animator._animator.SetBool("IsGround", IsGround);
-                IsInteracting = _Animator._animator.GetBool("IsInteracting");
-                Infinity = _Animator._animator.GetBool("Infinity");
-                Attacking = _Animator._animator.GetBool("Attacking");
-                Magnification = _Animator._animator.GetFloat("Magnification");
-                Rotate = _Animator._animator.GetBool("Rotate");
-                _Input.LeftClick = false;
-                _Input.RightClick = false;
-
-                bool d = Mathf.Abs(_Input.Vertical) + Mathf.Abs(_Input.Horizontal) == 0 ? d = true : d = false;
-
-                _Animator._animator.SetBool("MoveAmount", d);
-
-                _Animator._animator.SetBool("Lock_On_Camera", LockOnMode);
-                if (LockOnMode)
-                {
-                    WalkState = true;
-                    SprintState = false;
-                }
-                _Animator._animator.SetBool("WalkState", WalkState);
-                _Animator._animator.SetBool("SprintState", SprintState);
-                
-                
-
-                break;
+            return;
         }
 
+
+        _isInteracting = _animator._animator.GetBool("IsInteracting");
+        _isInfinity = _animator._animator.GetBool("Infinity");
+        _isAttacking = _animator._animator.GetBool("Attacking");
+        _magnification = _animator._animator.GetFloat("Magnification");
+        _isRotate = _animator._animator.GetBool("Rotate");
+        _input._isLeftClick = false;
+        _input._isRightClick = false;
+
+        
+        _animator._animator.SetBool("IsGround", _isGround);
+        bool d = Mathf.Abs(_input._vertical) + Mathf.Abs(_input._horizontal) == 0 ? d = true : d = false;
+        _animator._animator.SetBool("MoveAmount", d);
+        _animator._animator.SetBool("Lock_On_Camera", LockOnMode);
+        if (LockOnMode)
+        {
+            _isWalkState = true;
+            _isSprintState = false;
+        }
+        _animator._animator.SetBool("WalkState", _isWalkState);
+        _animator._animator.SetBool("SprintState", _isSprintState);
     }
 
 
@@ -234,53 +170,36 @@ public class Player_Manager : MonoBehaviour
     #region UI관련
     public bool Check_UI()
     {
-
-        if (_Manager_Inventory.Inventory_Object.activeSelf || _Manager_Inventory.Equip_Object.activeSelf)
+        if (Game_Master.instance.UI.Count_Open_UI > 0)
         {
-            
             return true;
         }
         return false;
-        
-
     }
-    
+
 
     public void Open_Close_Inventory_Self()
     {
-        if (_Connect_Object.IF)
+        if (_connect_Object.IF)
         {
             return;
         }
-        
+
         if (Open_UI)
         {
-            _Manager_Inventory.Open_Close_Equip_Window(false);
-            _Manager_Inventory.Open_Close_Inventory_Window(false);
+            _manager_Inventory.Open_Close_Equip_Window(false);
+            _manager_Inventory.Open_Close_Inventory_Window(false);
         }
         else
         {
-            _Manager_Inventory.Open_Close_Equip_Window(true);
-            _Manager_Inventory.Open_Close_Inventory_Window(true);
+            _manager_Inventory.Open_Close_Equip_Window(true);
+            _manager_Inventory.Open_Close_Inventory_Window(true);
         }
-        
+
     }
     #endregion
 
-    #region NPC접촉
 
-    public void Connect_Object_Function()
-    {
-
-        //if (_Connect_Object.Connecting)//이미연결되어있다면
-        //{
-        //    _Connect_Object.DisConnect_Object();
-            
-        //    return;
-        //}
-        _Connect_Object.Connect_IF_Function();
-    }
-    #endregion
 
     #region 데미지관련
 
@@ -288,27 +207,31 @@ public class Player_Manager : MonoBehaviour
     {
         if (temp.Live)
         {
-            Vector3 Weapon_Position = _WeaponSlotManager.Main_Weapon.Current_Weapon.transform.position;
-            _Attacker.temp.transform.position = Vector3.Lerp(_Attacker.temp.transform.position, Weapon_Position, 0.9f);
-            _Attacker.temp.transform.rotation = _WeaponSlotManager.Main_Weapon.Current_Weapon.transform.rotation;
-            _Attacker.temp.Play();
-            int CR = UnityEngine.Random.Range(1, 101);
-            float Damage_Point = _Status.ATK_Point;
+            Vector3 Weapon_Position = _weaponSlotManager.Main_Weapon._currentWeapon.transform.position;
+            _attackerController.temp.transform.position = Vector3.Lerp(_attackerController.temp.transform.position, Weapon_Position, 0.9f);
+            _attackerController.temp.transform.rotation = _weaponSlotManager.Main_Weapon._currentWeapon.transform.rotation;
+            _attackerController.temp.Play();
 
-            if (CR >= 100 - _Status.CRP_Point)
+            int CR = Random.Range(1, 101);
+
+            float Damage_Point = _status.ATK_Point;
+            if (CR >= 100 - _status.CRP_Point)
             {
-                Damage_Point = 1f * (Damage_Point * (100 + _Status.CRT_Point)) / 100f;
+                Damage_Point = 1f * (Damage_Point * (100 + _status.CRT_Point)) / 100f;
             }
-            Damage_Point *= Magnification;
+            Damage_Point *= _magnification;
             int INT_DAMGE = (int)Damage_Point;
-            Enemy_IDList.Add(temp.ID);
-            if (temp.Damaged(INT_DAMGE, this.transform))
+
+            _enemyIDList.Add(temp.ID);
+            
+            
+            if (temp.Damaged(INT_DAMGE, this.transform, _Attack_Effect))
             {
                 LockOnMode = false;
-                _Camera.ClearListTarget();
-                if (WalkState == true)
+                _camera.ClearListTarget();
+                if (_isWalkState == true)
                 {
-                    WalkState = false;
+                    _isWalkState = false;
                 }
             }
 
@@ -317,53 +240,46 @@ public class Player_Manager : MonoBehaviour
 
     public void Reset_IDList()
     {
-        Enemy_IDList.Clear();
+        _enemyIDList.Clear();
     }
 
-    public void PlayerDamaged(int Damage, Vector3 Dir, Hit_AnimationNumber AttackType, float KnockPower)
+    public void PlayerDamaged(int Damage, Vector3 Dir, EHit_AnimationNumber AttackType, float KnockPower)
     {
 
-        if (Infinity)
+        if (_isInfinity)
         {
             Debug.Log("무적회피");
             return;
         }
 
-        
         Debug.Log(Vector3.Angle(transform.forward, Dir));
-
         Damage = (int)(Damage + (KnockPower / 3));
-
-        
         Quaternion Q = transform.rotation;
-
         Vector3 temp = Q.eulerAngles;
-        //Debug.Log("Before" + temp.y);
+        
         temp.y -= Vector3.Angle(transform.forward, Dir);
         temp.x = 0;
         temp.z = 0;
         Q = Quaternion.Euler(temp);
-        //Debug.Log("Before" + Q.eulerAngles);
-        //Debug.Log("After" + transform.rotation.eulerAngles);
         transform.rotation = Q;
-        
-        _Animator._animator.SetFloat("Knock", KnockPower);
-        if (IsGround)
+
+        _animator._animator.SetFloat("Knock", KnockPower);
+        if (_isGround)
         {
             switch (AttackType)
             {
-                case Hit_AnimationNumber.Weak:
-                    _Animator.PlayerTargetAnimation("Damage_Front_Big_ver_A", true);
-                    _Move.rb.AddForce(KnockPower * -transform.forward, ForceMode.VelocityChange);
+                case EHit_AnimationNumber.Weak:
+                    _animator.PlayerTargetAnimation("Damage_Front_Big_ver_A", true);
+                    //_move._rigidBody.AddForce(KnockPower * -transform.forward, ForceMode.VelocityChange);
                     break;
-                case Hit_AnimationNumber.Nomal:
-                    _Animator.PlayerTargetAnimation("Damage_Front_Big_ver_C", true);
-                    _Move.rb.AddForce(KnockPower * -transform.forward, ForceMode.VelocityChange);
+                case EHit_AnimationNumber.Nomal:
+                    _animator.PlayerTargetAnimation("Damage_Front_Big_ver_C", true);
+                    //_move._rigidBody.AddForce(KnockPower * -transform.forward, ForceMode.VelocityChange);
                     break;
-                case Hit_AnimationNumber.Hard:
-                    _Animator.PlayerTargetAnimation("Damage_Front_High_KnockDown", true);
-                    _Move.rb.AddForce(KnockPower / 2f * -transform.forward, ForceMode.VelocityChange);
-                    //_Move.rb.AddForce(KnockPower / 4f * transform.up, ForceMode.VelocityChange);
+                case EHit_AnimationNumber.Hard:
+                    _animator.PlayerTargetAnimation("Damage_Front_High_KnockDown", true);
+                    //_move._rigidBody.AddForce(KnockPower / 2f * -transform.forward, ForceMode.VelocityChange);
+                    
                     break;
                 default:
                     break;
@@ -371,32 +287,13 @@ public class Player_Manager : MonoBehaviour
         }
         else
         {
-            switch (AttackType)
-            {
-                case Hit_AnimationNumber.Weak:
-                    _Animator.PlayerTargetAnimation("Damage_Front_Big_ver_A", true);
-                    //_Move.rb.AddForce(KnockPower / 10f * -transform.forward, ForceMode.Impulse);
-                    break;
-                case Hit_AnimationNumber.Nomal:
-                    _Animator.PlayerTargetAnimation("Damage_Front_Big_ver_C", true);
-                    //_Move.rb.AddForce(KnockPower / 10f * -transform.forward, ForceMode.Impulse);
-                    break;
-                case Hit_AnimationNumber.Hard:
-                    _Animator.PlayerTargetAnimation("Damage_Front_High_KnockDown", true);
-                    //_Move.rb.AddForce(KnockPower / 20f * -transform.forward, ForceMode.Impulse);
-                    //_Move.rb.AddForce(KnockPower / 40f * transform.up, ForceMode.Impulse);
-                    break;
-                default:
-                    break;
-            }
+            _animator.PlayerTargetAnimation("Damage_Front_Flying_ver_B", true);
         }
-        if (_Status.Damaged_HP(Damage))
+        if (_status.Damaged_HP(Damage))
         {
-            Live = false;
-            _Animator.PlayerTargetAnimation("Damage_Die", true);
+            _isLive = false;
+            _animator.PlayerTargetAnimation("Damage_Die", true);
         }
-
-
     }
     #endregion
 
@@ -404,78 +301,50 @@ public class Player_Manager : MonoBehaviour
 
     public void Save_On_FireBase()
     {
-        FireBase_M.Save_On_FireBase();
+        _fireBaseManger.Save_On_FireBase();
     }
-    
+
 
     public void Data_Save(bool T)//인벤토리내용을 플레이어데이터로옮기는과정 인벤토리열때 작동
     {
-        
-        if(T)
-        Save_On_FireBase();
+
+        if (T)
+            Save_On_FireBase();
     }
 
     #endregion
 
     #region 지상접촉 탐지
-    void Ground()
-    {
-        
-        if (ColliderList.Count > 0)
-        {
-            IsGround = true;
-            return;
-        }
-        
-
-        IsGround = false;
-    }
-
     public void Ground_Check()//땅에 닿을 위치면 땅위치로 이동시킴
     {
-        
-        if(_Animator._animator.GetBool("JUMP"))
+
+        if (_animator._animator.GetBool("JUMP"))
         {
-            IsGround = false;
+            _isGround = false;
             return;
         }
         Vector3 RaycastOrigin = transform.position;
         RaycastOrigin.y += 1f;
-        Vector3 Last_Posi= transform.position;
-        
-        if (Physics.SphereCast(RaycastOrigin,0.2f, Vector3.down,out RaycastHit hit,1.1f, GroundLayer))
+        Vector3 Last_Posi = transform.position;
+
+        if (Physics.SphereCast(RaycastOrigin, 0.2f, Vector3.down, out RaycastHit hit, 1.1f, _groundLayer))
         {
-            
+
             Vector3 Temp = hit.point;
             Last_Posi.y = Temp.y;
             transform.position = Last_Posi;
-            
-            IsGround = true;
+
+            _isGround = true;
         }
         else
         {
-            IsGround =false;
+            _isGround = false;
         }
-        
-        
-        
-    }
-    private void OnCollisionEnter(Collision collision)
-    {
 
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            //Ground();
-        }
+
+
     }
-    public float Dis;
-    private void OnCollisionExit(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            //Ground();
-        }
-    }
+
     #endregion
 
 
@@ -484,10 +353,3 @@ public class Player_Manager : MonoBehaviour
 
 }
 
-namespace Hit_Type_NameSpace
-{
-    public enum Hit_AnimationNumber
-    {
-        Weak, Nomal, Hard
-    }
-}

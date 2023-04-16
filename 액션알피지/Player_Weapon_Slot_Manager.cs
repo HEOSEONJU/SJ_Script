@@ -16,17 +16,17 @@ public class Player_Weapon_Slot_Manager : MonoBehaviour
 
         foreach (Weapon_Slot weaponHolderSlot in weapon_Slot)
         {
-            if (weaponHolderSlot.Left)
+            if (weaponHolderSlot._isLeft)
             {
                 Sub_Weapon = weaponHolderSlot;
                 //Sub_Weapon.Init(Inventory.Main_Weapon.weapon);
                 AbleWeaponCollider(false);
             }
-            else if (weaponHolderSlot.Right)
+            else if (weaponHolderSlot._isRight)
             {
                 Main_Weapon = weaponHolderSlot;
                 
-                Main_Weapon.Init((Weapon_Item)Game_Master.instance.PM.Data.Equip_Weapon_Item.Base_item);
+                Main_Weapon.Init(Game_Master.instance.PM.Data.Equip_Weapon_Item.Base_item as Weapon_Item);
 
 
 
@@ -50,11 +50,11 @@ public class Player_Weapon_Slot_Manager : MonoBehaviour
         {
             return;
         }
-
         
-        if(Game_Master.instance.PM.Data.Equip_Weapon_Item!=null)
+        
+        if(Game_Master.instance.PM.Data.Equip_Weapon_Item.Base_item!=null)
         {
-            Weapon_Item temp = (Weapon_Item)Game_Master.instance.PM.Data.Equip_Weapon_Item.Base_item;
+            Weapon_Item temp = Game_Master.instance.PM.Data.Equip_Weapon_Item.Base_item as Weapon_Item;
             
             Main_Weapon.Change_Weapon(temp);
             _Attack_Animator.Change_Weapon_Type(temp.Attack_List, temp.Air_Attack_List);

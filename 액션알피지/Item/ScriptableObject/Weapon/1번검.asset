@@ -17,8 +17,7 @@ MonoBehaviour:
   Item_Icon: {fileID: 21300000, guid: 8d601b2c10bbb12419063a03852a4622, type: 3}
   exp: 
   Value: 1000
-  Type: 0
-  EST: 0
+  Type: 1
   Attack_List:
   - OneHand_Attak_1
   - OneHand_Attak_2

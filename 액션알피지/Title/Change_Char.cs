@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -17,6 +18,9 @@ public class Change_Char : MonoBehaviour
 
     [SerializeField]
     List<GameObject> Char_List;
+
+
+    bool isLogin = false;
     public void Move_Char()
     {
         Login.SetActive(false);
@@ -26,7 +30,11 @@ public class Change_Char : MonoBehaviour
 
     public void Choice(int i)
     {
-        
+        if(isLogin)
+        {
+            return;
+        }
+        isLogin=true;
         FBM.Player_Char = Char_List[i];
         
         FBM.Set_ID = i;

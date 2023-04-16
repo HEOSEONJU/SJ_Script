@@ -30,7 +30,7 @@ public abstract class Base_NPC : MonoBehaviour
     public abstract void DisConnecting_NPC();
     public abstract void Open_Window();
     public abstract void Close_Window();
-    public abstract void Close_ALL_Window();
+    
 
 
 }

@@ -9,14 +9,14 @@ public class Only_Gravity : StateMachineBehaviour
     
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        PAC = animator.GetComponent<Player_Animaotr_Controller>();
+        animator.TryGetComponent<Player_Animaotr_Controller>(out PAC);
         PAC._Move.FallingStart();
     }
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
 
         //PAC.manager.Ground_Check();
-        if (PAC.manager.IsGround)
+        if (PAC.manager._isGround)
         {
             //Debug.Log("ÂøÁö½ÃÀÛ");
             if(animator.GetFloat("Flight_Timer")>0.35)

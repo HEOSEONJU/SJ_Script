@@ -4,20 +4,20 @@ using UnityEngine;
 
 public class Player_Animator : MonoBehaviour
 {
-    Player_Manager manager;
-    [SerializeField]
+    
+    
+    
     public Animator _animator;
+    [SerializeField]
     Player_Input _Input;
    
     int vertical;
     int horizontal;
 
     
-    public void Init()
+    public void Init(Player_Input IP)
     {
-        manager = GetComponent<Player_Manager>();
-        _Input = GetComponent<Player_Input>();
-       _animator = GetComponentInChildren<Animator>();
+        _Input = IP;
         vertical = Animator.StringToHash("Vertical");
         horizontal = Animator.StringToHash("Horizontal");
     }
@@ -25,7 +25,7 @@ public class Player_Animator : MonoBehaviour
     public void UpdataAnimation(float verticalMove, float horizontalMove, bool isSprinting)
     {
 
-        if(manager.LockOnMode)
+        if(Game_Master.instance.PM.LockOnMode)
         {
             _animator.SetFloat(vertical, verticalMove);
             _animator.SetFloat(horizontal, horizontalMove);
@@ -37,14 +37,14 @@ public class Player_Animator : MonoBehaviour
         float h = Mathf.Abs(horizontalMove);
 
 
-        if (_Input.MoveAmount > 0.1f)
+        if (_Input._moveAmount > 0.1f)
         {
-            if (isSprinting & _Input.MoveAmount > 0.1f)
+            if (isSprinting & _Input._moveAmount > 0.1f)
             {
                 v = Mathf.Clamp(v, 0, 2.0f)*2f;
                 h = Mathf.Clamp(h, 0, 2.0f) * 2f;
             }
-            else if (manager.WalkState & _Input.MoveAmount > 0.1f)
+            else if (Game_Master.instance.PM._isWalkState & _Input._moveAmount > 0.1f)
             {
                 v = Mathf.Clamp(v, 0, 0.5f);
                 h = Mathf.Clamp(h, 0, 0.5f);

@@ -32,7 +32,7 @@ public class Vender_Slot : Base_Slot, IPointerEnterHandler, IPointerExitHandler
 
         if ((Game_Master.Instance.UI.Windows == false) && Game_Master.Instance.UI.Draging == false)
         {
-            Game_Master.Instance.UI.Active_Windows(true, ITEM);
+            Game_Master.Instance.UI.Open_Small_Windows(ITEM);
 
         }
 
@@ -42,7 +42,7 @@ public class Vender_Slot : Base_Slot, IPointerEnterHandler, IPointerExitHandler
     {
         if (Game_Master.Instance.UI.Windows == true)
         {
-            Game_Master.Instance.UI.Active_Windows(false);
+            Game_Master.Instance.UI.Close_Small_Windows();
         }
 
 

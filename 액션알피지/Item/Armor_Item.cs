@@ -4,7 +4,7 @@ using UnityEngine;
 
 
 [CreateAssetMenu(menuName = "Item/Armor_Item")]
-public class Armor_Item : Equip_Item
+public class Armor_Item : item
 {
     //public List<string> Attack_List;
     //public GameObject WeaponPrefab;

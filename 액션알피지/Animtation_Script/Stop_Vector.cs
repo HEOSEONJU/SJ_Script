@@ -16,11 +16,11 @@ public class Stop_Vector : StateMachineBehaviour
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         StopLevel=layerIndex;
-        PAC = animator.GetComponent<Player_Animaotr_Controller>();
+        animator.TryGetComponent<Player_Animaotr_Controller>(out PAC);
         Timer = 0;
-        Start_Vector = PAC._Move.rb.velocity;
+        Start_Vector = PAC._Move._rigidBody.velocity;
         
-        Arrive_Vector = PAC._Move.rb.velocity;
+        Arrive_Vector = PAC._Move._rigidBody.velocity;
         Arrive_Vector.x = 0;
         Arrive_Vector.z = 0;
         if (YReset)
@@ -60,7 +60,7 @@ public class Stop_Vector : StateMachineBehaviour
         Timer += Time.deltaTime* Stop_Speed;
         
 
-        PAC._Move.rb.velocity = Vector3.Lerp(Start_Vector, Arrive_Vector, Timer);
+        PAC._Move._rigidBody.velocity = Vector3.Lerp(Start_Vector, Arrive_Vector, Timer);
         //PAC._Move.rb.velocity = Vector3.Lerp(Start_Vector, Arrive_Vector, Mathf.Pow(stateInfo.length, 2));
 
     }

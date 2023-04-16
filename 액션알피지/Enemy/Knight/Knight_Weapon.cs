@@ -7,12 +7,13 @@ public class Knight_Weapon : MonoBehaviour
     [SerializeField]
     Collider WeaponCollider;
 
+    [SerializeField]
     Knight_Enemy Manager;
     private void Start()
     {
-        WeaponCollider = GetComponent<Collider>();
+        
         WeaponCollider.enabled = false;
-        Manager =GetComponentInParent<Knight_Enemy>();
+        
     }
 
     public void WeaponColliderEnable()

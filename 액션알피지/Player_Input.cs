@@ -4,29 +4,32 @@ using UnityEngine;
 
 public class Player_Input : MonoBehaviour
 {
-    Player_Manager manager;
-    Player_Animator _Animator;
-    public Player_Animaotr_Controller _Attacker;
-    Player_Camera _Camera;
-    public float Horizontal;
-    public float Vertical;
-    public float MoveAmount;
-    public float MouseX;
-    public float MouseY;
+    
+    [SerializeField]
+    Player_Animator _animator;
+    [SerializeField]
+    Player_Animaotr_Controller _attackerController;
+    Player_Camera _camera;
+    public float _horizontal;
+    public float _vertical;
+    public float _moveAmount;
+    public float _mouseX;
+    public float _mouseY;
 
-    public bool LeftClick;
-    public bool RightClick;
+    public bool _isLeftClick;
+    public bool _isRightClick;
 
-    public bool CanJump = true;
+    public bool _canJump = true;
 
-    float Jump_Dodge;
-    bool JCheck;
-    public void Init()
+    float _jump_Dodge;
+    bool _jCheck;
+    public void Init(Player_Animator PA, Player_Animaotr_Controller PAC)
     {
-        manager = GetComponent<Player_Manager>();
-        _Animator = GetComponent<Player_Animator>();
-        _Attacker = GetComponentInChildren<Player_Animaotr_Controller>();
-        _Camera = manager._Camera;
+        _animator = PA;
+        _attackerController = PAC;
+        
+        
+        _camera =  Game_Master.instance.PM._camera;
 
 
     }
@@ -34,63 +37,63 @@ public class Player_Input : MonoBehaviour
 
     public void Player_Key_Input()
     {
-        Horizontal = Input.GetAxis("Horizontal");
-        Vertical = Input.GetAxis("Vertical");
-        MoveAmount = Mathf.Abs(Horizontal) + Mathf.Abs(Vertical);
+        _horizontal = Input.GetAxis("Horizontal");
+        _vertical = Input.GetAxis("Vertical");
+        _moveAmount = Mathf.Abs(_horizontal) + Mathf.Abs(_vertical);
 
 
-        if (manager._Connect_Object.IF)
+        if (Game_Master.instance.PM._connect_Object.IF)
         {
-            MouseX = 0;
-            MouseY = 0;
+            _mouseX = 0;
+            _mouseY = 0;
         }
         else
         {
-            MouseX = Input.GetAxis("Mouse X");
-            MouseY = Input.GetAxis("Mouse Y");
+            _mouseX = Input.GetAxis("Mouse X");
+            _mouseY = Input.GetAxis("Mouse Y");
         }
             if (Input.GetKeyDown(KeyCode.I))
         {
-            manager.Open_Close_Inventory_Self();
+            Game_Master.instance.PM.Open_Close_Inventory_Self();
             
         }
 
 
         if (Input.GetKeyDown(KeyCode.E))
         {
-            manager.Connect_Object_Function();
+            Game_Master.instance.PM._connect_Object.Connect_IF_Function();
         }
         // Input.GetMouseButtonDown(0)  Input.GetMouseButtonDown(1)
         // Input.GetKeyDown(KeyCode.E)
-        if (!manager._Connect_Object.IF)
+        if (!Game_Master.instance.PM.Check_UI())
         {
             
 
 
             if (Input.GetMouseButtonDown(0))
             {
-                if (manager.IsGround)
+                if (Game_Master.instance.PM._isGround)
                 {
-                    if (!manager.IsInteracting)
+                    if (!Game_Master.instance.PM._isInteracting)
                     {
-                        _Attacker.LeftAttack();
+                        _attackerController.LeftAttack();
 
                     }
-                    else if (_Animator._animator.GetInteger("Combo_Stack") >= 1)
+                    else if (_animator._animator.GetInteger("Combo_Stack") >= 1)
                     {
-                        _Attacker.LeftAttack();
+                        _attackerController.LeftAttack();
                     }
                 }
-                else if (!manager.IsGround)
+                else if (!Game_Master.instance.PM._isGround)
                 {
 
-                    if (_Animator._animator.GetInteger("Combo_Stack") == 0)
+                    if (_animator._animator.GetInteger("Combo_Stack") == 0)
                     {
-                        _Animator._animator.SetInteger("Combo_Stack", 1);
+                        _animator._animator.SetInteger("Combo_Stack", 1);
                     }
 
-                    if (_Animator._animator.GetInteger("Combo_Stack") < _Attacker.Air_Attack_Name.Count)
-                        _Attacker.RightAttack();
+                    if (_animator._animator.GetInteger("Combo_Stack") < _attackerController.Air_Attack_Name.Count)
+                        _attackerController.RightAttack();
 
 
                 }
@@ -99,12 +102,12 @@ public class Player_Input : MonoBehaviour
 
             if (Input.GetMouseButtonDown(1))
             {
-                if (manager.IsGround)
+                if (Game_Master.instance.PM._isGround)
                 {
-                    if (!manager.IsInteracting)
+                    if (!Game_Master.instance.PM._isInteracting)
                     {
-                        _Animator._animator.SetInteger("Combo_Stack", 0);
-                        _Attacker.RightAttack();
+                        _animator._animator.SetInteger("Combo_Stack", 0);
+                        _attackerController.RightAttack();
 
                     }
 
@@ -115,87 +118,87 @@ public class Player_Input : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
-            manager.SprintState = true;
+            Game_Master.instance.PM._isSprintState = true;
         }
         if (Input.GetKeyUp(KeyCode.LeftShift))
         {
-            manager.SprintState = false;
+            Game_Master.instance.PM._isSprintState = false;
         }
         if (Input.GetKeyDown(KeyCode.C))
         {
-            manager.WalkState = !manager.WalkState;
+            Game_Master.instance.PM._isWalkState = !Game_Master.instance.PM._isWalkState;
 
         }
 
 
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            manager.LockOnMode = !manager.LockOnMode;
+            Game_Master.instance.PM.LockOnMode = !Game_Master.instance.PM.LockOnMode;
 
-            if (manager.LockOnMode)
+            if (Game_Master.instance.PM.LockOnMode)
             {
 
-                _Camera.HandleLockOn();
+                _camera.HandleLockOn();
 
-                if (_Camera.nearLockonTarget != null)
+                if (_camera.nearLockonTarget != null)
                 {
-                    _Camera.CurrentLockonTarget = _Camera.nearLockonTarget;
+                    _camera.CurrentLockonTarget = _camera.nearLockonTarget;
                 }
                 else
                 {
                     Debug.Log("Å¸°Ù¾øÀ½");
-                    manager.LockOnMode = false;
-                    _Camera.ClearListTarget();
+                    Game_Master.instance.PM.LockOnMode = false;
+                    _camera.ClearListTarget();
                 }
 
             }
             else
             {
 
-                _Camera.ClearListTarget();
-                if (manager.WalkState == true)
+                _camera.ClearListTarget();
+                if (Game_Master.instance.PM._isWalkState == true)
                 {
-                    manager.WalkState = false;
+                    Game_Master.instance.PM._isWalkState = false;
                 }
             }
         }
 
 
-        if (manager.LockOnMode)
+        if (Game_Master.instance.PM.LockOnMode)
         {
-            if (Input.GetKeyDown(KeyCode.Space) & manager.IsGround & CanJump & !manager.IsInteracting)
+            if (Input.GetKeyDown(KeyCode.Space) & Game_Master.instance.PM._isGround & _canJump & !Game_Master.instance.PM._isInteracting)
             {
-                JCheck = true;
+                _jCheck = true;
             }
-            if (manager.IsInteracting)
+            if (Game_Master.instance.PM._isInteracting)
             {
-                JCheck = false;
-            }
-
-            if (JCheck)
-            {
-                Jump_Dodge += Time.deltaTime;
+                _jCheck = false;
             }
 
-            if (Jump_Dodge > 0.7f)
+            if (_jCheck)
             {
-                manager.Jump = true;
-                Jump_Dodge = 0;
-                JCheck = false;
+                _jump_Dodge += Time.deltaTime;
             }
 
-            if (Input.GetKeyUp(KeyCode.Space) & manager.IsGround & CanJump & !manager.IsInteracting)
+            if (_jump_Dodge > 0.7f)
+            {
+                Game_Master.instance.PM._isJump = true;
+                _jump_Dodge = 0;
+                _jCheck = false;
+            }
+
+            if (Input.GetKeyUp(KeyCode.Space) & Game_Master.instance.PM._isGround & _canJump & !Game_Master.instance.PM._isInteracting)
             {
 
 
 
-                if (JCheck && Jump_Dodge <= 0.7f)
+                if (_jCheck && _jump_Dodge <= 0.7f)
                 {
-                    if (_Animator.PlayDodge(Horizontal, Vertical))
+                    if (_animator.PlayDodge(_horizontal, _vertical))
                     {
 
-                        Jump_Dodge = 0;
-                        JCheck = false;
+                        _jump_Dodge = 0;
+                        _jCheck = false;
                     }
 
 
@@ -209,10 +212,10 @@ public class Player_Input : MonoBehaviour
         }
         else
         {
-            if (Input.GetKeyDown(KeyCode.Space) & manager.IsGround & CanJump & !manager.IsInteracting)
+            if (Input.GetKeyDown(KeyCode.Space) & Game_Master.instance.PM._isGround & _canJump & !Game_Master.instance.PM._isInteracting)
             {
 
-                manager.Jump = true;
+                Game_Master.instance.PM._isJump = true;
                 //CanJump = false;
             }
         }
@@ -220,14 +223,14 @@ public class Player_Input : MonoBehaviour
 
     public void JumpCoolTime()
     {
-        StartCoroutine(JCT_coroutine());
+        StartCoroutine(JCT_cCroutine());
     }
-    IEnumerator JCT_coroutine()
+    IEnumerator JCT_cCroutine()
     {
 
-        CanJump = false;
+        _canJump = false;
         yield return new WaitForSeconds(1);
-        CanJump = true;
+        _canJump = true;
 
     }
 }

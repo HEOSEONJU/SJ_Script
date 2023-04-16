@@ -7,7 +7,8 @@ public class State_Boar_Move : StateMachineBehaviour
     Boar_Enemy KN;
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        KN = animator.GetComponent<Boar_Enemy>();
+        if (animator.TryGetComponent<Boar_Enemy>(out Boar_Enemy E))
+            KN = E;
     }
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
@@ -17,9 +18,13 @@ public class State_Boar_Move : StateMachineBehaviour
             return;
         }
 
-        if (KN._Boar_AI.Move_Target(animator))
+        if (KN._boar_AI.Move_Target(animator))
         {
             animator.SetBool("Target", false);
         }
+    }
+    public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    {
+        KN._RD.velocity = Vector3.zero;
     }
 }

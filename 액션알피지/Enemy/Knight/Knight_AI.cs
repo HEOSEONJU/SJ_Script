@@ -49,7 +49,11 @@ public class Knight_AI : MonoBehaviour
 
     public bool Detection()
     {
-        
+        if (_Knight_Enemy.Aggro_Time > 0)
+        {
+
+            return true;
+        }
         Collider[] colliders = Physics.OverlapSphere(transform.position, DirectionRadius, DetectLayer);
         Collider PM = Array.Find(colliders, x => x.GetComponent<Player_Manager>());
         if (PM!=null)
@@ -60,7 +64,7 @@ public class Knight_AI : MonoBehaviour
             
             if (Angle < Detect_MaxAngle)
             {
-                
+                _Knight_Enemy.Aggro_Time = 15;
                 Current_Player = PM.gameObject.transform;
                 return true;
             }
@@ -168,10 +172,14 @@ public class Knight_AI : MonoBehaviour
         return false;
 
     }
-
+    private void Update()
+    {
+        _Knight_Enemy.Aggro_Time -= Time.deltaTime;
+    }
     public void Update_Attack_Delay(float delta)
     {
         AttackDelay -= delta;
+        
     }
 
 

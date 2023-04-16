@@ -4,7 +4,7 @@ using UnityEngine;
 
 
 [CreateAssetMenu(menuName = "Item/Weapon_Item")]
-public class Weapon_Item : Equip_Item
+public class Weapon_Item : item
 {
     public List<string> Attack_List;
     public List<string> Air_Attack_List;

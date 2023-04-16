@@ -7,7 +7,7 @@ public class Quest_NPC : Normal_NPC
 {
     [SerializeField]
     const int Max_Quset = 6;
-    public List<Quest_Set> Have_Quest_ID;
+    public List<int> Have_Quest_ID;
     //public Vender_Function Function;
     public Quest_Function QF;
     public GameObject Quest_UI;
@@ -27,30 +27,11 @@ public class Quest_NPC : Normal_NPC
 
     public void Open_Quset()
     {
-        Quest_UI.SetActive(true);
+        Game_Master.instance.UI.Close_All_UI();
+        Game_Master.instance.UI.Open_UI(Quest_UI);
         QF.Reset_Page();
-        Close_Window();
     }
 
-    public void  Close_Quest()
-    {
 
-        Close_ALL_Window();
-        
-        
-        
-
-    }
-    public override void Close_ALL_Window()
-    {
-        Quest_UI.SetActive(false);
-        base.Close_ALL_Window();
-    }
-}
-[System.Serializable]
-public struct Quest_Set
-{
-    public int Quset_ID;
-    public Quest_Type TYPE;
 
 }

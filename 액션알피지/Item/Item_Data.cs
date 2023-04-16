@@ -1,3 +1,4 @@
+using Item_Enum;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,7 +20,7 @@ public class Item_Data
     {
         if(Temp!= null) 
         {
-            if(Temp.Type==Type.Use)
+            if(Temp.Type== EItem_Slot_Type.Use)
             {
                 count = NUM;
             }
@@ -62,14 +63,16 @@ public class Item_Data
 
     }
 
-    public bool UseItem()
+    public bool UseItem(int C=1)
     {
-        if (count > 0)
+
+        if (count >= C)
         {
-            count--;
+            count-=C;
             if(count == 0)
             {
-                INDEX = 0;
+                Delete_Data();
+
             }
             return true;
         }

@@ -79,6 +79,7 @@ public  class Interaction_Function : MonoBehaviour
     }
     public virtual void Close_Window()// 기능종료
     {
+       
         return;
     }
 

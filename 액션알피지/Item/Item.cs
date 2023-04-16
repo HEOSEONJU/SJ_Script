@@ -1,5 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
+using Item_Enum;
+
 using UnityEngine;
 
 
@@ -12,7 +12,8 @@ public class item:ScriptableObject
     public string exp;//Ό³Έν
 
     public int Value;
-    public Type Type;
+    
+    public EItem_Slot_Type Type;
     
     
 
@@ -20,8 +21,3 @@ public class item:ScriptableObject
 }
 
 
-public enum Type
-{
-    Equip,
-    Use
-}

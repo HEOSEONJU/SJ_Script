@@ -171,7 +171,7 @@ public class Player_Camera : MonoBehaviour
                 && distanceFormTarget <= MaximunDistanceLockon)
                 {
                     
-                    if (Physics.Linecast(manager.Char_Center_Posi.transform.position, TargetList.position, out hit))
+                    if (Physics.Linecast(manager._charCentePosi.transform.position, TargetList.position, out hit))
                     {
                         //캐릭터에서 타겟방향으로 라인캐스트를 했을때 충돌 되는 오브젝트에 의해 화면이 가려지는지 검사
                         if (hit.collider.gameObject.layer != EnviromentLayer)
